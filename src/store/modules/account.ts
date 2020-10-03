@@ -5,10 +5,10 @@ import config from '../../config/index';
 
 const mutations = {
     setWeb3Provider: (_state: any, provider: any): void => {
-        _state.provider.web3 = provider;
+        _state.web3Provider = provider;
     },
     setFallbackProvider: (_state: any, provider: any): void => {
-        _state.provider.fallback = provider;
+        _state.fallbackProvider = provider;
     },
     setAddress: (_state: any, address: string): void => {
         _state.address = address;
@@ -23,6 +23,7 @@ const actions = {
         // Save Alchemy provider as fallback
         const fallbackProvider = new ethers.providers.JsonRpcProvider(config.alchemyUrl);
         commit('setFallbackProvider', fallbackProvider);
+        // TODO Save Web3 provider if available
     },
     connect: async({ commit }: any, connectorKey: any): Promise<void> => {
         const connector = lock.getConnector(connectorKey);
@@ -40,12 +41,16 @@ const actions = {
     },
 };
 
+const getters = {
+    provider: (state: any): any => {
+        return state.fallbackProvider || state.web3Provider;
+    },
+};
+
 function state(): any {
     return {
-        provider: {
-            web3: null,
-            fallback: null,
-        },
+        web3Provider: null,
+        fallbackProvider: null,
         address: '',
         chainId: 0,
     };
@@ -54,6 +59,7 @@ function state(): any {
 export default {
     namespaced: true,
     state,
+    getters,
     actions,
     mutations,
 };

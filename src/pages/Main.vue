@@ -63,7 +63,6 @@
 import { ref, defineComponent, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
 
 import { scale } from '../utils/helpers';
 import SOR from '../utils/sor';
@@ -85,8 +84,8 @@ export default defineComponent({
         const swaps = ref([]);
 
         const account = computed(() => {
-            const { provider, address } = store.state.account;
-            if (!provider || !address) {
+            const { web3Provider, address } = store.state.account;
+            if (!web3Provider || !address) {
                 return '';
             }
             return address;
@@ -290,25 +289,23 @@ export default defineComponent({
         function swap(): void {
             const tokenIn = getTokenAddress(inputToken.value);
             const tokenOut = getTokenAddress(outputToken.value);
+            const provider = store.state.account.web3Provider;
             if (activeInput.value === 'input') {
                 const inputAmountNumber = new BigNumber(inputAmount.value);
                 const tokenInDecimals = getTokenDecimals(tokenIn);
                 const tokenAmountIn = scale(inputAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
-                const provider = store.state.account.provider.web3;
                 Swapper.swapIn(provider, swaps.value, tokenIn, tokenOut, tokenAmountIn, minAmount);
             } else {
                 const inputAmountNumber = new BigNumber(inputAmount.value);
                 const tokenInDecimals = getTokenDecimals(tokenIn);
                 const tokenInAmountMax = scale(inputAmountNumber, tokenInDecimals);
-                const provider = store.state.account.provider.web3;
                 Swapper.swapOut(provider, swaps.value, tokenIn, tokenOut, tokenInAmountMax);
             }
         }
 
         onMounted(async () => {
-            // @ts-ignore
-            const provider = new ethers.providers.InfuraProvider('mainnet', '93e3393c76ed4e1f940d0266e2fdbda2');
+            const provider = store.getters['account/provider'];
             const allPools = await SOR.fetchPools(provider);
             const gasPrice = new BigNumber(30000000000);
             const swapGasCost = new BigNumber(100000);
