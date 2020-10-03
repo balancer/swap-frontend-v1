@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"outDir": "./built/",
+		"sourceMap": true,
+		"strict": true,
+		"module": "es2015",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"target": "es5",
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"experimentalDecorators": true
+	},
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"src/**/*.vue",
+		"tests/**/*.ts",
+		"tests/**/*.tsx"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

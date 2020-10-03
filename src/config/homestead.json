@@ -1,0 +1,55 @@
+{
+    "network": "homestead",
+    "chainId": 1,
+    "defaultPrecision": 2,
+    "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
+    "alchemyUrl": "https://eth-mainnet.alchemyapi.io/v2/Q08AP-nlA-yUiQnIiAVlyWK4tbXjRMmD",
+    "addresses": {
+        "bFactory": "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd",
+        "bActions": "0xde4A25A0b9589689945d842c5ba0CF4f0D4eB3ac",
+        "dsProxyRegistry": "0x4678f0a6958e4D2Bc4F1BAF7Bc52E8F3564f3fE4",
+        "proxy": "0x2633Dc6F65f293FdC47206beEf1FC9BD6C63edFF",
+        "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "multicall": "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441"
+    },
+    "connectors": {
+        "injected": {
+            "id": "injected",
+            "name": "MetaMask"
+        },
+        "walletconnect": {
+            "id": "walletconnect",
+            "name": "WalletConnect",
+            "options": {
+                "rpc": {
+                    "1": "https://eth-mainnet.alchemyapi.io/v2/Q08AP-nlA-yUiQnIiAVlyWK4tbXjRMmD"
+                }
+            }
+        },
+        "portis": {
+            "id": "portis",
+            "name": "Portis",
+            "options": {
+                "network": "mainnet",
+                "dappId": "3f1c3cfc-7dd5-4e8a-aa03-71ff7396d9fe"
+            }
+        },
+        "walletlink": {
+            "id": "walletlink",
+            "name": "Coinbase",
+            "options": {
+                "appName": "Pool management - Balancer",
+                "darkMode": true,
+                "chainId": 1,
+                "ethJsonrpcUrl": "https://eth-mainnet.alchemyapi.io/v2/Q08AP-nlA-yUiQnIiAVlyWK4tbXjRMmD"
+            }
+        },
+        "fortmatic": {
+            "id": "fortmatic",
+            "name": "Fortmatic",
+            "options": {
+                "apiKey": "pk_live_9CE8FD92E54684ED"
+            }
+        }
+    }
+}

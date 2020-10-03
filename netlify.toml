@@ -1,0 +1,9 @@
+[build]
+	publish = "dist/"
+	command = "webpack"
+
+# SPA setup
+[[redirects]]
+	from = "/*"
+	to = "/index.html"
+	status = 200
