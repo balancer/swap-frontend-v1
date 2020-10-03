@@ -1,10 +1,10 @@
 import { createStore } from 'vuex';
 
-import web3 from './modules/web3.ts';
+import account from './modules/account';
 
 const store = createStore({
     modules: {
-        web3,
+        account,
     },
 });
 

@@ -65,10 +65,10 @@ import { useStore } from 'vuex';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
-import { scale } from '../utils/helpers.ts';
-import SOR from '../utils/sor.ts';
-import Swapper from '../utils/swapper.ts';
-import { getTokenAddress, getTokenDecimals } from '../utils/tokens.ts';
+import { scale } from '../utils/helpers';
+import SOR from '../utils/sor';
+import Swapper from '../utils/web3/swapper';
+import { getTokenAddress, getTokenDecimals } from '../utils/tokens';
 
 export default defineComponent({
     setup() {
@@ -82,11 +82,10 @@ export default defineComponent({
         const outputToken = ref('WETH');
         const outputAmount = ref('…');
         const sor = ref(null);
-        const swapper = ref(null);
         const swaps = ref([]);
 
         const account = computed(() => {
-            const { provider, address } = store.state.web3;
+            const { provider, address } = store.state.account;
             if (!provider || !address) {
                 return '';
             }
@@ -285,7 +284,7 @@ export default defineComponent({
         }
 
         async function connect(): Promise<void> {
-            store.dispatch('web3/connect', 'injected');
+            store.dispatch('account/connect', 'injected');
         }
 
         function swap(): void {
@@ -296,21 +295,18 @@ export default defineComponent({
                 const tokenInDecimals = getTokenDecimals(tokenIn);
                 const tokenAmountIn = scale(inputAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
-                // @ts-ignore
-                swapper.value.swapIn(swaps.value, tokenIn, tokenOut, tokenAmountIn, minAmount);
+                const provider = store.state.account.provider.web3;
+                Swapper.swapIn(provider, swaps.value, tokenIn, tokenOut, tokenAmountIn, minAmount);
             } else {
                 const inputAmountNumber = new BigNumber(inputAmount.value);
                 const tokenInDecimals = getTokenDecimals(tokenIn);
                 const tokenInAmountMax = scale(inputAmountNumber, tokenInDecimals);
-                // @ts-ignore
-                swapper.value.swapOut(swaps.value, tokenIn, tokenOut, tokenInAmountMax);
+                const provider = store.state.account.provider.web3;
+                Swapper.swapOut(provider, swaps.value, tokenIn, tokenOut, tokenInAmountMax);
             }
         }
 
         onMounted(async () => {
-            const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-            // @ts-ignore
-            swapper.value = new Swapper(web3Provider);
             // @ts-ignore
             const provider = new ethers.providers.InfuraProvider('mainnet', '93e3393c76ed4e1f940d0266e2fdbda2');
             const allPools = await SOR.fetchPools(provider);

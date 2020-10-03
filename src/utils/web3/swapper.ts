@@ -1,20 +1,15 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
-import ExchangeProxyABI from '../abi/ExchangeProxy.json';
+import ExchangeProxyABI from '../../abi/ExchangeProxy.json';
 
-import { ETH_KEY } from './tokens.ts';
+import { ETH_KEY } from '../tokens';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export default class Swapper {
-    provider: any;
-
-    constructor(provider: any) {
-        this.provider = provider;
-    }
-
-    async swapIn(
+    static async swapIn(
+        provider: any,
         swaps: any[][],
         tokenInAddress: string,
         tokenOutAddress: string,
@@ -29,7 +24,8 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        await this.sendTransaction(
+        await sendTransaction(
+            provider,
             'multihopBatchSwapExactIn',
             [
                 swaps,
@@ -42,7 +38,8 @@ export default class Swapper {
         );
     }
 
-    async swapOut(
+    static async swapOut(
+        provider: any,
         swaps: any[][],
         tokenInAddress: string,
         tokenOutAddress: string,
@@ -56,7 +53,8 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        await this.sendTransaction(
+        await sendTransaction(
+            provider,
             'multihopBatchSwapExactOut',
             [
                 swaps,
@@ -67,10 +65,15 @@ export default class Swapper {
             overrides,
         );
     }
+}
 
-    async sendTransaction(functionName: string, params: any[], overrides: any): Promise<void> {
-        const exchangeProxyAddress = '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21';
-        const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, this.provider.getSigner());
-        await exchangeProxyContract[functionName](...params, overrides);
-    }
+async function sendTransaction(
+    provider: any,
+    functionName: string,
+    params: any[],
+    overrides: any,
+): Promise<void> {
+    const exchangeProxyAddress = '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21';
+    const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
+    await exchangeProxyContract[functionName](...params, overrides);
 }
