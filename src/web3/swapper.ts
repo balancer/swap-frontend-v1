@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
-import ExchangeProxyABI from '../../abi/ExchangeProxy.json';
+import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
-import { ETH_KEY } from '../tokens';
+import { ETH_KEY } from '../utils/tokens';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 

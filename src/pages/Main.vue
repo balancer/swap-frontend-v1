@@ -69,7 +69,7 @@ import BigNumber from 'bignumber.js';
 
 import { scale } from '../utils/helpers';
 import SOR from '../utils/sor';
-import Swapper from '../utils/web3/swapper';
+import Swapper from '../web3/swapper';
 import { getTokenAddress, getTokenDecimals } from '../utils/tokens';
 
 export default defineComponent({
