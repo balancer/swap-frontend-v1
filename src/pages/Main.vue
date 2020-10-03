@@ -3,7 +3,10 @@
         <div class="header">
             <h1>Balancer DEX</h1>
             <div>
-                <span v-if="account">{{ account }}</span>
+                <span v-if="account">
+                    {{ account }}
+                    <span @click="disconnect">x</span>
+                </span>
                 <button
                     v-else
                     @click="connect"
@@ -286,6 +289,10 @@ export default defineComponent({
             store.dispatch('account/connect', 'injected');
         }
 
+        async function disconnect(): Promise<void> {
+            store.dispatch('account/disconnect');
+        }
+
         function swap(): void {
             const tokenIn = getTokenAddress(inputToken.value);
             const tokenOut = getTokenAddress(outputToken.value);
@@ -324,6 +331,7 @@ export default defineComponent({
             account,
             setActiveInput,
             connect,
+            disconnect,
             swap,
         };
     },
