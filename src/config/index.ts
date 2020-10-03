@@ -3,7 +3,7 @@ import merge from 'lodash/merge';
 import registry from 'assets/generated/pm/registry.homestead.json';
 import registryKovan from 'assets/generated/pm/registry.kovan.json';
 
-import { clone } from '../utils/helpers.ts';
+import { clone } from '../utils/helpers';
 import homestead from './homestead.json';
 import staging from './homestead.staging.json';
 import kovan from './kovan.json';
