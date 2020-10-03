@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
+import config from '../config';
 import { ETH_KEY } from '../utils/tokens';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -73,7 +74,7 @@ async function sendTransaction(
     params: any[],
     overrides: any,
 ): Promise<void> {
-    const exchangeProxyAddress = '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21';
+    const exchangeProxyAddress = config.addresses.exchangeProxy;
     const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
     await exchangeProxyContract[functionName](...params, overrides);
 }
