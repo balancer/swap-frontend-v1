@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 
 import lock from '../../utils/connectors';
-import config from '../../config/index';
+import config from '../../config';
 
 const LS_CONNECTOR_KEY = '_lock.connector';
 
