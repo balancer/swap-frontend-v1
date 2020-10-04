@@ -53,4 +53,35 @@ export default class Ethereum {
         const proxy = data[2 * tokenCount + 1];
         return { allowances, balances, proxy };
     }
+
+    static async fetchTokenMetadata(provider: any, tokens: string[]): Promise<any> {
+        const ethcallProvider = new ethcall.Provider();
+        await ethcallProvider.init(provider);
+        const calls = [];
+        // Fetch token metadata
+        for (const tokenAddress of tokens) {
+            const tokenContract = new ethcall.Contract(tokenAddress, erc20Abi);
+            const nameCall = tokenContract.name();
+            const symbolCall = tokenContract.symbol();
+            const decimalCall = tokenContract.decimals();
+            calls.push(nameCall);
+            calls.push(symbolCall);
+            calls.push(decimalCall);
+        }
+        // Fetch data
+        const data = await ethcallProvider.all(calls);
+        const metadata = {};
+        for (let i = 0; i < tokens.length; i++) {
+            const tokenAddress = tokens[i];
+            const name = data[3 * i];
+            const symbol = data[3 * i + 1];
+            const decimals = data[3 * i + 2];
+            metadata[tokenAddress] = {
+                name,
+                symbol,
+                decimals,
+            };
+        }
+        return metadata;
+    }
 }
