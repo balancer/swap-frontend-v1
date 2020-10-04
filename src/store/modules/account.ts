@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 
+import Ethereum from '../../api/ethereum';
 import lock from '../../utils/connectors';
 import config from '../../config';
 
@@ -17,6 +18,30 @@ const mutations = {
     },
     setChainId: (_state: any, chainId: number): void => {
         _state.chainId = chainId;
+    },
+    setProxy: (_state: any, proxy: string): void => {
+        _state.proxy = proxy;
+    },
+    addBalances: (_state: any, balances: any): void => {
+        for (const address in balances) {
+            _state.balances[address] = balances[address];
+        }
+    },
+    addAllowances: (_state: any, allowances: any): void => {
+        for (const spender in allowances) {
+            if (!_state.allowances[spender]) {
+                _state.allowances[spender] = {};
+            }
+            for (const token in allowances[spender]) {
+                const allowance = allowances[spender][token];
+                _state.allowances[spender][token] = allowance;
+            }
+        }
+    },
+    clean: (_state: any): void => {
+        _state.proxy = '';
+        _state.balances = {};
+        _state.allowances = {};
     },
 };
 
@@ -55,13 +80,23 @@ const actions = {
         commit('setAddress', '');
         commit('setChainId', 0);
     },
-    saveWeb3Provider: async({ commit }: any, provider: any): Promise<void> => {
+    saveWeb3Provider: async({ commit, dispatch }: any, provider: any): Promise<void> => {
         const web3Provider = new ethers.providers.Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
         commit('setWeb3Provider', web3Provider);
         commit('setAddress', accounts[0]);
         commit('setChainId', network.chainId);
+        dispatch('fetchState');
+    },
+    fetchState: async({ commit, state, rootState }: any): Promise<void> => {
+        const { web3Provider, address } = state;
+        const { metadata } = rootState.tokens;
+        const tokens = Object.keys(metadata);
+        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, tokens);
+        commit('setProxy', proxy);
+        commit('addBalances', balances);
+        commit('addAllowances', allowances);
     },
 };
 
@@ -77,6 +112,9 @@ function state(): any {
         fallbackProvider: null,
         address: '',
         chainId: 0,
+        proxy: '',
+        balances: {},
+        allowances: {},
     };
 }
 
