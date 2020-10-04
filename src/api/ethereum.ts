@@ -39,6 +39,7 @@ export default class Ethereum {
         const data = await ethcallProvider.all(calls);
         const tokenCount = tokens.length - 1; // skip ether
         const allowances = {};
+        allowances[exchangeProxyAddress] = {};
         const balances: Record<string, string> = {};
         let i = 0;
         for (const tokenAddress of tokens) {
@@ -46,7 +47,7 @@ export default class Ethereum {
                 continue;
             }
             balances[tokenAddress] = data[2 * i].toString();
-            allowances[tokenAddress] = data[2 * i + 1].toString();
+            allowances[exchangeProxyAddress][tokenAddress] = data[2 * i + 1].toString();
             i++;
         }
         balances.ether = data[2 * tokenCount].toString();
