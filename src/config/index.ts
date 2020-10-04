@@ -1,7 +1,7 @@
 // @ts-ignore
 import merge from 'lodash/merge';
-import registry from 'assets/generated/dex/registry.homestead.json';
-import registryKovan from 'assets/generated/dex/registry.kovan.json';
+import registry from 'assets/generated/pm/registry.homestead.json';
+import registryKovan from 'assets/generated/pm/registry.kovan.json';
 
 import { clone } from '../utils/helpers';
 import homestead from './homestead.json';
