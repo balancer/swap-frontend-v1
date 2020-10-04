@@ -1,5 +1,6 @@
 <template>
     <div id="app">
+        <Header />
         <router-view />
     </div>
 </template>
@@ -8,7 +9,12 @@
 import { defineComponent, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
+import Header from './components/Header.vue';
+
 export default defineComponent({
+    components: {
+        Header,
+    },
     setup() {
         const store = useStore();
 
@@ -34,6 +40,8 @@ export default defineComponent({
     --info: #7685d5;
     --warning: #ffc780;
     --error: #ff8a80;
+    --border-radius: 4px;
+    --block-height: 40px;
 }
 
 body {

@@ -1,20 +1,5 @@
 <template>
     <div>
-        <div class="header">
-            <h1>Balancer DEX</h1>
-            <div>
-                <span v-if="account">
-                    {{ account }}
-                    <span @click="disconnect">x</span>
-                </span>
-                <button
-                    v-else
-                    @click="connect"
-                >
-                    Connect
-                </button>
-            </div>
-        </div>
         <div class="pair">
             <div>
                 <input
