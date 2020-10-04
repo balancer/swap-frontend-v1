@@ -81,6 +81,22 @@ const actions = {
         commit('setChainId', 0);
     },
     saveWeb3Provider: async({ commit, dispatch }: any, provider: any): Promise<void> => {
+        if (provider.removeAllListeners) {
+            provider.removeAllListeners();
+        }
+        if (provider && provider.on) {
+            provider.on('chainChanged', async () => {
+                dispatch('clean');
+                dispatch('saveWeb3Provider', provider);
+            });
+            provider.on('accountsChanged', async () => {
+                dispatch('clean');
+                dispatch('saveWeb3Provider', provider);
+            });
+            provider.on('disconnect', async () => {
+                dispatch('disconnect');
+            });
+        }
         const web3Provider = new ethers.providers.Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
@@ -88,6 +104,11 @@ const actions = {
         commit('setAddress', accounts[0]);
         commit('setChainId', network.chainId);
         dispatch('fetchState');
+    },
+    clean: async({ commit }: any): Promise<void> => {
+        commit('setProxy', '');
+        commit('addBalances', {});
+        commit('addAllowances', {});
     },
     fetchState: async({ commit, state, rootState }: any): Promise<void> => {
         const { web3Provider, address } = state;
