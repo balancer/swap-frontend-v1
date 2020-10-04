@@ -23,7 +23,23 @@ export default defineComponent({
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+    --background-primary: #21222c;
+    --background-secondary: #282932;
+    --outline: #41476b;
+    --accent: #536dfe;
+    --text-primary: #fff;
+    --info: #7685d5;
+    --warning: #ffc780;
+    --error: #ff8a80;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    margin: 0;
+    background: var(--background-primary);
+    color: var(--text-primary);
 }
 </style>
