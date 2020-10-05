@@ -5,6 +5,7 @@
                 <AssetInput
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
+                    :modal-key="'input'"
                     @change="setActiveToken('input')"
                 />
             </div>
@@ -15,6 +16,7 @@
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
+                    :modal-key="'output'"
                     @change="setActiveToken('output')"
                 />
             </div>
@@ -25,6 +27,10 @@
                 />
             </div>
         </div>
+        <ModalAssetSelector
+            v-if="isModalOpen.asset"
+            @select="handleAssetSelect"
+        />
     </div>
 </template>
 
@@ -40,11 +46,13 @@ import { getAssetAddressBySymbol } from '@/utils/assets';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
+import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 
 export default defineComponent({
     components: {
         AssetInput,
         Button,
+        ModalAssetSelector,
     },
     setup() {
         const store = useStore();
@@ -57,6 +65,14 @@ export default defineComponent({
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('…');
+
+        const isModalOpen = computed(() => {
+            return {
+                asset: store.state.ui.modal.asset.isOpen,
+                account: store.state.ui.modal.account.isOpen,
+            };
+        });
+        
         const sor = ref(null);
         const swaps = ref([]);
 
@@ -247,6 +263,16 @@ export default defineComponent({
             updatePaths();
         }
 
+        function handleAssetSelect(assetAddress: string): void {
+            const assetModalKey = store.state.ui.modal.asset.key;
+            if (assetModalKey === 'input') {
+                tokenInAddressInput.value = assetAddress;
+            }
+            if (assetModalKey === 'output') {
+                tokenOutAddressInput.value = assetAddress;
+            }
+        }
+
         async function connect(): Promise<void> {
             store.dispatch('account/connect', 'injected');
         }
@@ -293,8 +319,10 @@ export default defineComponent({
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
+            isModalOpen,
             account,
             setActiveToken,
+            handleAssetSelect,
             connect,
             disconnect,
             swap,

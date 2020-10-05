@@ -7,7 +7,10 @@
                 @input="$emit('change'); $emit('update:amount', $event.target.value)"
             >
         </div>
-        <div class="asset-wrapper">
+        <div
+            class="asset-wrapper"
+            @click="openModal"
+        >
             <div class="asset-meta">
                 <div class="asset-logo" />
                 <span class="asset-symbol">{{ symbol }}</span>
@@ -20,7 +23,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
@@ -28,6 +31,10 @@ import chevronIcon from '@/assets/chevronIcon.svg';
 
 export default defineComponent({
     props: {
+        modalKey: {
+            type: String,
+            required: true,
+        },
         address: {
             type: String,
             required: true,
@@ -50,9 +57,14 @@ export default defineComponent({
             return asset.symbol;
         });
 
+        function openModal(): void {
+            store.dispatch('ui/openAssetModal', props.modalKey);
+        }
+
         return {
             chevronIcon,
             symbol,
+            openModal,
         };
     },
 });
@@ -89,6 +101,11 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
+}
+
+.asset-wrapper:hover {
+    background: var(--background-primary);
 }
 
 .asset-meta {
