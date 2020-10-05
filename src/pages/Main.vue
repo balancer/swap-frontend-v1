@@ -29,7 +29,7 @@
             </div>
         </div>
         <ModalAssetSelector
-            v-if="isModalOpen.asset"
+            v-if="isModalOpen"
             @select="handleAssetSelect"
         />
     </div>
@@ -67,12 +67,7 @@ export default defineComponent({
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('…');
 
-        const isModalOpen = computed(() => {
-            return {
-                asset: store.state.ui.modal.asset.isOpen,
-                account: store.state.ui.modal.account.isOpen,
-            };
-        });
+        const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
         const sor = ref(null);
         const swaps = ref([]);
