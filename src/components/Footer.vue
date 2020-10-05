@@ -52,6 +52,10 @@
 a {
     margin-left: 8px;
     text-decoration: none;
+    color: var(--text-secondary);
+}
+
+a:hover {
     color: var(--text-primary);
 }
 </style>
