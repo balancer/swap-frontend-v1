@@ -61,7 +61,7 @@ export default defineComponent({
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];
                     const { address, name, symbol, decimals, precision } = asset;
-                    const balance = balances[address];
+                    const balance = balances[address] || '0';
                     const balanceNumber = new BigNumber(balance);
                     const amountNumber = scale(balanceNumber, -decimals);
                     const amount = amountNumber.isZero()
