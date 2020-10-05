@@ -1,28 +1,40 @@
 <template>
-    <div class="account">
-        <div
-            v-if="address"
-            class="address"
-        >
-            <span class="jazzicon" />
-            {{ address }}
+    <div
+        v-if="address"
+        class="account-wrapper"
+    >
+        <div class="account-meta">
+            <div class="account-icon" />
+            <div class="account-address">
+                {{ address }}
+            </div>
         </div>
-        <div
-            v-else
-            class="connect"
+        <img
+            class="chevron-icon"
+            :src="chevronIcon"
         >
-            Connect
-        </div>
     </div>
+    <Button
+        v-else
+        :text="'Connect'"
+        :primary="true"
+    />
 </template>
 
 <script>
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import chevronIcon from '@/assets/chevronIcon.svg';
+
 import { formatAddress } from '@/utils/helpers';
 
+import Button from '@/components/Button.vue';
+
 export default defineComponent({
+    components: {
+        Button,
+    },
     setup() {
         const store = useStore();
 
@@ -35,6 +47,7 @@ export default defineComponent({
         });
 
         return {
+            chevronIcon,
             address,
         };
     },
@@ -42,29 +55,30 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.account {
+.account-wrapper {
     height: var(--block-height);
-    width: 160px;
+    width: 170px;
     padding: 8px;
     box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border: 1px solid var(--outline);
     border-radius: var(--border-radius);
     background: var(--background-secondary);
-    text-align: right;
     cursor: pointer;
 }
 
-.account:hover {
+.account-wrapper:hover {
     background: var(--background-primary);
 }
 
-.address {
+.account-meta {
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
-.jazzicon {
+.account-icon {
     width: 16px;
     height: 16px;
     box-sizing: border-box;
@@ -72,7 +86,12 @@ export default defineComponent({
     border-radius: 8px;
 }
 
-.connect {
-    text-align: center;
+.account-address {
+    margin-left: 4px;
+}
+
+.chevron-icon {
+    width: 16px;
+    height: 16px;
 }
 </style>
