@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 
-import Ethereum from '../../api/ethereum';
-import lock from '../../utils/connectors';
-import config from '../../config';
+import Ethereum from '@/api/ethereum';
+import lock from '@/utils/connectors';
+import config from '@/config';
 
 const LS_CONNECTOR_KEY = '_lock.connector';
 

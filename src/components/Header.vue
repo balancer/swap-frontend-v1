@@ -14,9 +14,9 @@
 <script>
 import { defineComponent } from 'vue';
 
-import logo from '../assets/logo.svg';
+import logo from '@/assets/logo.svg';
 
-import Account from './Account.vue';
+import Account from '@/components/Account.vue';
 
 export default defineComponent({
     components: {

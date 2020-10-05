@@ -33,13 +33,13 @@ import { ref, defineComponent, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import BigNumber from 'bignumber.js';
 
-import { scale } from '../utils/helpers';
-import SOR from '../utils/sor';
-import Swapper from '../web3/swapper';
-import { getAssetAddressBySymbol } from '../utils/assets';
+import { scale } from '@/utils/helpers';
+import SOR from '@/utils/sor';
+import Swapper from '@/web3/swapper';
+import { getAssetAddressBySymbol } from '@/utils/assets';
 
-import AssetInput from '../components/AssetInput.vue';
-import Button from '../components/Button.vue';
+import AssetInput from '@/components/AssetInput.vue';
+import Button from '@/components/Button.vue';
 
 export default defineComponent({
     components: {

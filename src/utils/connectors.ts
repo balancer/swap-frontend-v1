@@ -5,7 +5,7 @@ import portis from '@bonustrack/lock/connectors/portis';
 import walletconnect from '@bonustrack/lock/connectors/walletconnect';
 import walletlink from '@bonustrack/lock/connectors/walletlink';
 
-import config from '../config';
+import config from '@/config';
 
 const lock = new Lock();
 

@@ -24,7 +24,7 @@
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import chevronIcon from '../assets/chevronIcon.svg';
+import chevronIcon from '@/assets/chevronIcon.svg';
 
 export default defineComponent({
     props: {

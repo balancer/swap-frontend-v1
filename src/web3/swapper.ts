@@ -3,8 +3,8 @@ import { ethers } from 'ethers';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
-import config from '../config';
-import { ETH_KEY } from '../utils/assets';
+import config from '@/config';
+import { ETH_KEY } from '@/utils/assets';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 

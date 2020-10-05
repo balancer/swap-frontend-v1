@@ -19,7 +19,7 @@ module.exports =
     devtool: isDev ? '': 'eval',
     resolve: {
         alias: {
-            // '@': path.resolve(__dirname, 'src'),
+            '@': path.resolve(__dirname, 'src'),
             vue: '@vue/runtime-dom',
         },
         extensions: ['.ts', '.js', '.json'],

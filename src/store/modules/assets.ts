@@ -1,4 +1,4 @@
-import config from '../../config';
+import config from '@/config';
 
 const mutations = {
     addMetadata: (_state: any, metadata: any): void => {

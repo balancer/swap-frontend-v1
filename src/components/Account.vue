@@ -20,7 +20,7 @@
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { formatAddress } from '../utils/helpers';
+import { formatAddress } from '@/utils/helpers';
 
 export default defineComponent({
     setup() {
