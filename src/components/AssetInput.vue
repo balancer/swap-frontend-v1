@@ -127,6 +127,8 @@ export default defineComponent({
 }
 
 .chevron-icon {
-    margin-right: 4px;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
 }
 </style>
