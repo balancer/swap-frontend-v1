@@ -6,7 +6,7 @@ const mutations = {
         _state.modal.asset.key= key;
     },
     setAccountModal: (_state: any, isOpen: boolean): void => {
-        _state.isAccountModalOpen = isOpen;
+        _state.modal.account.isOpen = isOpen;
     },
 };
 
