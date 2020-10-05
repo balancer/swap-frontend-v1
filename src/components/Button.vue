@@ -1,5 +1,7 @@
 <template>
-    <button>
+    <button
+        :class="{ primary }"
+    >
         {{ text }}
     </button>
 </template>
@@ -13,6 +15,10 @@ export default defineComponent({
             type: String,
             required: true,
         },
+        primary: {
+            type: Boolean,
+            default: false,
+        },
     },
 });
 </script>
@@ -20,12 +26,17 @@ export default defineComponent({
 <style scoped>
 button {
     height: var(--block-height);
-    width: 160px;
+    width: 170px;
     font-size: 16px;
-    background: var(--accent);
+    background: var(--background-secondary);
+    border: 1px solid var(--outline);
     color: var(--text-primary);
-    border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
 }
 </style>

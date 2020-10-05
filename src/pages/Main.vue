@@ -23,6 +23,7 @@
             <div class="swap-button-wrapper">
                 <Button
                     :text="'Swap'"
+                    :primary="true"
                     @click="swap"
                 />
             </div>
