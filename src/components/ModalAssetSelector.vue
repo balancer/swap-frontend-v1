@@ -1,43 +1,30 @@
 <template>
-    <div class="modal-wrapper">
-        <div
-            class="backdrop"
-            @click="close"
-        />
-        <div class="modal modal-asset">
-            <div class="header">
-                <div>
-                    Select Asset
-                </div>
-                <img
-                    :src="closeIcon"
-                    class="close-icon"
-                    @click="close"
-                >
-            </div>
-            <div class="body">
-                <div
-                    v-for="asset in assets"
-                    :key="asset.address"
-                    class="asset"
-                    @click="select(asset.address)"
-                >   
-                    <div class="asset-meta">
-                        <div class="asset-icon" />
-                        <div class="asset-name">
-                            {{ asset.name }}
-                        </div>
-                        <div class="asset-symbol">
-                            {{ asset.symbol }}
-                        </div>
+    <ModalBase
+        :title="'Select Asset'"
+        @close="close"
+    >
+        <template #default>
+            <div
+                v-for="asset in assets"
+                :key="asset.address"
+                class="asset"
+                @click="select(asset.address)"
+            >   
+                <div class="asset-meta">
+                    <div class="asset-icon" />
+                    <div class="asset-name">
+                        {{ asset.name }}
                     </div>
-                    <div class="asset-amount">
-                        {{ asset.amount }}
+                    <div class="asset-symbol">
+                        {{ asset.symbol }}
                     </div>
                 </div>
+                <div class="asset-amount">
+                    {{ asset.amount }}
+                </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </ModalBase>
 </template>
 
 <script lang="ts">
@@ -47,9 +34,12 @@ import { useStore } from 'vuex';
 
 import { scale } from '@/utils/helpers';
 
-import closeIcon from '@/assets/closeIcon.svg';
+import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
+    components: {
+        ModalBase,
+    },
     emits: ['select'],
     setup() {
         const store = useStore();
@@ -87,7 +77,6 @@ export default defineComponent({
         }
 
         return {
-            closeIcon,
             assets,
             select,
             close,

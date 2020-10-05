@@ -1,52 +1,42 @@
 <template>
-    <div class="modal-wrapper">
-        <div
-            class="backdrop"
-            @click="close"
-        />
-        <div class="modal modal-connector">
-            <div class="header">
-                <div>
-                    Select Wallet
-                </div>
+    <ModalBase
+        :title="'Select Wallet'"
+        @close="close"
+    >
+        <template #default>
+            <div
+                v-for="connector in connectors"
+                :key="connector.key"
+                class="connector"
+                @click="select(connector.key)"
+            >
                 <img
-                    :src="closeIcon"
-                    class="close-icon"
-                    @click="close"
+                    :src="
+                        `https://raw.githubusercontent.com/bonustrack/lock/master/connectors/assets/${connector.key}.png`
+                    "
+                    height="20"
+                    width="20"
                 >
-            </div>
-            <div class="body">
-                <div
-                    v-for="connector in connectors"
-                    :key="connector.key"
-                    class="connector"
-                    @click="select(connector.key)"
-                >
-                    <img
-                        :src="
-                            `https://raw.githubusercontent.com/bonustrack/lock/master/connectors/assets/${connector.key}.png`
-                        "
-                        height="20"
-                        width="20"
-                    >
-                    <div class="connector-title">
-                        {{ connector.title }}
-                    </div>
+                <div class="connector-title">
+                    {{ connector.title }}
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </ModalBase>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import closeIcon from '@/assets/closeIcon.svg';
-
 import config from '@/config';
 
+import ModalBase from '@/components/ModalBase.vue';
+
 export default defineComponent({
+    components: {
+        ModalBase,
+    },
     setup() {
         const store = useStore();
 
@@ -70,7 +60,6 @@ export default defineComponent({
         }
 
         return {
-            closeIcon,
             connectors,
             select,
             close,
@@ -80,60 +69,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.modal-wrapper {
-    position: fixed;
-    display: flex;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-
-.backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.4);
-}
-
-.modal {
-    max-height: 90%;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--outline);
-}
-
-.modal-connector {
-    width: 440px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--outline);
-}
-
-.close-icon {
-    width: 20px;
-    height: 20px;
-}
-
-.body {
-    overflow-y: auto;
-}
-
 .connector {
     display: flex;
     padding: 16px;

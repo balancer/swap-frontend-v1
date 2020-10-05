@@ -1,54 +1,41 @@
 <template>
-    <div class="modal-wrapper">
-        <div
-            class="backdrop"
-            @click="close"
-        />
-        <div class="modal modal-account">
-            <div class="header">
-                <div>
-                    Account
+    <ModalBase
+        :title="'Account'"
+        @close="close"
+    >
+        <template #default>
+            <div class="address">
+                Address: {{ address }}
+                <ButtonText
+                    :text="'disconnect'"
+                    @click="disconnect"
+                />
+            </div>
+            <div class="balances">
+                <div class="balances-header">
+                    Balances
                 </div>
-                <img
-                    :src="closeIcon"
-                    class="close-icon"
-                    @click="close"
+                <div
+                    v-for="balance in balances"
+                    :key="balance.address"
+                    class="balance"
                 >
-            </div>
-            <div class="body">
-                <div class="address">
-                    Address: {{ address }}
-                    <ButtonText
-                        :text="'disconnect'"
-                        @click="disconnect"
-                    />
-                </div>
-                <div class="balances">
-                    <div class="balances-header">
-                        Balances
+                    <div class="asset-meta">
+                        <div class="asset-icon" />
+                        <div class="asset-name">
+                            {{ balance.name }}
+                        </div>
+                        <div class="asset-symbol">
+                            {{ balance.symbol }}
+                        </div>
                     </div>
-                    <div
-                        v-for="balance in balances"
-                        :key="balance.address"
-                        class="balance"
-                    >
-                        <div class="asset-meta">
-                            <div class="asset-icon" />
-                            <div class="asset-name">
-                                {{ balance.name }}
-                            </div>
-                            <div class="asset-symbol">
-                                {{ balance.symbol }}
-                            </div>
-                        </div>
-                        <div class="asset-amount">
-                            {{ balance.amount }}
-                        </div>
+                    <div class="asset-amount">
+                        {{ balance.amount }}
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </ModalBase>
 </template>
 
 <script lang="ts">
@@ -56,16 +43,16 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import closeIcon from '@/assets/closeIcon.svg';
-
 import { scale } from '@/utils/helpers';
 import { formatAddress } from '@/utils/helpers';
 
 import ButtonText from '@/components/ButtonText.vue';
+import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
     components: {
         ButtonText,
+        ModalBase,
     },
     setup() {
         const store = useStore();
@@ -103,7 +90,6 @@ export default defineComponent({
         }
 
         return {
-            closeIcon,
             address: formatAddress(address),
             balances: accountBalances,
             disconnect,
@@ -114,60 +100,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.modal-wrapper {
-    position: fixed;
-    display: flex;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-}
-
-.backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.4);
-}
-
-.modal {
-    max-height: 90%;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--outline);
-}
-
-.modal-account {
-    width: 440px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--outline);
-}
-
-.close-icon {
-    width: 20px;
-    height: 20px;
-}
-
-.body {
-    overflow-y: auto;
-}
-
 .address {
     margin: 16px;
     display: flex;
