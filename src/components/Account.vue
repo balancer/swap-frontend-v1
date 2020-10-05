@@ -2,7 +2,7 @@
     <div
         v-if="address"
         class="account-wrapper"
-        @click="openModal"
+        @click="openAccountModal"
     >
         <div class="account-meta">
             <div class="account-icon" />
@@ -19,6 +19,7 @@
         v-else
         :text="'Connect'"
         :primary="true"
+        @click="openConnectorModal"
     />
 </template>
 
@@ -47,14 +48,19 @@ export default defineComponent({
             return formatAddress(address);
         });
 
-        function openModal(): void {
+        function openAccountModal(): void {
             store.dispatch('ui/openAccountModal');
+        }
+
+        function openConnectorModal(): void {
+            store.dispatch('ui/openConnectorModal');
         }
 
         return {
             chevronIcon,
             address,
-            openModal,
+            openAccountModal,
+            openConnectorModal,
         };
     },
 });

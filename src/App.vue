@@ -4,7 +4,8 @@
         <router-view class="view" />
         <Footer class="footer" />
 
-        <ModalAccount v-if="isModalOpen" />
+        <ModalAccount v-if="isAccountModalOpen" />
+        <ModalConnectorSelector v-if="isConnectorModalOpen" />
     </div>
 </template>
 
@@ -15,17 +16,20 @@ import { useStore } from 'vuex';
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
+import ModalConnectorSelector from '@/components/ModalConnectorSelector.vue';
 
 export default defineComponent({
     components: {
         Header,
         Footer,
         ModalAccount,
+        ModalConnectorSelector,
     },
     setup() {
         const store = useStore();
 
-        const isModalOpen = computed(() => store.state.ui.modal.account.isOpen);
+        const isAccountModalOpen = computed(() => store.state.ui.modal.account.isOpen);
+        const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);
 
         onMounted(() => {
             store.dispatch('assets/init');
@@ -33,7 +37,8 @@ export default defineComponent({
         });
 
         return {
-            isModalOpen,
+            isAccountModalOpen,
+            isConnectorModalOpen,
         };
     },
 });
