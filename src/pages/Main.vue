@@ -2,6 +2,9 @@
     <div>
         <div class="pair">
             <div>
+                <div class="input-label">
+                    Send
+                </div>
                 <AssetInput
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
@@ -9,10 +12,14 @@
                     @change="setActiveToken('input')"
                 />
             </div>
+            <img
+                class="chevron-icon"
+                :src="chevronIcon"
+            >
             <div>
-                ↓
-            </div>
-            <div>
+                <div class="input-label">
+                    Receive
+                </div>
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
@@ -39,6 +46,8 @@
 import { ref, defineComponent, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import BigNumber from 'bignumber.js';
+
+import chevronIcon from '@/assets/chevronIcon.svg';
 
 import { scale } from '@/utils/helpers';
 import SOR from '@/utils/sor';
@@ -310,6 +319,7 @@ export default defineComponent({
         });
 
         return {
+            chevronIcon,
             sor,
             tokenInAddressInput,
             tokenInAmountInput,
@@ -335,13 +345,20 @@ export default defineComponent({
 }
 
 .pair {
+    padding: 32px 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    border: 1px solid var(--outline);
+    border-radius: var(--border-radius);
 }
 
-.token-selector {
-    margin-left: 8px;
+.input-label {
+    margin-bottom: 4px;
+}
+
+.chevron-icon {
+    margin-top: 8px;
 }
 
 .swap-button-wrapper {
