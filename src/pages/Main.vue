@@ -312,7 +312,6 @@ export default defineComponent({
 
 .pair {
     display: flex;
-    margin-top: 200px;
     flex-direction: column;
     align-items: center;
 }

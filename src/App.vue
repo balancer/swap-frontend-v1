@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <Header />
-        <router-view />
+        <router-view class="view" />
         <Footer class="footer" />
     </div>
 </template>
@@ -52,6 +52,13 @@ body {
     margin: 0;
     background: var(--background-primary);
     color: var(--text-primary);
+}
+
+.view {
+    height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .footer {
