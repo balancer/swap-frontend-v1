@@ -29,9 +29,16 @@
             </div>
             <div class="swap-button-wrapper">
                 <Button
+                    v-if="isUnlocked"
                     :text="'Swap'"
                     :primary="true"
                     @click="swap"
+                />
+                <Button
+                    v-else
+                    :text="'Unlock & Swap'"
+                    :primary="true"
+                    @click="unlockSwap"
                 />
             </div>
         </div>
@@ -49,10 +56,12 @@ import BigNumber from 'bignumber.js';
 
 import chevronIcon from '@/assets/chevronIcon.svg';
 
+import config from '@/config';
 import { scale } from '@/utils/helpers';
 import SOR from '@/utils/sor';
-import Swapper from '@/web3/swapper';
 import { getAssetAddressBySymbol } from '@/utils/assets';
+import Swapper from '@/web3/swapper';
+import Helper from '@/web3/helper';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
@@ -67,6 +76,7 @@ export default defineComponent({
     setup() {
         const store = useStore();
         const assets = store.state.assets.metadata;
+        const { allowances } = store.state.account;
 
         const activeToken = ref('input');
         const tokenCost = ref({});
@@ -76,6 +86,23 @@ export default defineComponent({
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('…');
 
+        const isUnlocked = computed(() => {
+            const exchangeProxyAddress = config.addresses.exchangeProxy;
+            if (!tokenInAddressInput.value) {
+                return false;
+            }
+            const decimals = assets[tokenInAddressInput.value].decimals;
+            if (!allowances[exchangeProxyAddress]) {
+                return false;
+            }
+            const allowance = allowances[exchangeProxyAddress][tokenInAddressInput.value];
+            if (!allowance) {
+                return false;
+            }
+            const allowanceNumber = new BigNumber(allowance);
+            const allowanceRaw = scale(allowanceNumber, -decimals);
+            return allowanceRaw.gte(tokenInAmountInput.value);
+        });
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
         const sor = ref(null);
@@ -286,7 +313,15 @@ export default defineComponent({
             store.dispatch('account/disconnect');
         }
 
-        function swap(): void {
+        async function unlockSwap(): Promise<void> {
+            const provider = store.state.account.web3Provider;
+            const tokenInAddress = tokenInAddressInput.value;
+            const spender = config.addresses.exchangeProxy;
+            await Helper.unlock(provider, tokenInAddress, spender);
+            await swap();
+        }
+
+        async function swap(): Promise<void> {
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
             const provider = store.state.account.web3Provider;
@@ -295,12 +330,12 @@ export default defineComponent({
                 const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
-                Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
+                await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
-                Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
+                await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
             }
         }
 
@@ -325,12 +360,14 @@ export default defineComponent({
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
+            isUnlocked,
             isModalOpen,
             account,
             setActiveToken,
             handleAssetSelect,
             connect,
             disconnect,
+            unlockSwap,
             swap,
         };
     },
