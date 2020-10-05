@@ -5,7 +5,7 @@
                 <AssetInput
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
-                    @change="setActiveInput('input')"
+                    @change="setActiveToken('input')"
                 />
             </div>
             <div>
@@ -15,7 +15,7 @@
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
-                    @change="setActiveInput('output')"
+                    @change="setActiveToken('output')"
                 />
             </div>
             <div class="swap-button-wrapper">
@@ -50,7 +50,7 @@ export default defineComponent({
         const store = useStore();
         const tokens = store.state.tokens.metadata;
 
-        const activeInput = ref('input');
+        const activeToken = ref('input');
         const tokenCost = ref({});
         const swapPath = ref({});
         const tokenInAddressInput = ref('');
@@ -74,7 +74,7 @@ export default defineComponent({
             }
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
-            if (activeInput.value === 'input') {
+            if (activeToken.value === 'input') {
                 // @ts-ignore
                 if (!tokenCost.value[tokenOutAddress]) {
                     // @ts-ignore
@@ -120,7 +120,7 @@ export default defineComponent({
         }
 
         function onAmountChange(): void {
-            const isInputActive = activeInput.value === 'input';
+            const isInputActive = activeToken.value === 'input';
             if (isInputActive) {
                 if (tokenInAmountInput.value === '') {
                     tokenOutAmountInput.value = '';
@@ -217,7 +217,7 @@ export default defineComponent({
         });
 
         watch(tokenInAmountInput, async () => {
-            if (activeInput.value !== 'input') {
+            if (activeToken.value !== 'input') {
                 return;
             }
             await updatePaths();
@@ -230,7 +230,7 @@ export default defineComponent({
         });
 
         watch(tokenOutAmountInput, async () => {
-            if (activeInput.value !== 'output') {
+            if (activeToken.value !== 'output') {
                 return;
             }
             await updatePaths();
@@ -242,8 +242,8 @@ export default defineComponent({
             onAmountChange();
         });
 
-        function setActiveInput(input: string): void {
-            activeInput.value = input;
+        function setActiveToken(input: string): void {
+            activeToken.value = input;
             updatePaths();
         }
 
@@ -259,7 +259,7 @@ export default defineComponent({
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
             const provider = store.state.account.web3Provider;
-            if (activeInput.value === 'input') {
+            if (activeToken.value === 'input') {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInDecimals = tokens[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
@@ -294,7 +294,7 @@ export default defineComponent({
             tokenOutAddressInput,
             tokenOutAmountInput,
             account,
-            setActiveInput,
+            setActiveToken,
             connect,
             disconnect,
             swap,
