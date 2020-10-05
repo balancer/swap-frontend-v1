@@ -26,5 +26,6 @@ button {
     color: var(--text-primary);
     border: none;
     border-radius: 4px;
+    cursor: pointer;
 }
 </style>
