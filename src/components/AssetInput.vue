@@ -97,7 +97,7 @@ export default defineComponent({
 }
 
 .asset-wrapper {
-    width: 120px;
+    width: 140px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -124,6 +124,10 @@ export default defineComponent({
 
 .asset-symbol {
     margin-left: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 88px;
 }
 
 .chevron-icon {
