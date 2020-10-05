@@ -94,7 +94,7 @@ export default defineComponent({
         });
 
         function disconnect(): void {
-            store.dispatch('ui/closeAccountModal');
+            close();
             store.dispatch('account/disconnect');
         }
 
