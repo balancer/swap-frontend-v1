@@ -10,7 +10,8 @@ const routerHistory = createWebHistory();
 const router = createRouter({
     history: routerHistory,
     routes: [
-        { path: '/', component: Main },
+        { path: '/', redirect: '/swap' },
+        { path: '/swap', name: 'swap', component: Main },
     ],
 });
 
