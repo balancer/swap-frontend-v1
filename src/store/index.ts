@@ -1,12 +1,12 @@
 import { createStore } from 'vuex';
 
 import account from './modules/account';
-import tokens from './modules/tokens';
+import assets from './modules/assets';
 
 const store = createStore({
     modules: {
         account,
-        tokens,
+        assets,
     },
 });
 

@@ -2,8 +2,8 @@ import config from '../../config';
 
 const mutations = {
     addMetadata: (_state: any, metadata: any): void => {
-        for (const tokenAddress in metadata) {
-            _state.metadata[tokenAddress] = metadata[tokenAddress];
+        for (const assetsAddress in metadata) {
+            _state.metadata[assetsAddress] = metadata[assetsAddress];
         }
     },
 };

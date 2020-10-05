@@ -40,14 +40,14 @@ export default defineComponent({
     emits: ['update:amount', 'change'],
     setup(props) {
         const store = useStore();
-        const tokens = store.state.tokens.metadata;
+        const assets = store.state.assets.metadata;
 
         const symbol = computed(() => {
-            const token = tokens[props.address];
-            if (!token) {
+            const asset = assets[props.address];
+            if (!asset) {
                 return '';
             }
-            return token.symbol;
+            return asset.symbol;
         });
 
         return {

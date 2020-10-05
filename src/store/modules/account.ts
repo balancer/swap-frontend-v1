@@ -32,9 +32,9 @@ const mutations = {
             if (!_state.allowances[spender]) {
                 _state.allowances[spender] = {};
             }
-            for (const token in allowances[spender]) {
-                const allowance = allowances[spender][token];
-                _state.allowances[spender][token] = allowance;
+            for (const asset in allowances[spender]) {
+                const allowance = allowances[spender][asset];
+                _state.allowances[spender][asset] = allowance;
             }
         }
     },
@@ -112,9 +112,9 @@ const actions = {
     },
     fetchState: async({ commit, state, rootState }: any): Promise<void> => {
         const { web3Provider, address } = state;
-        const { metadata } = rootState.tokens;
-        const tokens = Object.keys(metadata);
-        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, tokens);
+        const { metadata } = rootState.assets;
+        const assets = Object.keys(metadata);
+        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, assets);
         commit('setProxy', proxy);
         commit('addBalances', balances);
         commit('addAllowances', allowances);

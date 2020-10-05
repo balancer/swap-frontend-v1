@@ -36,7 +36,7 @@ import BigNumber from 'bignumber.js';
 import { scale } from '../utils/helpers';
 import SOR from '../utils/sor';
 import Swapper from '../web3/swapper';
-import { getTokenAddressBySymbol } from '../utils/tokens';
+import { getAssetAddressBySymbol } from '../utils/assets';
 
 import AssetInput from '../components/AssetInput.vue';
 import Button from '../components/Button.vue';
@@ -48,7 +48,7 @@ export default defineComponent({
     },
     setup() {
         const store = useStore();
-        const tokens = store.state.tokens.metadata;
+        const assets = store.state.assets.metadata;
 
         const activeToken = ref('input');
         const tokenCost = ref({});
@@ -135,8 +135,8 @@ export default defineComponent({
 
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
-            const tokenInDecimals = tokens[tokenInAddress].decimals;
-            const tokenOutDecimals = tokens[tokenOutAddress].decimals;
+            const tokenInDecimals = assets[tokenInAddress].decimals;
+            const tokenOutDecimals = assets[tokenOutAddress].decimals;
 
             const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
             const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
@@ -261,21 +261,21 @@ export default defineComponent({
             const provider = store.state.account.web3Provider;
             if (activeToken.value === 'input') {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = tokens[tokenInAddress].decimals;
+                const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
                 Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = tokens[tokenInAddress].decimals;
+                const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
                 Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
             }
         }
 
         onMounted(async () => {
-            tokenInAddressInput.value = getTokenAddressBySymbol(tokens, 'DAI');
-            tokenOutAddressInput.value = getTokenAddressBySymbol(tokens, 'WETH');
+            tokenInAddressInput.value = getAssetAddressBySymbol(assets, 'DAI');
+            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'WETH');
 
             const provider = store.getters['account/provider'];
             const allPools = await SOR.fetchPools(provider);

@@ -5,16 +5,16 @@ import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
 import config from '../config';
-import { ETH_KEY } from '../utils/tokens';
+import { ETH_KEY } from '../utils/assets';
 
 export default class Ethereum {
-    static async fetchAccountState(provider: any, address: string, tokens: string[]): Promise<any> {
+    static async fetchAccountState(provider: any, address: string, assets: string[]): Promise<any> {
         const ethcallProvider = new ethcall.Provider();
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch balances and allowances
         const exchangeProxyAddress = config.addresses.exchangeProxy;
-        for (const tokenAddress of tokens) {
+        for (const tokenAddress of assets) {
             if (tokenAddress === ETH_KEY) {
                 continue;
             }
@@ -37,12 +37,12 @@ export default class Ethereum {
         calls.push(proxyCall);
         // Fetch data
         const data = await ethcallProvider.all(calls);
-        const tokenCount = tokens.length - 1; // skip ether
+        const tokenCount = assets.length - 1; // skip ether
         const allowances = {};
         allowances[exchangeProxyAddress] = {};
         const balances: Record<string, string> = {};
         let i = 0;
-        for (const tokenAddress of tokens) {
+        for (const tokenAddress of assets) {
             if (tokenAddress === ETH_KEY) {
                 continue;
             }
@@ -55,12 +55,12 @@ export default class Ethereum {
         return { allowances, balances, proxy };
     }
 
-    static async fetchTokenMetadata(provider: any, tokens: string[]): Promise<any> {
+    static async fetchTokenMetadata(provider: any, assets: string[]): Promise<any> {
         const ethcallProvider = new ethcall.Provider();
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch token metadata
-        for (const tokenAddress of tokens) {
+        for (const tokenAddress of assets) {
             const tokenContract = new ethcall.Contract(tokenAddress, erc20Abi);
             const nameCall = tokenContract.name();
             const symbolCall = tokenContract.symbol();
@@ -72,8 +72,8 @@ export default class Ethereum {
         // Fetch data
         const data = await ethcallProvider.all(calls);
         const metadata = {};
-        for (let i = 0; i < tokens.length; i++) {
-            const tokenAddress = tokens[i];
+        for (let i = 0; i < assets.length; i++) {
+            const tokenAddress = assets[i];
             const name = data[3 * i];
             const symbol = data[3 * i + 1];
             const decimals = data[3 * i + 2];

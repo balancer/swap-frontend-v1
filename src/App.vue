@@ -22,7 +22,7 @@ export default defineComponent({
         const store = useStore();
 
         onMounted(() => {
-            store.dispatch('tokens/init');
+            store.dispatch('assets/init');
             store.dispatch('account/init');
         });
 
