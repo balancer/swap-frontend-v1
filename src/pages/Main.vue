@@ -19,9 +19,10 @@
                 />
             </div>
             <div class="swap-button-wrapper">
-                <button @click="swap">
-                    Swap
-                </button>
+                <Button
+                    :text="'Swap'"
+                    @click="swap"
+                />
             </div>
         </div>
     </div>
@@ -38,10 +39,12 @@ import Swapper from '../web3/swapper';
 import { getTokenAddressBySymbol } from '../utils/tokens';
 
 import AssetInput from '../components/AssetInput.vue';
+import Button from '../components/Button.vue';
 
 export default defineComponent({
     components: {
         AssetInput,
+        Button,
     },
     setup() {
         const store = useStore();
@@ -301,34 +304,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-input {
-    font-size: 32px;
-    width: 160px;
-    border: none;
-    border-bottom: 1px solid;
-    outline: none;
-}
-
-button {
-    width: 160px;
-    padding: 0 6px;
-    color: black;
-    font-size: 32px;
-    border: 1px solid black;
-    outline: none;
-}
-
-select {
-    width: 160px;
-    padding: 0 6px;
-    color: black;
-    font-size: 32px;
-    border: 1px solid black;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    outline: none;
-}
-
 .header {
     display: flex;
     justify-content: space-between;
