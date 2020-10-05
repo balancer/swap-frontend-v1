@@ -2,41 +2,21 @@
     <div>
         <div class="pair">
             <div>
-                <input
-                    v-model="inputAmount"
-                    @focus="setActiveInput('input')"
-                >
-                <select
-                    v-model="inputToken"
-                    class="token-selector"
-                >
-                    <option>DAI</option>
-                    <option>USDC</option>
-                    <option>ETH</option>
-                    <option>WETH</option>
-                    <option>WBTC</option>
-                    <option>BAL</option>
-                </select>
+                <AssetInput
+                    v-model:address="tokenInAddressInput"
+                    v-model:amount="tokenInAmountInput"
+                    @change="setActiveInput('input')"
+                />
             </div>
             <div>
                 ↓
             </div>
             <div>
-                <input
-                    v-model="outputAmount"
-                    @focus="setActiveInput('output')"
-                >
-                <select
-                    v-model="outputToken"
-                    class="token-selector"
-                >
-                    <option>DAI</option>
-                    <option>USDC</option>
-                    <option>ETH</option>
-                    <option>WETH</option>
-                    <option>WBTC</option>
-                    <option>BAL</option>
-                </select>
+                <AssetInput
+                    v-model:address="tokenOutAddressInput"
+                    v-model:amount="tokenOutAmountInput"
+                    @change="setActiveInput('output')"
+                />
             </div>
             <div class="swap-button-wrapper">
                 <button @click="swap">
@@ -55,19 +35,25 @@ import BigNumber from 'bignumber.js';
 import { scale } from '../utils/helpers';
 import SOR from '../utils/sor';
 import Swapper from '../web3/swapper';
-import { getTokenAddress, getTokenDecimals } from '../utils/tokens';
+import { getTokenAddressBySymbol } from '../utils/tokens';
+
+import AssetInput from '../components/AssetInput.vue';
 
 export default defineComponent({
+    components: {
+        AssetInput,
+    },
     setup() {
         const store = useStore();
+        const tokens = store.state.tokens.metadata;
 
         const activeInput = ref('input');
         const tokenCost = ref({});
         const swapPath = ref({});
-        const inputToken = ref('DAI');
-        const inputAmount = ref('10');
-        const outputToken = ref('WETH');
-        const outputAmount = ref('…');
+        const tokenInAddressInput = ref('');
+        const tokenInAmountInput = ref('10');
+        const tokenOutAddressInput = ref('');
+        const tokenOutAmountInput = ref('…');
         const sor = ref(null);
         const swaps = ref([]);
 
@@ -83,14 +69,8 @@ export default defineComponent({
             if (!sor.value) {
                 return;
             }
-            const tokenInSymbol = inputToken.value;
-            const tokenOutSymbol = outputToken.value;
-            const tokenInAddress = tokenInSymbol === 'ETH'
-                ? getTokenAddress('WETH')
-                : getTokenAddress(tokenInSymbol);
-            const tokenOutAddress = tokenOutSymbol === 'ETH'
-                ? getTokenAddress('WETH')
-                : getTokenAddress(tokenOutSymbol);
+            const tokenInAddress = tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value;
             if (activeInput.value === 'input') {
                 // @ts-ignore
                 if (!tokenCost.value[tokenOutAddress]) {
@@ -139,31 +119,25 @@ export default defineComponent({
         function onAmountChange(): void {
             const isInputActive = activeInput.value === 'input';
             if (isInputActive) {
-                if (inputAmount.value === '') {
-                    outputAmount.value = '';
+                if (tokenInAmountInput.value === '') {
+                    tokenOutAmountInput.value = '';
                     return;
                 }
             } else {
-                if (outputAmount.value === '') {
-                    inputAmount.value = '';
+                if (tokenOutAmountInput.value === '') {
+                    tokenInAmountInput.value = '';
                     return;
                 }
             }
 
-            const tokenInSymbol = inputToken.value;
-            const tokenOutSymbol = outputToken.value;
-            const tokenInAddress = tokenInSymbol === 'ETH'
-                ? getTokenAddress('WETH')
-                : getTokenAddress(tokenInSymbol);
-            const tokenOutAddress = tokenOutSymbol === 'ETH'
-                ? getTokenAddress('WETH')
-                : getTokenAddress(tokenOutSymbol);
-            const tokenInDecimals = getTokenDecimals(tokenInAddress);
-            const tokenOutDecimals = getTokenDecimals(tokenOutAddress);
+            const tokenInAddress = tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value;
+            const tokenInDecimals = tokens[tokenInAddress].decimals;
+            const tokenOutDecimals = tokens[tokenOutAddress].decimals;
 
-            const tokenInAmountRaw = new BigNumber(inputAmount.value);
+            const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
             const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
-            const tokenOutAmountRaw = new BigNumber(outputAmount.value);
+            const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
             const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
 
             if (!sor.value ||
@@ -173,10 +147,10 @@ export default defineComponent({
                 !swapPath.value[tokenInAddress][tokenOutAddress]
             ) {
                 if (isInputActive) {
-                    outputAmount.value = '…';
+                    tokenOutAmountInput.value = '…';
                     return;
                 } else {
-                    inputAmount.value = '…';
+                    tokenInAmountInput.value = '…';
                     return;
                 }
             }
@@ -188,7 +162,7 @@ export default defineComponent({
                     // @ts-ignore
                     !tokenCost.value[tokenOutAddress]
                 ) {
-                    outputAmount.value = '…';
+                    tokenOutAmountInput.value = '…';
                     return;
                 }
 
@@ -205,7 +179,7 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
-                outputAmount.value = tokenOutAmountRaw.toString();
+                tokenOutAmountInput.value = tokenOutAmountRaw.toString();
             } else {
                 if (
                     // @ts-ignore
@@ -213,7 +187,7 @@ export default defineComponent({
                     // @ts-ignore
                     !tokenCost.value[tokenInAddress]
                 ) {
-                    inputAmount.value = '…';
+                    tokenInAmountInput.value = '…';
                     return;
                 }
 
@@ -230,33 +204,33 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
-                inputAmount.value = tokenInAmountRaw.toString();
+                tokenInAmountInput.value = tokenInAmountRaw.toString();
             }
         }
 
-        async function onTokenChange(): Promise<void> {
-            if (activeInput.value === 'input') {
-                outputAmount.value = '…';
-            } else {
-                inputAmount.value = '…';
+        watch(tokenInAddressInput, async () => {
+            await updatePaths();
+            onAmountChange();
+        });
+
+        watch(tokenInAmountInput, async () => {
+            if (activeInput.value !== 'input') {
+                return;
             }
             await updatePaths();
             onAmountChange();
-        }
-
-        watch(inputToken, () => {
-            onTokenChange();
         });
 
-        watch(inputAmount, () => {
+        watch(tokenOutAddressInput, async () => {
+            await updatePaths();
             onAmountChange();
         });
 
-        watch(outputToken, () => {
-            onTokenChange();
-        });
-
-        watch(outputAmount, () => {
+        watch(tokenOutAmountInput, async () => {
+            if (activeInput.value !== 'output') {
+                return;
+            }
+            await updatePaths();
             onAmountChange();
         });
 
@@ -279,24 +253,27 @@ export default defineComponent({
         }
 
         function swap(): void {
-            const tokenIn = getTokenAddress(inputToken.value);
-            const tokenOut = getTokenAddress(outputToken.value);
+            const tokenInAddress = tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value;
             const provider = store.state.account.web3Provider;
             if (activeInput.value === 'input') {
-                const inputAmountNumber = new BigNumber(inputAmount.value);
-                const tokenInDecimals = getTokenDecimals(tokenIn);
-                const tokenAmountIn = scale(inputAmountNumber, tokenInDecimals);
+                const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
+                const tokenInDecimals = tokens[tokenInAddress].decimals;
+                const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
-                Swapper.swapIn(provider, swaps.value, tokenIn, tokenOut, tokenAmountIn, minAmount);
+                Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
             } else {
-                const inputAmountNumber = new BigNumber(inputAmount.value);
-                const tokenInDecimals = getTokenDecimals(tokenIn);
-                const tokenInAmountMax = scale(inputAmountNumber, tokenInDecimals);
-                Swapper.swapOut(provider, swaps.value, tokenIn, tokenOut, tokenInAmountMax);
+                const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
+                const tokenInDecimals = tokens[tokenInAddress].decimals;
+                const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
+                Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
             }
         }
 
         onMounted(async () => {
+            tokenInAddressInput.value = getTokenAddressBySymbol(tokens, 'DAI');
+            tokenOutAddressInput.value = getTokenAddressBySymbol(tokens, 'WETH');
+
             const provider = store.getters['account/provider'];
             const allPools = await SOR.fetchPools(provider);
             const gasPrice = new BigNumber(30000000000);
@@ -309,10 +286,10 @@ export default defineComponent({
 
         return {
             sor,
-            inputToken,
-            inputAmount,
-            outputToken,
-            outputAmount,
+            tokenInAddressInput,
+            tokenInAmountInput,
+            tokenOutAddressInput,
+            tokenOutAmountInput,
             account,
             setActiveInput,
             connect,
