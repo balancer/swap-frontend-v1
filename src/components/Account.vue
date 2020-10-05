@@ -2,6 +2,7 @@
     <div
         v-if="address"
         class="account-wrapper"
+        @click="openModal"
     >
         <div class="account-meta">
             <div class="account-icon" />
@@ -21,7 +22,7 @@
     />
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
@@ -46,9 +47,14 @@ export default defineComponent({
             return formatAddress(address);
         });
 
+        function openModal(): void {
+            store.dispatch('ui/openAccountModal');
+        }
+
         return {
             chevronIcon,
             address,
+            openModal,
         };
     },
 });

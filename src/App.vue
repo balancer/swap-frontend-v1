@@ -3,30 +3,38 @@
         <Header />
         <router-view class="view" />
         <Footer class="footer" />
+
+        <ModalAccount v-if="isModalOpen" />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
+import ModalAccount from '@/components/ModalAccount.vue';
 
 export default defineComponent({
     components: {
         Header,
         Footer,
+        ModalAccount,
     },
     setup() {
         const store = useStore();
+
+        const isModalOpen = computed(() => store.state.ui.modal.account.isOpen);
 
         onMounted(() => {
             store.dispatch('assets/init');
             store.dispatch('account/init');
         });
 
-        return {};
+        return {
+            isModalOpen,
+        };
     },
 });
 </script>
