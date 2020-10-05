@@ -43,13 +43,19 @@ export default defineComponent({
 
 <style scoped>
 .account {
+    height: var(--block-height);
+    width: 160px;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid var(--outline);
     border-radius: var(--border-radius);
-    width: 160px;
-    height: var(--block-height);
-    box-sizing: border-box;
+    background: var(--background-secondary);
     text-align: right;
+    cursor: pointer;
+}
+
+.account:hover {
+    background: var(--background-primary);
 }
 
 .address {
