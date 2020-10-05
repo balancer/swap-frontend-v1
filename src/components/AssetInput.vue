@@ -75,7 +75,7 @@ export default defineComponent({
 
 .amount {
     width: 200px;
-    margin-right: 8px;
+    padding: 8px;
     border: none;
     background: transparent;
     color: var(--text-primary);
