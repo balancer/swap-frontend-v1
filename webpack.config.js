@@ -13,7 +13,7 @@ module.exports =
     output:
     {
         publicPath: '/',
-        filename: '[name].[contenthash].js',
+        filename: '[name].[hash].js',
     },
     mode: isDev ? 'development' : 'production',
     devtool: isDev ? '': 'eval',
@@ -80,5 +80,6 @@ module.exports =
     },
     devServer: {
         historyApiFallback: true,
+        hot: true,
     },
 };
