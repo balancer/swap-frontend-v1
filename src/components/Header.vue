@@ -1,12 +1,14 @@
 <template>
     <div class="header">
-        <div class="brand">
-            <img
-                class="logo"
-                :src="logo"
-            >
-            <span class="title">Balancer</span>
-        </div>
+        <router-link :to="'/'">
+            <div class="brand">
+                <img
+                    class="logo"
+                    :src="logo"
+                >
+                <span class="title">Balancer</span>
+            </div>
+        </router-link>
         <Account class="account" />
     </div>
 </template>
@@ -36,6 +38,11 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-primary);
 }
 
 .brand {
