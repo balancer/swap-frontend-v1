@@ -8,6 +8,9 @@ const mutations = {
     setAccountModal: (_state: any, isOpen: boolean): void => {
         _state.modal.account.isOpen = isOpen;
     },
+    setConnectorModal: (_state: any, isOpen: boolean): void => {
+        _state.modal.connector.isOpen = isOpen;
+    },
 };
 
 const actions = {
@@ -24,6 +27,12 @@ const actions = {
     closeAccountModal: ({ commit }: any): void => {
         commit('setAccountModal', false);
     },
+    openConnectorModal: ({ commit }: any): void => {
+        commit('setConnectorModal', true);
+    },
+    closeConnectorModal: ({ commit }: any): void => {
+        commit('setConnectorModal', false);
+    },
 };
 
 function state(): any {
@@ -34,6 +43,9 @@ function state(): any {
                 key: '',
             },
             account: {
+                isOpen: false,
+            },
+            connector: {
                 isOpen: false,
             },
         },
