@@ -1,3 +1,4 @@
+import Ethereum from '@/api/ethereum';
 import config from '@/config';
 
 const mutations = {
@@ -11,6 +12,11 @@ const mutations = {
 const actions = {
     init: ({ commit }: any): void => {
         const metadata = config.tokens;
+        commit('addMetadata', metadata);
+    },
+    fetch: async({ commit, rootGetters }: any, assets: string[]): Promise<void> => {
+        const provider = rootGetters['account/provider'];
+        const metadata = await Ethereum.fetchTokenMetadata(provider, assets);
         commit('addMetadata', metadata);
     },
 };
