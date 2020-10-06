@@ -308,6 +308,9 @@ export default defineComponent({
             const tokenInAmount = tokenOutAmountInput.value;
             const tokenOutAddress = tokenInAddressInput.value;
             const tokenOutAmount = tokenInAmountInput.value;
+            activeToken.value = activeToken.value === 'input'
+                ? 'output'
+                : 'input';
             tokenInAddressInput.value = tokenInAddress;
             tokenInAmountInput.value = tokenInAmount;
             tokenOutAddressInput.value = tokenOutAddress;
