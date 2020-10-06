@@ -19,7 +19,7 @@ export default defineComponent({
 
 <style scoped>
 .button {
-    color: var(--accent);
+    color: var(--info);
     text-decoration: underline;
     cursor: pointer;
     font-size: 14px;

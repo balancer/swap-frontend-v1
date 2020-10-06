@@ -363,6 +363,7 @@ export default defineComponent({
         return {
             chevronIcon,
             sor,
+
             activeToken,
             tokenInAddressInput,
             tokenInAmountInput,
@@ -370,7 +371,9 @@ export default defineComponent({
             tokenOutAmountInput,
             isUnlocked,
             isModalOpen,
+
             account,
+
             handleAmountChange,
             handleAssetSelect,
             connect,
@@ -401,6 +404,8 @@ export default defineComponent({
 
 .input-label {
     margin-bottom: 4px;
+    color: var(--text-secondary);
+    font-size: 14px;
 }
 
 .chevron-icon {

@@ -27,7 +27,7 @@ export default defineComponent({
 button {
     height: var(--block-height);
     width: 170px;
-    font-size: 16px;
+    font-size: 14px;
     background: var(--background-secondary);
     border: 1px solid var(--outline);
     color: var(--text-primary);
