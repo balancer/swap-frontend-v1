@@ -51,7 +51,7 @@ export default defineComponent({
     --background-primary: #21222c;
     --background-secondary: #282932;
     --outline: #41476b;
-    --accent: #536dfe;
+    --accent: #4965ff;
     --text-primary: #fff;
     --text-secondary: #a7b3b9;
     --info: #7685d5;
