@@ -4,14 +4,14 @@ import store from './store';
 
 import App from './App.vue';
 
-import Main from './pages/Main.vue';
+import Swap from './pages/Swap.vue';
 
 const routerHistory = createWebHistory();
 const router = createRouter({
     history: routerHistory,
     routes: [
         { path: '/', redirect: '/swap' },
-        { path: '/swap', name: 'swap', component: Main },
+        { path: '/swap', name: 'swap', component: Swap },
     ],
 });
 
