@@ -119,6 +119,12 @@ const actions = {
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
+    fetchAssets: async({ commit, state }: any, assets: string[]): Promise<void> => {
+        const { web3Provider, address } = state;
+        const { balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, assets);
+        commit('addBalances', balances);
+        commit('addAllowances', allowances);
+    },
 };
 
 const getters = {
