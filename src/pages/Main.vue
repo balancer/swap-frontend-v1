@@ -90,6 +90,9 @@ export default defineComponent({
         const tokenOutAmountInput = ref('…');
 
         const isUnlocked = computed(() => {
+            if (tokenInAddressInput.value === 'ether') {
+                return true;
+            }
             const exchangeProxyAddress = config.addresses.exchangeProxy;
             if (!tokenInAddressInput.value) {
                 return false;
