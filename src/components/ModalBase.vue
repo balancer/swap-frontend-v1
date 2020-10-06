@@ -86,13 +86,13 @@ export default defineComponent({
 
 .header {
     padding: 16px;
-    font-weight: 700;
     border-bottom: 1px solid var(--outline);
 }
 
 .header-top {
     display: flex;
     justify-content: space-between;
+    font-weight: 700;
 }
 
 .close-icon {
