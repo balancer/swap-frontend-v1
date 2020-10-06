@@ -7,7 +7,12 @@
                 @click="setMax"
             />
             <span v-else />
+            <div
+                v-if="loading"
+                class="loading"
+            />
             <input
+                v-else
                 :value="amount"
                 class="amount"
                 @input="handleInputChange($event.target.value)"
@@ -56,6 +61,10 @@ export default defineComponent({
         amount: {
             type: String,
             required: true,
+        },
+        loading: {
+            type: Boolean,
+            default: false,
         },
     },
     emits: ['update:amount', 'change'],
@@ -119,6 +128,30 @@ export default defineComponent({
     justify-content: space-between;
     border-right: 1px solid var(--outline);
     border-radius: 4px;
+}
+
+.loading {
+    width: 80px;
+    height: 21px;
+    background: var(--text-primary);
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.2;
+    }
+
+    10% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
 }
 
 .amount {

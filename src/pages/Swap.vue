@@ -10,6 +10,7 @@
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
                     :modal-key="'input'"
+                    :loading="isLoading.input"
                     @change="handleAmountChange('input')"
                 />
             </div>
@@ -27,6 +28,7 @@
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
                     :modal-key="'output'"
+                    :loading="isLoading.output"
                     @change="handleAmountChange('output')"
                 />
             </div>
@@ -87,7 +89,7 @@ export default defineComponent({
         const tokenInAddressInput = ref('');
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
-        const tokenOutAmountInput = ref('…');
+        const tokenOutAmountInput = ref('');
 
         const isUnlocked = computed(() => {
             if (tokenInAddressInput.value === 'ether') {
@@ -110,6 +112,32 @@ export default defineComponent({
             return allowanceRaw.gte(tokenInAmountInput.value);
         });
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
+
+        const isLoading = computed(() => {
+            const tokenInAddress = tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value;
+            if (activeToken.value === 'input') {
+                const outputTokenLoading =
+                    !tokenCost.value[tokenOutAddress] ||
+                    !swapPath.value[tokenInAddress] ||
+                    !swapPath.value[tokenInAddress][tokenOutAddress] ||
+                    !swapPath.value[tokenInAddress][tokenOutAddress].in;
+                return {
+                    input: false,
+                    output: outputTokenLoading,
+                };
+            } else {
+                const inputTokenLoading =
+                    !tokenCost.value[tokenInAddress] ||
+                    !swapPath.value[tokenInAddress] ||
+                    !swapPath.value[tokenInAddress][tokenOutAddress] ||
+                    !swapPath.value[tokenInAddress][tokenOutAddress].out;
+                return {
+                    input: inputTokenLoading,
+                    output: false,
+                };
+            }
+        });
         
         const sor = ref(null);
         const swaps = ref([]);
@@ -204,10 +232,8 @@ export default defineComponent({
                 !swapPath.value[tokenInAddress][tokenOutAddress]
             ) {
                 if (isInputActive) {
-                    tokenOutAmountInput.value = '…';
                     return;
                 } else {
-                    tokenInAmountInput.value = '…';
                     return;
                 }
             }
@@ -219,7 +245,6 @@ export default defineComponent({
                     // @ts-ignore
                     !tokenCost.value[tokenOutAddress]
                 ) {
-                    tokenOutAmountInput.value = '…';
                     return;
                 }
 
@@ -245,7 +270,6 @@ export default defineComponent({
                     // @ts-ignore
                     !tokenCost.value[tokenInAddress]
                 ) {
-                    tokenInAmountInput.value = '…';
                     return;
                 }
 
@@ -371,6 +395,7 @@ export default defineComponent({
             tokenOutAmountInput,
             isUnlocked,
             isModalOpen,
+            isLoading,
 
             account,
 
