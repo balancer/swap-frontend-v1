@@ -16,6 +16,7 @@
             <img
                 class="chevron-icon"
                 :src="chevronIcon"
+                @click="togglePair"
             >
             <div>
                 <div class="input-label">
@@ -315,6 +316,17 @@ export default defineComponent({
             store.dispatch('account/disconnect');
         }
 
+        async function togglePair(): Promise<void> {
+            const tokenInAddress = tokenOutAddressInput.value;
+            const tokenInAmount = tokenOutAmountInput.value;
+            const tokenOutAddress = tokenInAddressInput.value;
+            const tokenOutAmount = tokenInAmountInput.value;
+            tokenInAddressInput.value = tokenInAddress;
+            tokenInAmountInput.value = tokenInAmount;
+            tokenOutAddressInput.value = tokenOutAddress;
+            tokenOutAmountInput.value = tokenOutAmount;
+        }
+
         async function unlockSwap(): Promise<void> {
             const provider = store.state.account.web3Provider;
             const tokenInAddress = tokenInAddressInput.value;
@@ -370,6 +382,7 @@ export default defineComponent({
             handleAssetSelect,
             connect,
             disconnect,
+            togglePair,
             unlockSwap,
             swap,
         };
