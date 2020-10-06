@@ -42,7 +42,8 @@
 
 <script lang="ts">
 import BigNumber from 'bignumber.js';
-import { defineComponent, onMounted, computed, ref } from 'vue';
+import { ethers } from 'ethers';
+import { defineComponent, onMounted, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
@@ -67,6 +68,18 @@ export default defineComponent({
         onMounted(() => {
             // @ts-ignore
             queryEl.value.focus();
+        });
+
+        watch(query, () => {
+            if (!isAddress(query.value)) {
+                return;
+            }
+            const address = ethers.utils.getAddress(query.value);
+            const asset = metadata[address];
+            if (!asset) {
+                store.dispatch('assets/fetch', [address]);
+                store.dispatch('account/fetchAssets', [address]);
+            }
         });
 
         const assets = computed(() => {
