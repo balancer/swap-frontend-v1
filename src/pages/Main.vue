@@ -4,6 +4,7 @@
             <div>
                 <div class="input-label">
                     Send
+                    <span v-if="activeToken === 'output'">(approximate)</span>
                 </div>
                 <AssetInput
                     v-model:address="tokenInAddressInput"
@@ -19,6 +20,7 @@
             <div>
                 <div class="input-label">
                     Receive
+                    <span v-if="activeToken === 'input'">(approximate)</span>
                 </div>
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
@@ -356,6 +358,7 @@ export default defineComponent({
         return {
             chevronIcon,
             sor,
+            activeToken,
             tokenInAddressInput,
             tokenInAmountInput,
             tokenOutAddressInput,
