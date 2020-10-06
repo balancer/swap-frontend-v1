@@ -10,7 +10,7 @@
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
                     :modal-key="'input'"
-                    @change="setActiveToken('input')"
+                    @change="handleAmountChange('input')"
                 />
             </div>
             <img
@@ -27,7 +27,7 @@
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
                     :modal-key="'output'"
-                    @change="setActiveToken('output')"
+                    @change="handleAmountChange('output')"
                 />
             </div>
             <div class="swap-button-wrapper">
@@ -233,7 +233,8 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
-                tokenOutAmountInput.value = tokenOutAmountRaw.toString();
+                const tokenOutPrecision = assets[tokenOutAddress].precision;
+                tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision);
             } else {
                 if (
                     // @ts-ignore
@@ -258,19 +259,12 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
-                tokenInAmountInput.value = tokenInAmountRaw.toString();
+                const tokenInPrecision = assets[tokenInAddress].precision;
+                tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision);
             }
         }
 
         watch(tokenInAddressInput, async () => {
-            await updatePaths();
-            onAmountChange();
-        });
-
-        watch(tokenInAmountInput, async () => {
-            if (activeToken.value !== 'input') {
-                return;
-            }
             await updatePaths();
             onAmountChange();
         });
@@ -280,22 +274,15 @@ export default defineComponent({
             onAmountChange();
         });
 
-        watch(tokenOutAmountInput, async () => {
-            if (activeToken.value !== 'output') {
-                return;
-            }
-            await updatePaths();
-            onAmountChange();
-        });
-
         watch(sor, async () => {
             await updatePaths();
             onAmountChange();
         });
 
-        function setActiveToken(input: string): void {
+        async function handleAmountChange(input: string): Promise<void> {
             activeToken.value = input;
-            updatePaths();
+            await updatePaths();
+            onAmountChange();
         }
 
         function handleAssetSelect(assetAddress: string): void {
@@ -378,7 +365,7 @@ export default defineComponent({
             isUnlocked,
             isModalOpen,
             account,
-            setActiveToken,
+            handleAmountChange,
             handleAssetSelect,
             connect,
             disconnect,
