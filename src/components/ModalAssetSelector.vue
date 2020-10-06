@@ -3,6 +3,16 @@
         :title="'Select Asset'"
         @close="close"
     >
+        <template #header>
+            <div class="query-input-wrapper">
+                <input
+                    ref="queryEl"
+                    v-model="query"
+                    class="query-input"
+                    placeholder="Search by symbol, name, or address"
+                >
+            </div>
+        </template>
         <template #default>
             <div
                 v-for="asset in assets"
@@ -32,10 +42,10 @@
 
 <script lang="ts">
 import BigNumber from 'bignumber.js';
-import { defineComponent, computed } from 'vue';
+import { defineComponent, onMounted, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
-import { scale } from '@/utils/helpers';
+import { isAddress, scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -50,6 +60,14 @@ export default defineComponent({
         const store = useStore();
         const { metadata } = store.state.assets;
         const { balances } = store.state.account;
+
+        const query = ref('');
+        const queryEl = ref(null);
+
+        onMounted(() => {
+            // @ts-ignore
+            queryEl.value.focus();
+        });
 
         const assets = computed(() => {
             return Object.keys(metadata)
@@ -68,6 +86,21 @@ export default defineComponent({
                         symbol,
                         amount,
                     };
+                })
+                .filter(asset => {
+                    const queryString = query.value.toLowerCase();
+                    if (!queryString) {
+                        return true;
+                    }
+                    if (isAddress(queryString)) {
+                        return asset.address.toLowerCase() === queryString;
+                    }
+                    if (asset.name.toLowerCase().includes(queryString)) {
+                        return true;
+                    }
+                    if (asset.symbol.toLowerCase().includes(queryString)) {
+                        return true;
+                    }
                 });
         });
 
@@ -82,6 +115,8 @@ export default defineComponent({
         }
 
         return {
+            query,
+            queryEl,
             assets,
             select,
             close,
@@ -91,58 +126,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.modal-wrapper {
-    position: fixed;
-    display: flex;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
+.query-input-wrapper {
+    margin-top: 16px;
 }
 
-.backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.4);
-}
-
-.modal {
-    max-height: 90%;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--outline);
-}
-
-.modal-asset {
-    width: 440px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 16px;
-    font-weight: 700;
-    border-bottom: 1px solid var(--outline);
-}
-
-.close-icon {
-    width: 20px;
-    height: 20px;
-}
-
-.body {
-    overflow-y: auto;
+.query-input {
+    width: 100%;
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    outline: none;
 }
 
 .asset {
