@@ -1,10 +1,16 @@
 <template>
     <div class="input">
         <div class="amount-wrapper">
+            <ButtonText
+                v-if="modalKey === 'input' && address !== 'ether'"
+                :text="'max'"
+                @click="setMax"
+            />
+            <span v-else />
             <input
                 :value="amount"
                 class="amount"
-                @input="$emit('change'); $emit('update:amount', $event.target.value)"
+                @input="handleInputChange($event.target.value)"
             >
         </div>
         <div
@@ -24,12 +30,20 @@
 </template>
 
 <script lang="ts">
+import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import chevronIcon from '@/assets/chevronIcon.svg';
 
+import { scale } from '@/utils/helpers';
+
+import ButtonText from '@/components/ButtonText.vue';
+
 export default defineComponent({
+    components: {
+        ButtonText,
+    },
     props: {
         modalKey: {
             type: String,
@@ -45,17 +59,33 @@ export default defineComponent({
         },
     },
     emits: ['update:amount', 'change'],
-    setup(props) {
+    setup(props, { emit }) {
         const store = useStore();
-        const assets = store.state.assets.metadata;
 
         const symbol = computed(() => {
+            const assets = store.state.assets.metadata;
             const asset = assets[props.address];
             if (!asset) {
                 return '';
             }
             return asset.symbol;
         });
+
+        function setMax(): void {
+            const assets = store.state.assets.metadata;
+            const { balances } = store.state.account;
+            const balance = balances[props.address];
+            const assetDecimals = assets[props.address].decimals;
+            const balanceNumber = new BigNumber(balance);
+            const amountNumber = scale(balanceNumber, -assetDecimals);
+            const amount = amountNumber.toString();
+            handleInputChange(amount);
+        }
+
+        function handleInputChange(value: string): void {
+            emit('change');
+            emit('update:amount', value);
+        }
 
         function openModal(): void {
             store.dispatch('ui/openAssetModal', props.modalKey);
@@ -64,6 +94,8 @@ export default defineComponent({
         return {
             chevronIcon,
             symbol,
+            setMax,
+            handleInputChange,
             openModal,
         };
     },
@@ -80,14 +112,16 @@ export default defineComponent({
 }
 
 .amount-wrapper {
+    width: 240px;
+    padding: 8px;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     border-right: 1px solid var(--outline);
     border-radius: 4px;
 }
 
 .amount {
-    width: 200px;
-    padding: 8px;
     border: none;
     background: transparent;
     color: var(--text-primary);
