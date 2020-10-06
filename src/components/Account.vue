@@ -5,9 +5,12 @@
         @click="openAccountModal"
     >
         <div class="account-meta">
-            <div class="account-icon" />
+            <Jazzicon
+                class="account-icon"
+                :address="address"
+            />
             <div class="account-address">
-                {{ address }}
+                {{ formatAddress(address) }}
             </div>
         </div>
         <img
@@ -32,10 +35,12 @@ import chevronIcon from '@/assets/chevronIcon.svg';
 import { formatAddress } from '@/utils/helpers';
 
 import Button from '@/components/Button.vue';
+import Jazzicon from '@/components/Jazzicon.vue';
 
 export default defineComponent({
     components: {
         Button,
+        Jazzicon,
     },
     setup() {
         const store = useStore();
@@ -45,7 +50,7 @@ export default defineComponent({
             if (!web3Provider || !address) {
                 return '';
             }
-            return formatAddress(address);
+            return address;
         });
 
         function openAccountModal(): void {
@@ -59,6 +64,7 @@ export default defineComponent({
         return {
             chevronIcon,
             address,
+            formatAddress,
             openAccountModal,
             openConnectorModal,
         };
@@ -94,7 +100,6 @@ export default defineComponent({
     width: 16px;
     height: 16px;
     box-sizing: border-box;
-    border: 1px solid white;
     border-radius: 8px;
 }
 
