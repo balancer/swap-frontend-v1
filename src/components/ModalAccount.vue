@@ -21,7 +21,10 @@
                     class="balance"
                 >
                     <div class="asset-meta">
-                        <div class="asset-icon" />
+                        <AssetIcon
+                            class="asset-icon"
+                            :address="balance.address"
+                        />
                         <div class="asset-name">
                             {{ balance.name }}
                         </div>
@@ -46,11 +49,13 @@ import { useStore } from 'vuex';
 import { scale } from '@/utils/helpers';
 import { formatAddress } from '@/utils/helpers';
 
+import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
     components: {
+        AssetIcon,
         ButtonText,
         ModalBase,
     },
@@ -129,8 +134,6 @@ export default defineComponent({
 .asset-icon {
     width: 20px;
     height: 20px;
-    box-sizing: border-box;
-    border: 1px solid white;
     border-radius: 50%;
 }
 

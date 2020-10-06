@@ -23,7 +23,10 @@
             @click="openModal"
         >
             <div class="asset-meta">
-                <div class="asset-logo" />
+                <AssetIcon
+                    class="asset-icon"
+                    :address="address"
+                />
                 <span class="asset-symbol">{{ symbol }}</span>
             </div>
             <img
@@ -43,10 +46,12 @@ import chevronIcon from '@/assets/chevronIcon.svg';
 
 import { scale } from '@/utils/helpers';
 
+import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 
 export default defineComponent({
     components: {
+        AssetIcon,
         ButtonText,
     },
     props: {
@@ -181,13 +186,11 @@ export default defineComponent({
     align-items: center;
 }
 
-.asset-logo {
-    width: 16px;
-    height: 16px;
-    box-sizing: border-box;
+.asset-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
     margin-left: 8px;
-    border: 1px solid white;
-    border-radius: 8px;
 }
 
 .asset-symbol {

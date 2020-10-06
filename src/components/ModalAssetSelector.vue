@@ -11,7 +11,10 @@
                 @click="select(asset.address)"
             >   
                 <div class="asset-meta">
-                    <div class="asset-icon" />
+                    <AssetIcon
+                        class="asset-icon"
+                        :address="asset.address"
+                    />
                     <div class="asset-name">
                         {{ asset.name }}
                     </div>
@@ -34,10 +37,12 @@ import { useStore } from 'vuex';
 
 import { scale } from '@/utils/helpers';
 
+import AssetIcon from '@/components/AssetIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
     components: {
+        AssetIcon,
         ModalBase,
     },
     emits: ['select'],
@@ -159,8 +164,6 @@ export default defineComponent({
 .asset-icon {
     width: 20px;
     height: 20px;
-    box-sizing: border-box;
-    border: 1px solid white;
     border-radius: 50%;
 }
 
