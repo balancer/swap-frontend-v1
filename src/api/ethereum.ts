@@ -78,9 +78,11 @@ export default class Ethereum {
             const symbol = data[3 * i + 1];
             const decimals = data[3 * i + 2];
             metadata[tokenAddress] = {
+                address: tokenAddress,
                 name,
                 symbol,
                 decimals,
+                hasIcon: true,
             };
         }
         return metadata;
