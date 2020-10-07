@@ -114,8 +114,12 @@ export default defineComponent({
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
 
         const isLoading = computed(() => {
-            const tokenInAddress = tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value;
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
             if (activeToken.value === 'input') {
                 const outputTokenLoading =
                     !tokenCost.value[tokenOutAddress] ||
@@ -154,8 +158,12 @@ export default defineComponent({
             if (!sor.value) {
                 return;
             }
-            const tokenInAddress = tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value;
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
             if (activeToken.value === 'input') {
                 // @ts-ignore
                 if (!tokenCost.value[tokenOutAddress]) {
@@ -215,8 +223,12 @@ export default defineComponent({
                 }
             }
 
-            const tokenInAddress = tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value;
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
             const tokenInDecimals = assets[tokenInAddress].decimals;
             const tokenOutDecimals = assets[tokenOutAddress].decimals;
 
