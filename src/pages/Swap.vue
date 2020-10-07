@@ -274,7 +274,7 @@ export default defineComponent({
                 swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
                 const tokenOutPrecision = assets[tokenOutAddress].precision;
-                tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision);
+                tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
             } else {
                 if (
                     // @ts-ignore
@@ -299,7 +299,7 @@ export default defineComponent({
                 swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
                 const tokenInPrecision = assets[tokenInAddress].precision;
-                tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision);
+                tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
         }
 
