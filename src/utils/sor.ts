@@ -45,6 +45,7 @@ export default class SOR {
             this.multicallAddress,
             this.provider,
         );
+        // @ts-ignore
         this.allPools = onchainPools;
     }
 
