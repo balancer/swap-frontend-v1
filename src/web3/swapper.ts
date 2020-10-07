@@ -49,7 +49,7 @@ export default class Swapper {
         const overrides: any = {};
         if (tokenInAddress === ETH_KEY) {
             tokenInAddress = ETH_ADDRESS;
-            overrides.value = tokenInAmountMax.toString();
+            overrides.value = `0x${tokenInAmountMax.toString(16)}`;
         }
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
