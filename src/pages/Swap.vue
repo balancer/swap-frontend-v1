@@ -387,13 +387,23 @@ export default defineComponent({
             tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'WETH');
 
             const provider = store.getters['account/provider'];
-            const allPools = await SOR.fetchPools(provider);
             const gasPrice = new BigNumber(30000000000);
             const swapGasCost = new BigNumber(100000);
             const maxPoolCount = 4;
+            const multicallAddress = config.addresses.multicall;
+            const subgraphUrl = config.subgraphUrl;
 
+            const sorInstance = new SOR(
+                gasPrice,
+                swapGasCost,
+                maxPoolCount,
+                multicallAddress,
+                subgraphUrl,
+                provider,
+            );
+            await sorInstance.fetchPools();
             // @ts-ignore
-            sor.value = new SOR(allPools, gasPrice, swapGasCost, maxPoolCount, provider);
+            sor.value = sorInstance;
         });
 
         return {

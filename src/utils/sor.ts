@@ -12,39 +12,40 @@ import BigNumber from 'bignumber.js';
 // @ts-ignore
 import cloneDeep from 'lodash/cloneDeep';
 
-// eslint-disable-next-line no-undef
-const SUBGRAPH_URL = process.env.REACT_APP_SUBGRAPH_URL || 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer';
-const multiAddress = '0xeefba1e63905ef1d7acba5a8513c70307c1ce441';
-
 export default class SOR {
-    allPools: any;
-    gasPrice: any;
-    swapGasCost: any;
-    maxPoolCount: any;
+    allPools: any[];
+    gasPrice: BigNumber;
+    swapGasCost: BigNumber;
+    maxPoolCount: number;
+    multicallAddress: string;
+    subgraphUrl: string;
     provider: any;
 
     constructor(
-        allPools: any[],
         gasPrice: BigNumber,
         swapGasCost: BigNumber,
         maxPoolCount: number,
+        multicallAddress: string,
+        subgraphUrl: string,
         provider: any,
     ) {
-        this.allPools = allPools;
+        this.allPools = [];
         this.gasPrice = gasPrice;
         this.swapGasCost = swapGasCost;
         this.maxPoolCount = maxPoolCount;
+        this.multicallAddress = multicallAddress;
+        this.subgraphUrl = subgraphUrl;
         this.provider = provider;
     }
 
-    static async fetchPools(provider: any): Promise<any> {
-        const subgraphPools = await getAllPublicSwapPools();
+    async fetchPools(): Promise<void> {
+        const subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
         const onchainPools = await getAllPoolDataOnChain(
             subgraphPools,
-            multiAddress,
-            provider,
+            this.multicallAddress,
+            this.provider,
         );
-        return onchainPools;
+        this.allPools = onchainPools;
     }
 
     async getTokenCost(token: string): Promise<any> {
@@ -142,7 +143,7 @@ export default class SOR {
     }
 }
 
-async function getAllPublicSwapPools(): Promise<any> {
+async function getAllPublicSwapPools(subgraphUrl: string): Promise<any> {
     const query = `
         {
             pools (first: 1000, where: {publicSwap: true, active: true}) {
@@ -157,7 +158,7 @@ async function getAllPublicSwapPools(): Promise<any> {
         }
     `;
 
-    const response = await fetch(SUBGRAPH_URL, {
+    const response = await fetch(subgraphUrl, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
