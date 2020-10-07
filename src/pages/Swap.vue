@@ -390,8 +390,8 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            tokenInAddressInput.value = getAssetAddressBySymbol(assets, 'DAI');
-            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'WETH');
+            tokenInAddressInput.value = getAssetAddressBySymbol(assets, 'ETH');
+            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'BAL');
 
             const provider = store.getters['account/provider'];
             const multicallAddress = config.addresses.multicall;
