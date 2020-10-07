@@ -143,11 +143,6 @@ export default class SOR {
 }
 
 async function getAllPublicSwapPools(): Promise<any> {
-    const pools = await getSubgraphPools();
-    return pools;
-}
-
-async function getSubgraphPools(): Promise<any> {
     const query = `
         {
             pools (first: 1000, where: {publicSwap: true, active: true}) {
