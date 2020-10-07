@@ -1,6 +1,6 @@
 import {
-    filterPoolsWithTokensDirect,
-    filterPoolsWithTokensMultihop,
+    filterPools,
+    sortPoolsMostLiquid,
     getAllPoolDataOnChain,
     processPaths,
     parsePoolData,
@@ -182,7 +182,7 @@ function loadPathData(
     tokenIn = tokenIn.toLowerCase();
     tokenOut = tokenOut.toLowerCase();
 
-    const directPools = filterPoolsWithTokensDirect(
+    const [directPools, hopTokens, poolsTokenIn, poolsTokenOut] = filterPools(
         allPools.pools,
         tokenIn,
         tokenOut,
@@ -191,8 +191,13 @@ function loadPathData(
     const [
         mostLiquidPoolsFirstHop,
         mostLiquidPoolsSecondHop,
+    ] = sortPoolsMostLiquid(
+        tokenIn,
+        tokenOut,
         hopTokens,
-    ] = filterPoolsWithTokensMultihop(allPools.pools, tokenIn, tokenOut);
+        poolsTokenIn,
+        poolsTokenOut,
+    );
 
     const [pools, pathData] = parsePoolData(
         directPools,
