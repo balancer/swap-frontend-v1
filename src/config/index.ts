@@ -11,7 +11,7 @@ const configs = {
     42: merge(registryKovan, kovan),
 };
 // eslint-disable-next-line no-undef
-const network = process.env.CHAIN_ID || 1;
+const network = process.env.APP_CHAIN_ID || 1;
 
 // @ts-ignore
 export default configs[network];
