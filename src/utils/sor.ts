@@ -40,11 +40,19 @@ export default class SOR {
 
     async fetchPools(): Promise<void> {
         const subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
-        const onchainPools = await getAllPoolDataOnChain(
-            subgraphPools,
-            this.multicallAddress,
-            this.provider,
-        );
+        let onchainPools;
+        while (!onchainPools) {
+            try {
+                // @ts-ignore
+                onchainPools = await getAllPoolDataOnChain(
+                    subgraphPools,
+                    this.multicallAddress,
+                    this.provider,
+                );
+            } catch(e) {
+                console.log('Could not fetch onchain pool data, retrying…');
+            }
+        } 
         // @ts-ignore
         this.allPools = onchainPools;
     }
