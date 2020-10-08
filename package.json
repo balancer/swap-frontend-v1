@@ -15,7 +15,7 @@
     "stylelint": "stylelint \"src/**/*.vue\""
   },
   "dependencies": {
-    "@balancer-labs/sor": "^0.4.0-7",
+    "@balancer-labs/sor": "^0.4.0-8",
     "@bonustrack/lock": "github:bonustrack/lock#99e05fd7e31c1e56e877d8b683a75bf7bce25f90",
     "@metamask/jazzicon": "^2.0.0",
     "@portis/web3": "^2.0.0-beta.59",
