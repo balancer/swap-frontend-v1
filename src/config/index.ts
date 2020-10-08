@@ -13,7 +13,5 @@ const configs = {
 // eslint-disable-next-line no-undef
 const network = process.env.APP_CHAIN_ID || 1;
 
-console.log('config', registryHomestead, homestead, registryKovan, kovan, network, configs, configs[network]);
-
 // @ts-ignore
 export default configs[network];
