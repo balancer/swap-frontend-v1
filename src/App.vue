@@ -54,6 +54,7 @@ export default defineComponent({
     --accent: #4965ff;
     --text-primary: #fff;
     --text-secondary: #a7b3b9;
+    --success: #21b66f;
     --info: #7685d5;
     --warning: #ffc780;
     --error: #ff8a80;
