@@ -127,6 +127,12 @@ const actions = {
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
+    unlock: async({ commit }: any, { token, spender }: any): Promise<void> => {
+        const allowances = {};
+        allowances[spender] = {};
+        allowances[spender][token] = ethers.constants.MaxUint256;
+        commit('addAllowances', allowances);
+    },
     saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
         commit('addTransaction', transaction);
     },

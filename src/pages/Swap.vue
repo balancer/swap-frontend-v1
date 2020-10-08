@@ -41,9 +41,9 @@
                 />
                 <Button
                     v-else
-                    :text="'Unlock & Swap'"
+                    :text="'Unlock'"
                     :primary="true"
-                    @click="unlockSwap"
+                    @click="unlock"
                 />
             </div>
         </div>
@@ -363,12 +363,15 @@ export default defineComponent({
             tokenOutAmountInput.value = tokenOutAmount;
         }
 
-        async function unlockSwap(): Promise<void> {
+        async function unlock(): Promise<void> {
             const provider = store.state.account.web3Provider;
             const tokenInAddress = tokenInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
-            await Helper.unlock(provider, tokenInAddress, spender);
-            await swap();
+            const tx = await Helper.unlock(provider, tokenInAddress, spender);
+            handleTx(tx, 'unlock', {
+                token: tokenInAddress,
+                spender,
+            });
         }
 
         async function swap(): Promise<void> {
@@ -381,13 +384,13 @@ export default defineComponent({
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
                 const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
-                handleTx(tx, 'swap');
+                handleTx(tx, 'swap', {});
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
                 const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
-                handleTx(tx, 'swap');
+                handleTx(tx, 'swap', {});
             }
         }
 
@@ -412,9 +415,14 @@ export default defineComponent({
             sor.value = sorInstance;
         });
 
-        async function handleTx(tx: any, txType: string): Promise<void> {
+        async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {
             store.dispatch('account/saveTransaction', tx);
             const minedTx = await tx.wait(1);
+            notify(minedTx, txType);
+            updateState(minedTx, txType, txMeta);
+        }
+
+        async function notify(minedTx: any, txType: string): Promise<void> {
             const type = minedTx.status === 1
                 ? 'success'
                 : 'error';
@@ -431,6 +439,15 @@ export default defineComponent({
                 type,
                 txHash,
             });
+        }
+
+        async function updateState(minedTx: any, txType: string, txMeta: any): Promise<void> {
+            if (minedTx.status !== 1) {
+                return;
+            }
+            if (txType === 'unlock') {
+                store.dispatch('account/unlock', txMeta);
+            }
         }
 
         return {
@@ -453,7 +470,7 @@ export default defineComponent({
             connect,
             disconnect,
             togglePair,
-            unlockSwap,
+            unlock,
             swap,
         };
     },

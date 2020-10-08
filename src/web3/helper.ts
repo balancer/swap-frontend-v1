@@ -9,8 +9,8 @@ export default class Helper {
         provider: any,
         asset: string,
         spender: string,
-    ): Promise<void> {
+    ): Promise<any> {
         const assetContract = new ethers.Contract(asset, ERC20Abi, provider.getSigner());
-        await assetContract.approve(spender, uintMax);
+        return await assetContract.approve(spender, uintMax);
     }
 }
