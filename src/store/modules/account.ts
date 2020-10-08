@@ -106,9 +106,7 @@ const actions = {
         dispatch('fetchState');
     },
     clean: async({ commit }: any): Promise<void> => {
-        commit('setProxy', '');
-        commit('addBalances', {});
-        commit('addAllowances', {});
+        commit('clean');
     },
     fetchState: async({ commit, state, rootState }: any): Promise<void> => {
         const { web3Provider, address } = state;
