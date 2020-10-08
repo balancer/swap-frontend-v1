@@ -19,19 +19,22 @@
         <div class="button-wrapper">
             <NotificationButton
                 :type="type"
-                :link="'https://etherscan.io/'"
+                :link="link"
             />
         </div>
+        <div class="progress" />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 
-import NotificationButton from './NotificationButton.vue';
-
 import successIcon from '@/assets/successIcon.svg';
 import errorIcon from '@/assets/errorIcon.svg';
+
+import { getEtherscanLink } from '@/utils/helpers';
+
+import NotificationButton from './NotificationButton.vue';
 
 export default defineComponent({
     components: {
@@ -45,6 +48,10 @@ export default defineComponent({
         text: {
             type: String,
             required: true,
+        },
+        txHash: {
+            type: String,
+            default: '',
         },
     },
     setup(props) {
@@ -66,9 +73,20 @@ export default defineComponent({
             return titleMap[props.type];
         });
 
+        const link = computed(() => {
+            if (props.type === 'warning') {
+                return 'https://help.balancer.finance/en/';
+            }
+            if (props.txHash) {
+                return getEtherscanLink(props.txHash);
+            }
+            return '';
+        });
+
         return {
             icon,
             title,
+            link,
         };
     },
 });
@@ -90,6 +108,8 @@ export default defineComponent({
     display: flex;
     border-radius: var(--border-radius);
     align-items: center;
+    animation-name: slide;
+    animation-duration: 10000ms;
 }
 
 .success {
@@ -118,5 +138,47 @@ export default defineComponent({
 
 .button-wrapper {
     margin-left: 8px;
+}
+
+.progress {
+    position: fixed;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: white;
+    animation-name: grow;
+    animation-duration: 10000ms;
+}
+
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: translateX(300px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    90% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(300px);
+    }
+}
+
+@keyframes grow {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
 }
 </style>

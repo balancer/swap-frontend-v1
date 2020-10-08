@@ -4,7 +4,7 @@ import Ethereum from '@/api/ethereum';
 import lock from '@/utils/connectors';
 import config from '@/config';
 
-const LS_CONNECTOR_KEY = '_lock.connector';
+const LS_CONNECTOR_KEY = 'connector';
 
 const mutations = {
     setWeb3Provider: (_state: any, provider: any): void => {
@@ -38,10 +38,14 @@ const mutations = {
             }
         }
     },
+    addTransaction: (_state: any, transaction: any): void => {
+        _state.transactions.push(transaction);
+    },
     clean: (_state: any): void => {
         _state.proxy = '';
         _state.balances = {};
         _state.allowances = {};
+        _state.transactions = {};
     },
 };
 
@@ -123,6 +127,9 @@ const actions = {
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
+    saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
+        commit('addTransaction', transaction);
+    },
 };
 
 const getters = {
@@ -140,6 +147,7 @@ function state(): any {
         proxy: '',
         balances: {},
         allowances: {},
+        transactions: [],
     };
 }
 

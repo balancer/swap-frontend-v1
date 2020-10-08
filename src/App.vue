@@ -6,6 +6,12 @@
 
         <ModalAccount v-if="isAccountModalOpen" />
         <ModalConnectorSelector v-if="isConnectorModalOpen" />
+        <Notification
+            v-if="notification"
+            :type="notification.type"
+            :text="notification.text"
+            :tx-hash="notification.txHash"
+        />
     </div>
 </template>
 
@@ -17,6 +23,7 @@ import Header from './components/Header.vue';
 import Footer from './components/Footer.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
 import ModalConnectorSelector from '@/components/ModalConnectorSelector.vue';
+import Notification from '@/components/Notification.vue';
 
 export default defineComponent({
     components: {
@@ -24,12 +31,15 @@ export default defineComponent({
         Footer,
         ModalAccount,
         ModalConnectorSelector,
+        Notification,
     },
     setup() {
         const store = useStore();
 
         const isAccountModalOpen = computed(() => store.state.ui.modal.account.isOpen);
         const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);
+
+        const notification = computed(() => store.state.ui.notification);
 
         onMounted(() => {
             store.dispatch('assets/init');
@@ -39,6 +49,7 @@ export default defineComponent({
         return {
             isAccountModalOpen,
             isConnectorModalOpen,
+            notification,
         };
     },
 });

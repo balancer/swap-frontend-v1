@@ -380,18 +380,20 @@ export default defineComponent({
                 const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
-                await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
+                const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
+                handleTx(tx, 'swap');
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInDecimals = assets[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
-                await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
+                const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
+                handleTx(tx, 'swap');
             }
         }
 
         onMounted(async () => {
             tokenInAddressInput.value = getAssetAddressBySymbol(assets, 'ETH');
-            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'BAL');
+            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'USDC');
 
             const provider = store.getters['account/provider'];
             const multicallAddress = config.addresses.multicall;
@@ -409,6 +411,27 @@ export default defineComponent({
             // @ts-ignore
             sor.value = sorInstance;
         });
+
+        async function handleTx(tx: any, txType: string): Promise<void> {
+            store.dispatch('account/saveTransaction', tx);
+            const minedTx = await tx.wait(1);
+            const type = minedTx.status === 1
+                ? 'success'
+                : 'error';
+            const text = txType === 'swap'
+                ? type === 'success'
+                    ? 'Swap completed'
+                    : 'Swap failed'
+                : type === 'success'
+                    ? 'Unlock completed'
+                    : 'Unlock failed';
+            const txHash = minedTx.transactionHash;
+            store.dispatch('ui/notify', {
+                text,
+                type,
+                txHash,
+            });
+        }
 
         return {
             chevronIcon,

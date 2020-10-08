@@ -1,3 +1,5 @@
+import { sleep } from '@/utils/helpers';
+
 const mutations = {
     setAssetModalOpen: (_state: any, isOpen: boolean): void => {
         _state.modal.asset.isOpen = isOpen;
@@ -10,6 +12,9 @@ const mutations = {
     },
     setConnectorModal: (_state: any, isOpen: boolean): void => {
         _state.modal.connector.isOpen = isOpen;
+    },
+    setNotification: (_state: any, notification: any): void => {
+        _state.notification = notification;
     },
 };
 
@@ -33,6 +38,11 @@ const actions = {
     closeConnectorModal: ({ commit }: any): void => {
         commit('setConnectorModal', false);
     },
+    notify: async ({ commit }: any, notification: any): Promise<void> => {
+        commit('setNotification', notification);
+        await sleep(10 * 1000);
+        commit('setNotification', null);
+    },
 };
 
 function state(): any {
@@ -49,6 +59,7 @@ function state(): any {
                 isOpen: false,
             },
         },
+        notification: null,
     };
 }
 

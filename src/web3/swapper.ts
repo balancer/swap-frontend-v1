@@ -16,7 +16,7 @@ export default class Swapper {
         tokenOutAddress: string,
         tokenInAmount: BigNumber,
         tokenOutAmountMin: BigNumber,
-    ): Promise<void> {
+    ): Promise<any> {
         const overrides: any = {};
         if (tokenInAddress === ETH_KEY) {
             tokenInAddress = ETH_ADDRESS;
@@ -25,7 +25,7 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        await sendTransaction(
+        return await sendTransaction(
             provider,
             'multihopBatchSwapExactIn',
             [
@@ -45,7 +45,7 @@ export default class Swapper {
         tokenInAddress: string,
         tokenOutAddress: string,
         tokenInAmountMax: BigNumber,
-    ): Promise<void> {
+    ): Promise<any> {
         const overrides: any = {};
         if (tokenInAddress === ETH_KEY) {
             tokenInAddress = ETH_ADDRESS;
@@ -54,7 +54,7 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        await sendTransaction(
+        return await sendTransaction(
             provider,
             'multihopBatchSwapExactOut',
             [
@@ -73,8 +73,8 @@ async function sendTransaction(
     functionName: string,
     params: any[],
     overrides: any,
-): Promise<void> {
+): Promise<any> {
     const exchangeProxyAddress = config.addresses.exchangeProxy;
     const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
-    await exchangeProxyContract[functionName](...params, overrides);
+    return await exchangeProxyContract[functionName](...params, overrides);
 }
