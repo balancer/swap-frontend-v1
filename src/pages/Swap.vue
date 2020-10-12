@@ -423,6 +423,7 @@ export default defineComponent({
         }
 
         async function notify(minedTx: any, txType: string): Promise<void> {
+            store.dispatch('account/updateTransaction', minedTx);
             const type = minedTx.status === 1
                 ? 'success'
                 : 'error';

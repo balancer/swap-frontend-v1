@@ -8,6 +8,11 @@ export function formatAddress(address: string, length = 8): string {
     return ellipsizedAddress;
 }
 
+export function formatTxHash(txHash: string, length = 16): string {
+    const ellipsizedHash = `${txHash.substr(0, 2 + length / 2)}…${txHash.substr(66 - length / 2)}`;
+    return ellipsizedHash;
+}
+
 export function isAddress(value: string): boolean {
     try {
         ethers.utils.getAddress(value);

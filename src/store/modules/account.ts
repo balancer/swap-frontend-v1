@@ -6,6 +6,12 @@ import config from '@/config';
 
 const LS_CONNECTOR_KEY = 'connector';
 
+enum TransactionStatus {
+    PENDING,
+    OK,
+    FAILED,
+}
+
 const mutations = {
     setWeb3Provider: (_state: any, provider: any): void => {
         _state.web3Provider = provider;
@@ -39,13 +45,29 @@ const mutations = {
         }
     },
     addTransaction: (_state: any, transaction: any): void => {
-        _state.transactions.push(transaction);
+        const { hash } = transaction;
+        _state.transactions.push({
+            hash,
+            status: TransactionStatus.PENDING,
+        });
+    },
+    setTransaction: (_state: any, minedTransaction: any): void => {
+        const hash = minedTransaction.transactionHash;
+        const status = minedTransaction.status === 1
+            ? TransactionStatus.OK
+            : TransactionStatus.FAILED;
+        const transactionIndex = _state.transactions
+            .findIndex((transaction: any) => transaction.hash === hash);
+        _state.transactions[transactionIndex] = {
+            hash,
+            status,
+        };
     },
     clean: (_state: any): void => {
         _state.proxy = '';
         _state.balances = {};
         _state.allowances = {};
-        _state.transactions = {};
+        _state.transactions = [];
     },
 };
 
@@ -135,6 +157,9 @@ const actions = {
     },
     saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
         commit('addTransaction', transaction);
+    },
+    updateTransaction: async({ commit }: any, transaction: any): Promise<void> => {
+        commit('setTransaction', transaction);
     },
 };
 
