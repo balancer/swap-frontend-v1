@@ -40,6 +40,10 @@ export default class SOR {
 
     async fetchPools(): Promise<void> {
         const subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
+        if (!subgraphPools) {
+            // TODO use backup
+            return;
+        }
         let onchainPools;
         while (!onchainPools) {
             try {
