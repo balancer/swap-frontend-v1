@@ -32,22 +32,25 @@
                     @change="handleAmountChange('output')"
                 />
             </div>
-            <div class="swap-button-wrapper">
-                <Button
-                    v-if="isUnlocked"
-                    :disabled="isDisabled"
-                    :text="'Swap'"
-                    :primary="true"
-                    @click="swap"
-                />
-                <Button
-                    v-else
-                    :disabled="isDisabled"
-                    :text="'Unlock'"
-                    :primary="true"
-                    @click="unlock"
-                />
+            <div class="status-label">
+                {{ statusLabel }}
             </div>
+            <Button
+                v-if="isUnlocked"
+                class="swap-button"
+                :disabled="isDisabled"
+                :text="'Swap'"
+                :primary="true"
+                @click="swap"
+            />
+            <Button
+                v-else
+                class="swap-button"
+                :disabled="isDisabled"
+                :text="'Unlock'"
+                :primary="true"
+                @click="unlock"
+            />
         </div>
         <ModalAssetSelector
             v-if="isModalOpen"
@@ -215,6 +218,36 @@ export default defineComponent({
         
         const isDisabled = computed(() => {
             return validation.value !== Validation.NONE;
+        });
+        
+        const statusLabel = computed(() => {
+            if (validation.value === Validation.NONE) {
+                // TODO price
+                const { metadata } = store.state.assets;
+                const assetInMetadata = metadata[tokenInAddressInput.value];
+                const assetOutMetadata = metadata[tokenOutAddressInput.value];
+                const assetInAmountRaw = new BigNumber(tokenInAmountInput.value);
+                const assetOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
+                const assetInAmount = scale(assetInAmountRaw, assetInMetadata.decimals);
+                const assetOutAmount = scale(assetOutAmountRaw, assetOutMetadata.decimals);
+                const price = assetOutAmount.div(assetInAmount);
+                return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
+            }
+            if (validation.value === Validation.INVALID_INPUT) {
+                return 'Invalid input';
+            }
+            if (validation.value === Validation.NO_ACCOUNT) {
+                return 'Connect account to continue';
+            }
+            if (validation.value === Validation.WRONG_NETWORK) {
+                return 'Change network to continue';
+            }
+            if (validation.value === Validation.INSUFFICIENT_BALANCE) {
+                return 'Insufficient balance';
+            }
+            if (validation.value === Validation.NO_SWAPS) {
+                return 'Insufficient liquidity';
+            }
         });
 
         async function updatePaths(): Promise<void> {
@@ -523,6 +556,7 @@ export default defineComponent({
             isLoading,
             isDisabled,
             account,
+            statusLabel,
 
             chevronIcon,
 
@@ -564,7 +598,12 @@ export default defineComponent({
     margin-top: 8px;
 }
 
-.swap-button-wrapper {
+.status-label {
     margin-top: 32px;
+    font-size: 14px;
+}
+
+.swap-button {
+    margin-top: 16px;
 }
 </style>
