@@ -134,18 +134,20 @@ const actions = {
     clean: async({ commit }: any): Promise<void> => {
         commit('clean');
     },
-    fetchState: async({ commit, state, rootState }: any): Promise<void> => {
-        const { web3Provider, address } = state;
+    fetchState: async({ commit, state, getters, rootState }: any): Promise<void> => {
+        const provider = getters.provider;
+        const { address } = state;
         const { metadata } = rootState.assets;
         const assets = Object.keys(metadata);
-        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, assets);
+        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('setProxy', proxy);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
-    fetchAssets: async({ commit, state }: any, assets: string[]): Promise<void> => {
-        const { web3Provider, address } = state;
-        const { balances, allowances } = await Ethereum.fetchAccountState(web3Provider, address, assets);
+    fetchAssets: async({ commit, state, getters }: any, assets: string[]): Promise<void> => {
+        const provider = getters.provider;
+        const { address } = state;
+        const { balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
@@ -165,7 +167,7 @@ const actions = {
 
 const getters = {
     provider: (state: any): any => {
-        return state.fallbackProvider || state.web3Provider;
+        return state.web3Provider || state.fallbackProvider;
     },
 };
 
