@@ -35,12 +35,14 @@
             <div class="swap-button-wrapper">
                 <Button
                     v-if="isUnlocked"
+                    :disabled="isDisabled"
                     :text="'Swap'"
                     :primary="true"
                     @click="swap"
                 />
                 <Button
                     v-else
+                    :disabled="isDisabled"
                     :text="'Unlock'"
                     :primary="true"
                     @click="unlock"
@@ -65,6 +67,7 @@ import config from '@/config';
 import { scale } from '@/utils/helpers';
 import SOR from '@/utils/sor';
 import { getAssetAddressBySymbol } from '@/utils/assets';
+import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 
@@ -78,6 +81,15 @@ const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 const APP_SWAP_COST = process.env.APP_SWAP_COST || '100000';
 // eslint-disable-next-line no-undef
 const APP_MAX_POOLS = process.env.APP_MAX_POOLS || '4';
+
+enum Validation {
+    NONE,
+    INVALID_INPUT,
+    NO_ACCOUNT,
+    WRONG_NETWORK,
+    INSUFFICIENT_BALANCE,
+    NO_SWAPS,
+}
 
 export default defineComponent({
     components: {
@@ -160,6 +172,49 @@ export default defineComponent({
                     output: false,
                 };
             }
+        });
+
+        const validation = computed(() => {
+            // Invalid input
+            const amountValue = activeToken.value === 'input'
+                ? tokenInAmountInput.value
+                : tokenOutAmountInput.value;
+            const error = validateNumberInput(amountValue);
+            if (error !== ValidationError.NONE) {
+                return Validation.INVALID_INPUT;
+            }
+            // No account
+            if (!account.value) {
+                return Validation.NO_ACCOUNT;
+            }
+            // Wrong network
+            const { chainId } = store.state.account;
+            if (config.chainId !== chainId) {
+                return Validation.WRONG_NETWORK;
+            }
+            // Insufficient balance
+            const { balances } = store.state.account;
+            const { metadata } = store.state.assets;
+            const assetInBalance = balances[tokenInAddressInput.value];
+            const assetInMetadata = metadata[tokenInAddressInput.value];
+            if (!assetInMetadata) {
+                return Validation.INSUFFICIENT_BALANCE;
+            }
+            const assetInDecimals = assetInMetadata.decimals;
+            const assetInAmountRaw = new BigNumber(tokenInAmountInput.value);
+            const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
+            if (assetInAmount.gt(assetInBalance)) {
+                return Validation.INSUFFICIENT_BALANCE;
+            }
+            // No swaps
+            if (swaps.value.length === 0) {
+                return Validation.NO_SWAPS;
+            }
+            return Validation.NONE;
+        });
+        
+        const isDisabled = computed(() => {
+            return validation.value !== Validation.NONE;
         });
 
         async function updatePaths(): Promise<void> {
@@ -466,6 +521,7 @@ export default defineComponent({
             isModalOpen,
             isUnlocked,
             isLoading,
+            isDisabled,
             account,
 
             chevronIcon,

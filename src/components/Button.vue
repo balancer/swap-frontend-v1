@@ -39,4 +39,10 @@ button.primary {
     background: var(--accent);
     border-color: var(--accent);
 }
+
+button:disabled {
+    background: var(--text-secondary);
+    border-color: var(--text-secondary);
+    cursor: not-allowed;
+}
 </style>
