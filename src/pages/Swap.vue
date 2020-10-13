@@ -62,12 +62,14 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
-import { scale } from '@/utils/helpers';
+import { scale, isAddress } from '@/utils/helpers';
 import SOR from '@/utils/sor';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
@@ -101,6 +103,7 @@ export default defineComponent({
         ModalAssetSelector,
     },
     setup() {
+        const router = useRouter();
         const store = useStore();
         const assets = store.state.assets.metadata;
         const { allowances } = store.state.account;
@@ -481,8 +484,10 @@ export default defineComponent({
         }
 
         onMounted(async () => {
-            tokenInAddressInput.value = getAssetAddressBySymbol(assets, 'ETH');
-            tokenOutAddressInput.value = getAssetAddressBySymbol(assets, 'USDC');
+            const { assetIn, assetOut } = getInitialPair();
+            await fetchTokenMetadata(assetIn, assetOut);
+            tokenInAddressInput.value = assetIn;
+            tokenOutAddressInput.value = assetOut;
 
             const provider = store.getters['account/provider'];
             const multicallAddress = config.addresses.multicall;
@@ -535,6 +540,43 @@ export default defineComponent({
             if (txType === 'unlock') {
                 store.dispatch('account/unlock', txMeta);
             }
+        }
+        
+        async function fetchTokenMetadata(assetIn: string, assetOut: string): Promise<void> {
+            const { metadata } = store.state.assets;
+            const unknownTokens = [];
+            if (!metadata[assetIn]) {
+                unknownTokens.push(assetIn);
+            }
+            if (!metadata[assetOut]) {
+                unknownTokens.push(assetOut);
+            }
+            if (unknownTokens.length === 0) {
+                return;
+            }
+            await store.dispatch('assets/fetch', unknownTokens);
+            await store.dispatch('account/fetchAssets', unknownTokens);
+        }
+
+        function getInitialPair(): any {
+            let assetIn = router.currentRoute.value.params.assetIn as string;
+            let assetOut = router.currentRoute.value.params.assetOut as string;
+            if (!assetIn || !assetOut) {
+                return {
+                    assetIn: getAssetAddressBySymbol(assets, 'ETH'),
+                    assetOut: getAssetAddressBySymbol(assets, 'USDC'),
+                };
+            }
+            if (isAddress(assetIn)) {
+                assetIn = ethers.utils.getAddress(assetIn);
+            }
+            if (isAddress(assetOut)) {
+                assetOut = ethers.utils.getAddress(assetOut);
+            }
+            return {
+                assetIn,
+                assetOut,
+            };
         }
 
         return {

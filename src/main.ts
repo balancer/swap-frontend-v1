@@ -11,7 +11,7 @@ const router = createRouter({
     history: routerHistory,
     routes: [
         { path: '/', redirect: '/swap' },
-        { path: '/swap', name: 'swap', component: Swap },
+        { path: '/swap/:assetIn?/:assetOut?', name: 'swap', component: Swap },
     ],
 });
 
