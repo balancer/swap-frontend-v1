@@ -90,13 +90,26 @@ export default defineComponent({
         const assets = store.state.assets.metadata;
         const { allowances } = store.state.account;
 
-        const activeToken = ref('input');
+        const sor = ref(null);
+        const swaps = ref([]);
         const tokenCost = ref({});
         const swapPath = ref({});
+
+        const activeToken = ref('input');
         const tokenInAddressInput = ref('');
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
+
+        const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
+        
+        const account = computed(() => {
+            const { web3Provider, address } = store.state.account;
+            if (!web3Provider || !address) {
+                return '';
+            }
+            return address;
+        });
 
         const isUnlocked = computed(() => {
             if (tokenInAddressInput.value === 'ether') {
@@ -118,7 +131,6 @@ export default defineComponent({
             const allowanceRaw = scale(allowanceNumber, -decimals);
             return allowanceRaw.gte(tokenInAmountInput.value);
         });
-        const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
 
         const isLoading = computed(() => {
             const tokenInAddress = tokenInAddressInput.value === 'ether'
@@ -148,17 +160,6 @@ export default defineComponent({
                     output: false,
                 };
             }
-        });
-        
-        const sor = ref(null);
-        const swaps = ref([]);
-
-        const account = computed(() => {
-            const { web3Provider, address } = store.state.account;
-            if (!web3Provider || !address) {
-                return '';
-            }
-            return address;
         });
 
         async function updatePaths(): Promise<void> {
@@ -452,19 +453,22 @@ export default defineComponent({
         }
 
         return {
-            chevronIcon,
             sor,
+            swaps,
+            tokenCost,
+            swapPath,
 
             activeToken,
             tokenInAddressInput,
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
-            isUnlocked,
             isModalOpen,
+            isUnlocked,
             isLoading,
-
             account,
+
+            chevronIcon,
 
             handleAmountChange,
             handleAssetSelect,
