@@ -45,4 +45,13 @@ button:disabled {
     border-color: var(--text-secondary);
     cursor: not-allowed;
 }
+
+button:hover {
+    background: var(--background-primary);
+}
+
+button.primary:hover {
+    background: var(--accent-dark);
+    border-color: var(--accent-dark);
+}
 </style>
