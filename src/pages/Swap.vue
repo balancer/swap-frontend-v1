@@ -222,14 +222,11 @@ export default defineComponent({
         
         const statusLabel = computed(() => {
             if (validation.value === Validation.NONE) {
-                // TODO price
                 const { metadata } = store.state.assets;
                 const assetInMetadata = metadata[tokenInAddressInput.value];
                 const assetOutMetadata = metadata[tokenOutAddressInput.value];
-                const assetInAmountRaw = new BigNumber(tokenInAmountInput.value);
-                const assetOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
-                const assetInAmount = scale(assetInAmountRaw, assetInMetadata.decimals);
-                const assetOutAmount = scale(assetOutAmountRaw, assetOutMetadata.decimals);
+                const assetInAmount = new BigNumber(tokenInAmountInput.value);
+                const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
                 const price = assetOutAmount.div(assetInAmount);
                 return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
             }
