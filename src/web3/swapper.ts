@@ -5,6 +5,7 @@ import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
 import { ETH_KEY } from '@/utils/assets';
+import { getCancelledTx } from '@/utils/helpers';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
@@ -76,5 +77,9 @@ async function sendTransaction(
 ): Promise<any> {
     const exchangeProxyAddress = config.addresses.exchangeProxy;
     const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
-    return await exchangeProxyContract[functionName](...params, overrides);
+    try {
+        return await exchangeProxyContract[functionName](...params, overrides);
+    } catch(e) {
+        return getCancelledTx(e);
+    }
 }

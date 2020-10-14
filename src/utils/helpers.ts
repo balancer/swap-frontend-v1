@@ -3,6 +3,20 @@ import { ethers } from 'ethers';
 
 import config from '@/config';
 
+export enum CancelledTransactionType {
+    REJECTED,
+    REVERTED,
+    UNKNOWN,
+}
+
+export class CancelledTransaction {
+    type: CancelledTransactionType;
+    
+    constructor(type: CancelledTransactionType) {
+        this.type = type;
+    }
+}
+
 export function formatAddress(address: string, length = 8): string {
     const ellipsizedAddress = `${address.substr(0, 2 + length / 2)}…${address.substr(42 - length / 2)}`;
     return ellipsizedAddress;
@@ -41,4 +55,15 @@ export function getEtherscanLink(txHash: string): string {
     const prefix = prefixMap[chainId];
     const link = `https://${prefix}etherscan.io/tx/${txHash}`;
     return link;
+}
+
+export function getCancelledTx(txError: any): CancelledTransaction {
+    const errorCode = txError.code;
+    if (errorCode === 4001 || errorCode === -32603) {
+        return new CancelledTransaction(CancelledTransactionType.REJECTED);
+    }
+    if (errorCode === -32016) {
+        return new CancelledTransaction(CancelledTransactionType.REVERTED);
+    }
+    return new CancelledTransaction(CancelledTransactionType.UNKNOWN);
 }

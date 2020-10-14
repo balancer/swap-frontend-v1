@@ -38,17 +38,19 @@
             <Button
                 v-if="isUnlocked"
                 class="swap-button"
-                :disabled="isDisabled"
+                :disabled="isDisabled || buttonLoading"
                 :text="'Swap'"
                 :primary="true"
+                :loading="buttonLoading"
                 @click="swap"
             />
             <Button
                 v-else
                 class="swap-button"
-                :disabled="isDisabled"
+                :disabled="isDisabled || buttonLoading"
                 :text="'Unlock'"
                 :primary="true"
+                :loading="buttonLoading"
                 @click="unlock"
             />
         </div>
@@ -69,7 +71,7 @@ import { ethers } from 'ethers';
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
-import { scale, isAddress } from '@/utils/helpers';
+import { CancelledTransaction, scale, isAddress } from '@/utils/helpers';
 import SOR from '@/utils/sor';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
@@ -118,6 +120,7 @@ export default defineComponent({
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
+        const buttonLoading = ref(false);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -464,6 +467,7 @@ export default defineComponent({
         }
 
         async function swap(): Promise<void> {
+            buttonLoading.value = true;
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
             const provider = store.state.account.web3Provider;
@@ -507,8 +511,13 @@ export default defineComponent({
         });
 
         async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {
+            if (tx instanceof CancelledTransaction) {
+                buttonLoading.value = false;
+                return;
+            }
             store.dispatch('account/saveTransaction', tx);
             const minedTx = await tx.wait(1);
+            buttonLoading.value = false;
             notify(minedTx, txType);
             updateState(minedTx, txType, txMeta);
         }
@@ -590,6 +599,7 @@ export default defineComponent({
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
+            buttonLoading,
             isModalOpen,
             isUnlocked,
             isLoading,
