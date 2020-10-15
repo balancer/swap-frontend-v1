@@ -1,5 +1,5 @@
 import { MaxUint256 } from '@ethersproject/constants';
-import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
+import { WebSocketProvider, Web3Provider } from '@ethersproject/providers';
 
 import Ethereum from '@/api/ethereum';
 import lock from '@/utils/connectors';
@@ -169,7 +169,7 @@ const getters = {
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
-        const fallbackProvider = new JsonRpcProvider(config.alchemyUrl);
+        const fallbackProvider = new WebSocketProvider(config.alchemyUrl);
         return fallbackProvider;
     },
 };

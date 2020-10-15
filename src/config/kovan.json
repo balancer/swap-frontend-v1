@@ -3,7 +3,7 @@
     "chainId": 42,
     "defaultPrecision": 2,
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
-    "alchemyUrl": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
+    "alchemyUrl": "wss://eth-kovan.ws.alchemyapi.io/v2/Fa315qKOTy_ksUH1VS1zXAxuKo83s_Ko",
     "addresses": {
         "bFactory": "0x8f7F78080219d4066A8036ccD30D588B416a40DB",
         "bActions": "0x02EFDB542B9390ae7C1620B29674e02F9c0d86CC",
@@ -22,7 +22,7 @@
             "name": "WalletConnect",
             "options": {
                 "rpc": {
-                    "42": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
+                    "42": "https://eth-kovan.alchemyapi.io/v2/Fa315qKOTy_ksUH1VS1zXAxuKo83s_Ko"
                 }
             }
         },
