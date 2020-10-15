@@ -1,10 +1,9 @@
-import { ethers } from 'ethers';
+import { MaxUint256 } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
 
 import ERC20Abi from '../abi/ERC20.json';
 
 import { getCancelledTx } from '@/utils/helpers';
-
-const uintMax = ethers.constants.MaxUint256;
 
 export default class Helper {
     static async unlock(
@@ -12,9 +11,9 @@ export default class Helper {
         asset: string,
         spender: string,
     ): Promise<any> {
-        const assetContract = new ethers.Contract(asset, ERC20Abi, provider.getSigner());
+        const assetContract = new Contract(asset, ERC20Abi, provider.getSigner());
         try {
-            return await assetContract.approve(spender, uintMax);
+            return await assetContract.approve(spender, MaxUint256);
         } catch(e) {
             return getCancelledTx(e);
         }

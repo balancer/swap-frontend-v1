@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { MaxUint256 } from '@ethersproject/constants';
+import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 
 import Ethereum from '@/api/ethereum';
 import lock from '@/utils/connectors';
@@ -13,11 +14,8 @@ enum TransactionStatus {
 }
 
 const mutations = {
-    setWeb3Provider: (_state: any, provider: any): void => {
-        _state.web3Provider = provider;
-    },
-    setFallbackProvider: (_state: any, provider: any): void => {
-        _state.fallbackProvider = provider;
+    setWeb3Provider: (_state: any, hasProvider: boolean): void => {
+        _state.web3Provider = hasProvider;
     },
     setAddress: (_state: any, address: string): void => {
         _state.address = address;
@@ -72,10 +70,7 @@ const mutations = {
 };
 
 const actions = {
-    init: async({ commit, dispatch }: any): Promise<void> => {
-        // Save Alchemy provider as fallback
-        const fallbackProvider = new ethers.providers.JsonRpcProvider(config.alchemyUrl);
-        commit('setFallbackProvider', fallbackProvider);
+    init: async({ dispatch }: any): Promise<void> => {
         // Save Web3 provider if available
         const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
         if (connectorKey) {
@@ -102,7 +97,7 @@ const actions = {
             }
             localStorage.removeItem(LS_CONNECTOR_KEY);
         }
-        commit('setWeb3Provider', null);
+        commit('setWeb3Provider', false);
         commit('setAddress', '');
         commit('setChainId', 0);
     },
@@ -123,10 +118,10 @@ const actions = {
                 dispatch('disconnect');
             });
         }
-        const web3Provider = new ethers.providers.Web3Provider(provider);
+        const web3Provider = new Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
-        commit('setWeb3Provider', web3Provider);
+        commit('setWeb3Provider', true);
         commit('setAddress', accounts[0]);
         commit('setChainId', network.chainId);
         dispatch('fetchState');
@@ -135,17 +130,18 @@ const actions = {
         commit('clean');
     },
     fetchState: async({ commit, state, getters, rootState }: any): Promise<void> => {
-        const provider = getters.provider;
+        const provider = await getters.provider;
         const { address } = state;
         const { metadata } = rootState.assets;
         const assets = Object.keys(metadata);
+        console.log('fetch state', getters.provider, provider);
         const { proxy, balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('setProxy', proxy);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
     fetchAssets: async({ commit, state, getters }: any, assets: string[]): Promise<void> => {
-        const provider = getters.provider;
+        const provider = await getters.provider;
         const { address } = state;
         const { balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('addBalances', balances);
@@ -154,7 +150,7 @@ const actions = {
     unlock: async({ commit }: any, { token, spender }: any): Promise<void> => {
         const allowances = {};
         allowances[spender] = {};
-        allowances[spender][token] = ethers.constants.MaxUint256;
+        allowances[spender][token] = MaxUint256;
         commit('addAllowances', allowances);
     },
     saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
@@ -166,15 +162,21 @@ const actions = {
 };
 
 const getters = {
-    provider: (state: any): any => {
-        return state.web3Provider || state.fallbackProvider;
+    provider: async(state: any): Promise<any> => {
+        if (state.web3Provider) {
+            const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
+            const connector = lock.getConnector(connectorKey);
+            const provider = await connector.connect();
+            return new Web3Provider(provider);
+        }
+        const fallbackProvider = new JsonRpcProvider(config.alchemyUrl);
+        return fallbackProvider;
     },
 };
 
 function state(): any {
     return {
-        web3Provider: null,
-        fallbackProvider: null,
+        web3Provider: false,
         address: '',
         chainId: 0,
         proxy: '',

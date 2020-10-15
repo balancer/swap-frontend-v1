@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
+import { getAddress } from '@ethersproject/address';
 
 import config from '@/config';
 
@@ -29,7 +29,7 @@ export function formatTxHash(txHash: string, length = 16): string {
 
 export function isAddress(value: string): boolean {
     try {
-        ethers.utils.getAddress(value);
+        getAddress(value);
     } catch(e) {
         return false;
     }

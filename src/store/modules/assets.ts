@@ -15,7 +15,7 @@ const actions = {
         commit('addMetadata', metadata);
     },
     fetch: async({ commit, rootGetters }: any, assets: string[]): Promise<void> => {
-        const provider = rootGetters['account/provider'];
+        const provider = await rootGetters['account/provider'];
         const metadata = await Ethereum.fetchTokenMetadata(provider, assets);
         commit('addMetadata', metadata);
     },

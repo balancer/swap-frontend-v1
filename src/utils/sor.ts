@@ -45,7 +45,7 @@ export default class SOR {
             return;
         }
         let onchainPools;
-        while (!onchainPools) {
+        // while (!onchainPools) {
             try {
                 // @ts-ignore
                 onchainPools = await getAllPoolDataOnChain(
@@ -54,9 +54,9 @@ export default class SOR {
                     this.provider,
                 );
             } catch(e) {
-                console.log('Could not fetch onchain pool data, retrying…');
+                console.log('Could not fetch onchain pool data, retrying…', e);
             }
-        } 
+        // } 
         // @ts-ignore
         this.allPools = onchainPools;
     }

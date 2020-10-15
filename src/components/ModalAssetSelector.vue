@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts">
+import { getAddress } from '@ethersproject/address';
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
 import { defineComponent, onMounted, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
@@ -74,7 +74,7 @@ export default defineComponent({
             if (!isAddress(query.value)) {
                 return;
             }
-            const address = ethers.utils.getAddress(query.value);
+            const address = getAddress(query.value);
             const asset = metadata[address];
             if (!asset) {
                 store.dispatch('assets/fetch', [address]);

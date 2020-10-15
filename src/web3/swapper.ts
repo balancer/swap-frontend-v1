@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { ethers } from 'ethers';
+import { Contract } from '@ethersproject/contracts';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
@@ -76,7 +76,7 @@ async function sendTransaction(
     overrides: any,
 ): Promise<any> {
     const exchangeProxyAddress = config.addresses.exchangeProxy;
-    const exchangeProxyContract = new ethers.Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
+    const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
     try {
         return await exchangeProxyContract[functionName](...params, overrides);
     } catch(e) {

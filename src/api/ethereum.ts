@@ -1,5 +1,4 @@
-// @ts-ignore
-import ethcall from 'ethcall';
+import { Provider, Contract } from 'ethcall';
 
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
@@ -9,7 +8,7 @@ import { ETH_KEY } from '@/utils/assets';
 
 export default class Ethereum {
     static async fetchAccountState(provider: any, address: string, assets: string[]): Promise<any> {
-        const ethcallProvider = new ethcall.Provider();
+        const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch balances and allowances
@@ -18,7 +17,7 @@ export default class Ethereum {
             if (tokenAddress === ETH_KEY) {
                 continue;
             }
-            const tokenContract = new ethcall.Contract(tokenAddress, erc20Abi);
+            const tokenContract = new Contract(tokenAddress, erc20Abi);
             const balanceCall = tokenContract.balanceOf(address);
             const allowanceCall = tokenContract.allowance(address, exchangeProxyAddress);
             calls.push(balanceCall);
@@ -29,7 +28,7 @@ export default class Ethereum {
         calls.push(ethBalanceCall);
         // Fetch proxy
         const dsProxyRegistryAddress = config.addresses.dsProxyRegistry;
-        const dsProxyRegistryContract = new ethcall.Contract(
+        const dsProxyRegistryContract = new Contract(
             dsProxyRegistryAddress,
             dsProxyRegistryAbi,
         );
@@ -56,12 +55,12 @@ export default class Ethereum {
     }
 
     static async fetchTokenMetadata(provider: any, assets: string[]): Promise<any> {
-        const ethcallProvider = new ethcall.Provider();
+        const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch token metadata
         for (const tokenAddress of assets) {
-            const tokenContract = new ethcall.Contract(tokenAddress, erc20Abi);
+            const tokenContract = new Contract(tokenAddress, erc20Abi);
             const nameCall = tokenContract.name();
             const symbolCall = tokenContract.symbol();
             const decimalCall = tokenContract.decimals();
