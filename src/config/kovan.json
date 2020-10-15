@@ -3,7 +3,7 @@
     "chainId": 42,
     "defaultPrecision": 2,
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
-    "alchemyUrl": "https://eth-kovan.alchemyapi.io/v2/C467LJc7Aa761LLxlcxXvhIG9HzDTtKw",
+    "alchemyUrl": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
     "addresses": {
         "bFactory": "0x8f7F78080219d4066A8036ccD30D588B416a40DB",
         "bActions": "0x02EFDB542B9390ae7C1620B29674e02F9c0d86CC",
@@ -22,7 +22,7 @@
             "name": "WalletConnect",
             "options": {
                 "rpc": {
-                    "42": "https://eth-kovan.alchemyapi.io/v2/C467LJc7Aa761LLxlcxXvhIG9HzDTtKw"
+                    "42": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
                 }
             }
         },
@@ -41,7 +41,7 @@
                 "appName": "Pool management - Balancer",
                 "darkMode": true,
                 "chainId": 42,
-                "ethJsonrpcUrl": "https://eth-kovan.alchemyapi.io/v2/C467LJc7Aa761LLxlcxXvhIG9HzDTtKw"
+                "ethJsonrpcUrl": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
             }
         },
         "fortmatic": {
