@@ -71,7 +71,7 @@ import { getAddress } from '@ethersproject/address';
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
-import { CancelledTransaction, scale, isAddress } from '@/utils/helpers';
+import { CancelledTransaction, CancelledTransactionType, scale, isAddress } from '@/utils/helpers';
 import SOR from '@/utils/sor';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
@@ -513,6 +513,12 @@ export default defineComponent({
         async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {
             if (tx instanceof CancelledTransaction) {
                 buttonLoading.value = false;
+                if (tx.type === CancelledTransactionType.REVERTED) {
+                    store.dispatch('ui/notify', {
+                        text: 'Couldn\'t swap tokens',
+                        type: 'warning',
+                    });
+                }
                 return;
             }
             store.dispatch('account/saveTransaction', tx);
