@@ -163,7 +163,7 @@ const actions = {
 const getters = {
     provider: async(state: any): Promise<any> => {
         if (state.web3Provider) {
-            const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
+            const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY) || 'injected';
             const connector = lock.getConnector(connectorKey);
             const provider = await connector.connect();
             return new Web3Provider(provider);
