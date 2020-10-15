@@ -206,4 +206,14 @@ export default defineComponent({
     height: 16px;
     margin-right: 8px;
 }
+
+@media only screen and (max-width: 768px) {
+    .amount-wrapper {
+        width: 160px;
+    }
+    
+    .amount {
+        width: 120px;
+    }
+}
 </style>
