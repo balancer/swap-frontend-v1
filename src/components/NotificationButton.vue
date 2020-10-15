@@ -66,7 +66,7 @@ a {
     border-radius: 4px;
     display: flex;
     align-items: center;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .success {

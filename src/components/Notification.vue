@@ -130,10 +130,11 @@ export default defineComponent({
 
 .body-title {
     font-size: 16px;
+    font-weight: bold;
 }
 
 .body-text {
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .button-wrapper {
