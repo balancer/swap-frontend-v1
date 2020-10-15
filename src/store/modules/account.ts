@@ -134,7 +134,6 @@ const actions = {
         const { address } = state;
         const { metadata } = rootState.assets;
         const assets = Object.keys(metadata);
-        console.log('fetch state', getters.provider, provider);
         const { proxy, balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('setProxy', proxy);
         commit('addBalances', balances);
