@@ -13,6 +13,7 @@ import BigNumber from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
 import config from '@/config';
+// @ts-ignore
 import pools from '@/pools.json';
 
 export default class SOR {
