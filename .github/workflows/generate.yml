@@ -1,0 +1,50 @@
+name: Generate Subgraph backup
+
+on:
+  schedule:
+	- cron: '0 8 * * *'
+
+jobs:
+  backup:
+	runs-on: ubuntu-latest
+	steps:
+	- name: Create backup branch
+	  uses: peterjgrainger/action-create-branch@v1.0.0
+	  env:
+		GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+	  with:
+		branch: backup
+	- name: Checkout
+	  uses: actions/checkout@v2
+	  with:
+		repository: Destiner/actions_test
+		ref: backup
+		path: branch
+		fetch-depth: 0
+	- name: Make backup
+	  run: |
+		cd branch
+		npm i
+		node ./scripts/backup.js
+	- name: Commit
+	  id: commit
+	  run: |
+		cd branch
+		DIFF_LINES=$(git diff | wc -l)
+		if [ $DIFF_LINES -gt 0  ]
+		then
+		  echo "::set-output name=status::commited"
+		  git config --global user.email "bot@balancer.finance"
+		  git config --global user.name "Balancer Bot"
+		  git add .
+		  git commit -m "Subgraph backup"
+		  git push
+		fi
+	- name: Make PR to master
+	  if: ${{ steps.commit.outputs.status }}
+	  uses: thomaseizinger/create-pull-request@master
+	  with:
+		GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+		head: backup
+		base: main
+		title: "Update backup"
