@@ -12,6 +12,9 @@ import BigNumber from 'bignumber.js';
 // @ts-ignore
 import cloneDeep from 'lodash/cloneDeep';
 
+import config from '@/config';
+import pools from '@/pools.json';
+
 export default class SOR {
     allPools: any[];
     gasPrice: BigNumber;
@@ -39,10 +42,11 @@ export default class SOR {
     }
 
     async fetchPools(): Promise<void> {
-        const subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
+        let subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
         if (!subgraphPools) {
-            // TODO use backup
-            return;
+            subgraphPools = {
+                pools: pools[config.chainId],
+            };
         }
         let onchainPools;
         while (!onchainPools) {
