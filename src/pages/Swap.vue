@@ -112,9 +112,9 @@ export default defineComponent({
         const assets = store.state.assets.metadata;
         const { allowances } = store.state.account;
 
-        const swaps = ref([]);
-        const tokenCost = ref({});
-        const swapPath = ref({});
+        let swaps = ref([]);
+        let tokenCost = ref({});
+        let swapPath = ref({});
 
         const activeToken = ref('input');
         const tokenInAddressInput = ref('');
@@ -504,10 +504,11 @@ export default defineComponent({
                 subgraphUrl,
                 provider,
             );
-            await sorInstance.fetchPools();
+            await sorInstance.fetchSubgraphPools();
             sor = sorInstance;
             await updatePaths();
             onAmountChange();
+            await sorInstance.fetchOnchainPools();
         }
 
         async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {

@@ -1,5 +1,6 @@
 import {
     filterPools,
+    formatSubgraphPools,
     sortPoolsMostLiquid,
     getAllPoolDataOnChain,
     processPaths,
@@ -13,11 +14,11 @@ import BigNumber from 'bignumber.js';
 import cloneDeep from 'lodash/cloneDeep';
 
 import config from '@/config';
-// @ts-ignore
 import pools from '@/pools.json';
 
 export default class SOR {
-    allPools: any[];
+    subgraphPools: any;
+    allPools: any;
     gasPrice: BigNumber;
     swapGasCost: BigNumber;
     maxPoolCount: number;
@@ -33,7 +34,12 @@ export default class SOR {
         subgraphUrl: string,
         provider: any,
     ) {
-        this.allPools = [];
+        this.subgraphPools = {
+            pools: [],
+        };
+        this.allPools = {
+            pools: [],
+        };
         this.gasPrice = gasPrice;
         this.swapGasCost = swapGasCost;
         this.maxPoolCount = maxPoolCount;
@@ -42,19 +48,26 @@ export default class SOR {
         this.provider = provider;
     }
 
-    async fetchPools(): Promise<void> {
+    async fetchSubgraphPools(): Promise<void> {
         let subgraphPools = await getAllPublicSwapPools(this.subgraphUrl);
         if (!subgraphPools) {
             subgraphPools = {
                 pools: pools[config.chainId],
             };
         }
+        this.subgraphPools = subgraphPools;
+        const allPools = JSON.parse(JSON.stringify(subgraphPools));
+        formatSubgraphPools(allPools);
+        this.allPools = allPools;
+    }
+
+    async fetchOnchainPools(): Promise<void> {
         let onchainPools;
         while (!onchainPools) {
             try {
                 // @ts-ignore
                 onchainPools = await getAllPoolDataOnChain(
-                    subgraphPools,
+                    this.subgraphPools,
                     this.multicallAddress,
                     this.provider,
                 );
@@ -168,8 +181,12 @@ async function getAllPublicSwapPools(subgraphUrl: string): Promise<any> {
                 id
                 swapFee
                 totalWeight
+                publicSwap
                 tokens {
                     address
+                    balance
+                    decimals
+                    denormWeight
                 }
                 tokensList
             }
