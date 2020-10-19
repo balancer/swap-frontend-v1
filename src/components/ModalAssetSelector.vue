@@ -57,7 +57,7 @@ export default defineComponent({
         ModalBase,
     },
     emits: ['select'],
-    setup() {
+    setup(props, { emit }) {
         const store = useStore();
         const { metadata } = store.state.assets;
         const { balances } = store.state.account;
@@ -118,8 +118,7 @@ export default defineComponent({
         });
 
         function select(assetAddress: string): void {
-            // @ts-ignore
-            this.$emit('select', assetAddress);
+            emit('select', assetAddress);
             close();
         }
 
