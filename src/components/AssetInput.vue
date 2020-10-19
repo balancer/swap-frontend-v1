@@ -97,7 +97,7 @@ export default defineComponent({
         }
 
         function handleInputChange(value: string): void {
-            emit('change');
+            emit('change', value);
             emit('update:amount', value);
         }
 
