@@ -10,7 +10,7 @@
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
                     :modal-key="'input'"
-                    :loading="swapsLoading && activeToken === 'output'"
+                    :loading="pathsLoading && activeToken === 'output'"
                     @change="handleAmountChange('input')"
                 />
             </div>
@@ -28,7 +28,7 @@
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
                     :modal-key="'output'"
-                    :loading="swapsLoading && activeToken === 'input'"
+                    :loading="pathsLoading && activeToken === 'input'"
                     @change="handleAmountChange('output')"
                 />
             </div>
@@ -122,7 +122,7 @@ export default defineComponent({
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
         const buttonLoading = ref(false);
-        const swapsLoading = ref(true);
+        const pathsLoading = ref(true);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -188,7 +188,7 @@ export default defineComponent({
                 return Validation.INSUFFICIENT_BALANCE;
             }
             // No swaps
-            if (swapsLoading.value || swaps.length === 0) {
+            if (pathsLoading.value || swaps.length === 0) {
                 return Validation.NO_SWAPS;
             }
             return Validation.NONE;
@@ -338,7 +338,7 @@ export default defineComponent({
             if (!sor) {
                 return;
             }
-            swapsLoading.value = true;
+            pathsLoading.value = true;
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -372,7 +372,7 @@ export default defineComponent({
                     swapPath[tokenInAddress][tokenOutAddress].out = sor.getOutPath(tokenInAddress, tokenOutAddress);
                 }
             }
-            swapsLoading.value = false;
+            pathsLoading.value = false;
         }
 
         function refreshAmount(): void {
@@ -549,7 +549,7 @@ export default defineComponent({
             chevronIcon,
 
             buttonLoading,
-            swapsLoading,
+            pathsLoading,
             isModalOpen,
             isUnlocked,
             isDisabled,
