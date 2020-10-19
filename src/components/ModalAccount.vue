@@ -47,7 +47,7 @@
                 class="balances"
             >
                 <div class="balances-header">
-                    Balances
+                    Wallet
                 </div>
                 <div
                     v-for="balance in balances"
