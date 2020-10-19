@@ -10,7 +10,6 @@ import {
     getCostOutputToken,
 } from '@balancer-labs/sor';
 import BigNumber from 'bignumber.js';
-// @ts-ignore
 import cloneDeep from 'lodash/cloneDeep';
 
 import config from '@/config';

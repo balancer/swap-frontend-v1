@@ -23,6 +23,7 @@
     "@ethersproject/providers": "^5.0.12",
     "@metamask/jazzicon": "^2.0.0",
     "@portis/web3": "^2.0.0-beta.59",
+    "@types/lodash": "^4.14.162",
     "@walletconnect/web3-provider": "^1.2.2",
     "assets": "github:balancer-labs/assets#master",
     "bignumber.js": "^9.0.1",
