@@ -347,7 +347,7 @@ export default defineComponent({
                 : tokenOutAddressInput.value;
             if (activeToken.value === 'input') {
                 if (!tokenCost[tokenOutAddress]) {
-                    tokenCost[tokenOutAddress] = await sor.getTokenCost(tokenOutAddress);
+                    tokenCost[tokenOutAddress] = new BigNumber(100000);
                 }
                 if (!swapPath[tokenInAddress]) {
                     swapPath[tokenInAddress] = {};
@@ -360,7 +360,7 @@ export default defineComponent({
                 }
             } else {
                 if (!tokenCost[tokenInAddress]) {
-                    tokenCost[tokenInAddress] = await sor.getTokenCost(tokenInAddress);
+                    tokenCost[tokenInAddress] = new BigNumber(0);
                 }
                 if (!swapPath[tokenInAddress]) {
                     swapPath[tokenInAddress] = {};
