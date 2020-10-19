@@ -10,8 +10,10 @@
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
                     :modal-key="'input'"
-                    :loading="pathsLoading && activeToken === 'output'"
-                    @change="handleAmountChange('input')"
+                    :loading="swapsLoading && activeToken === 'output'"
+                    @change="value => {
+                        handleAmountChange('input', value);
+                    }"
                 />
             </div>
             <img
@@ -28,8 +30,10 @@
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
                     :modal-key="'output'"
-                    :loading="pathsLoading && activeToken === 'input'"
-                    @change="handleAmountChange('output')"
+                    :loading="swapsLoading && activeToken === 'input'"
+                    @change="value => {
+                        handleAmountChange('output', value);
+                    }"
                 />
             </div>
             <div class="status-label">
@@ -67,12 +71,12 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
+import { SOR } from '@balancer-labs/sor';
 
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
 import { CancelledTransaction, CancelledTransactionType, scale, isAddress } from '@/utils/helpers';
-import SOR from '@/utils/sor';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Swapper from '@/web3/swapper';
@@ -105,7 +109,7 @@ export default defineComponent({
         ModalAssetSelector,
     },
     setup() {
-        let sor: any = null;
+        let sor: SOR | undefined = undefined;
 
         const router = useRouter();
         const store = useStore();
@@ -113,8 +117,6 @@ export default defineComponent({
         const { allowances } = store.state.account;
 
         let swaps: any[][] = [];
-        const tokenCost = {};
-        const swapPath = {};
 
         const activeToken = ref('input');
         const tokenInAddressInput = ref('');
@@ -122,7 +124,7 @@ export default defineComponent({
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
         const buttonLoading = ref(false);
-        const pathsLoading = ref(true);
+        const swapsLoading = ref(true);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -188,16 +190,16 @@ export default defineComponent({
                 return Validation.INSUFFICIENT_BALANCE;
             }
             // No swaps
-            if (pathsLoading.value || swaps.length === 0) {
+            if (swapsLoading.value || swaps.length === 0) {
                 return Validation.NO_SWAPS;
             }
             return Validation.NONE;
         });
-        
+
         const isDisabled = computed(() => {
             return validation.value !== Validation.NONE;
         });
-        
+
         const statusLabel = computed(() => {
             if (validation.value === Validation.NONE) {
                 const { metadata } = store.state.assets;
@@ -225,6 +227,14 @@ export default defineComponent({
             }
         });
 
+        const activeInput = computed(() => {
+            if (activeToken.value === 'input') {
+                return tokenInAmountInput.value;
+            } else {
+                return tokenOutAmountInput.value;
+            }
+        });
+
         onMounted(async () => {
             const { assetIn, assetOut } = getInitialPair();
             await fetchTokenMetadata(assetIn, assetOut);
@@ -233,17 +243,17 @@ export default defineComponent({
             initSor();
         });
 
-        watch(tokenInAddressInput, async () => {
-            await onAmountChange();
+        watch(tokenInAddressInput, () => {
+            onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, async () => {
-            await onAmountChange();
+        watch(tokenOutAddressInput, () => {
+            onAmountChange(activeInput.value);
         });
 
-        async function handleAmountChange(input: string): Promise<void> {
+        function handleAmountChange(input: string, amount: string): void {
             activeToken.value = input;
-            await onAmountChange();
+            onAmountChange(amount);
         }
 
         function handleAssetSelect(assetAddress: string): void {
@@ -316,77 +326,28 @@ export default defineComponent({
             const subgraphUrl = config.subgraphUrl;
 
             const sorInstance = new SOR(
-                new BigNumber(APP_GAS_PRICE),
-                new BigNumber(APP_SWAP_COST),
-                parseInt(APP_MAX_POOLS),
-                multicallAddress,
-                subgraphUrl,
                 provider,
+                new BigNumber(APP_GAS_PRICE),
+                parseInt(APP_MAX_POOLS),
             );
-            await sorInstance.fetchSubgraphPools();
+            await sorInstance.fetchSubgraphPools(subgraphUrl);
             sor = sorInstance;
-            await onAmountChange();
-            await sorInstance.fetchOnchainPools();
+            await onAmountChange(activeInput.value);
+            await sorInstance.fetchOnChainPools(multicallAddress);
         }
 
-        async function onAmountChange(): Promise<void> {
-            await updatePaths();
-            refreshAmount();
-        }
+        async function onAmountChange(amount: string): Promise<void> {
+            const isInputActive = activeToken.value === 'input';
+            if (!amount) {
+                if (isInputActive) {
+                    tokenOutAmountInput.value = '';
+                } else {
+                    tokenInAmountInput.value = '';
+                }
+            }
 
-        async function updatePaths(): Promise<void> {
             if (!sor) {
                 return;
-            }
-            pathsLoading.value = true;
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenOutAddressInput.value;
-            if (activeToken.value === 'input') {
-                if (!tokenCost[tokenOutAddress]) {
-                    tokenCost[tokenOutAddress] = new BigNumber(100000);
-                }
-                if (!swapPath[tokenInAddress]) {
-                    swapPath[tokenInAddress] = {};
-                }
-                if (!swapPath[tokenInAddress][tokenOutAddress]) {
-                    swapPath[tokenInAddress][tokenOutAddress] = {};
-                }
-                if (!swapPath[tokenInAddress][tokenOutAddress].in) {
-                    swapPath[tokenInAddress][tokenOutAddress].in = sor.getInPath(tokenInAddress, tokenOutAddress);
-                }
-            } else {
-                if (!tokenCost[tokenInAddress]) {
-                    tokenCost[tokenInAddress] = new BigNumber(0);
-                }
-                if (!swapPath[tokenInAddress]) {
-                    swapPath[tokenInAddress] = {};
-                }
-                if (!swapPath[tokenInAddress][tokenOutAddress]) {
-                    swapPath[tokenInAddress][tokenOutAddress] = {};
-                }
-                if (!swapPath[tokenInAddress][tokenOutAddress].out) {
-                    swapPath[tokenInAddress][tokenOutAddress].out = sor.getOutPath(tokenInAddress, tokenOutAddress);
-                }
-            }
-            pathsLoading.value = false;
-        }
-
-        function refreshAmount(): void {
-            const isInputActive = activeToken.value === 'input';
-            if (isInputActive) {
-                if (tokenInAmountInput.value === '') {
-                    tokenOutAmountInput.value = '';
-                    return;
-                }
-            } else {
-                if (tokenOutAmountInput.value === '') {
-                    tokenInAmountInput.value = '';
-                    return;
-                }
             }
 
             const tokenInAddress = tokenInAddressInput.value === 'ether'
@@ -398,59 +359,37 @@ export default defineComponent({
             const tokenInDecimals = assets[tokenInAddress].decimals;
             const tokenOutDecimals = assets[tokenOutAddress].decimals;
 
-            const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
-            const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
-            const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
-            const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
-
-            if (!sor ||
-                !swapPath[tokenInAddress] ||
-                !swapPath[tokenInAddress][tokenOutAddress]
-            ) {
-                return;
-            }
-
+            swapsLoading.value = true;
             if (isInputActive) {
-                if (
-                    !swapPath[tokenInAddress][tokenOutAddress].in ||
-                    !tokenCost[tokenOutAddress]
-                ) {
-                    return;
-                }
-
-                const paths = swapPath[tokenInAddress][tokenOutAddress].in;
-                const [tradeSwaps, tradeAmount] = sor.getInTrade(
+                const tokenInAmountRaw = new BigNumber(amount);
+                const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
+                const [tradeSwaps, tradeAmount] = await sor.getSwaps(
+                    tokenInAddress,
+                    tokenOutAddress,
+                    'swapExactIn',
                     tokenInAmount,
-                    paths.pools,
-                    paths.paths,
-                    paths.epsOfInterest,
-                    tokenCost[tokenOutAddress],
+                    false,
                 );
                 swaps = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
                 const tokenOutPrecision = assets[tokenOutAddress].precision;
                 tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
             } else {
-                if (
-                    !swapPath[tokenInAddress][tokenOutAddress].out ||
-                    !tokenCost[tokenInAddress]
-                ) {
-                    return;
-                }
-
-                const paths = swapPath[tokenInAddress][tokenOutAddress].out;
-                const [tradeSwaps, tradeAmount] = sor.getOutTrade(
+                const tokenOutAmountRaw = new BigNumber(amount);
+                const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
+                const [tradeSwaps, tradeAmount] = await sor.getSwaps(
+                    tokenInAddress,
+                    tokenOutAddress,
+                    'swapExactOut',
                     tokenOutAmount,
-                    paths.pools,
-                    paths.paths,
-                    paths.epsOfInterest,
-                    tokenCost[tokenInAddress],
+                    false,
                 );
                 swaps = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
                 const tokenInPrecision = assets[tokenInAddress].precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
+            swapsLoading.value = false;
         }
 
         async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {
@@ -549,7 +488,7 @@ export default defineComponent({
             chevronIcon,
 
             buttonLoading,
-            pathsLoading,
+            swapsLoading,
             isModalOpen,
             isUnlocked,
             isDisabled,
