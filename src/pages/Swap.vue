@@ -407,11 +407,7 @@ export default defineComponent({
                 !swapPath[tokenInAddress] ||
                 !swapPath[tokenInAddress][tokenOutAddress]
             ) {
-                if (isInputActive) {
-                    return;
-                } else {
-                    return;
-                }
+                return;
             }
 
             if (isInputActive) {
