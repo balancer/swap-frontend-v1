@@ -10,7 +10,7 @@
             v-if="notification"
             :type="notification.type"
             :text="notification.text"
-            :tx-hash="notification.txHash"
+            :link="notification.link"
         />
     </div>
 </template>

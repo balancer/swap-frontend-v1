@@ -32,8 +32,6 @@ import { defineComponent, computed } from 'vue';
 import successIcon from '@/assets/successIcon.svg';
 import errorIcon from '@/assets/errorIcon.svg';
 
-import { getEtherscanLink } from '@/utils/helpers';
-
 import NotificationButton from './NotificationButton.vue';
 
 export default defineComponent({
@@ -49,7 +47,7 @@ export default defineComponent({
             type: String,
             required: true,
         },
-        txHash: {
+        link: {
             type: String,
             default: '',
         },
@@ -73,20 +71,9 @@ export default defineComponent({
             return titleMap[props.type];
         });
 
-        const link = computed(() => {
-            if (props.type === 'warning') {
-                return 'https://help.balancer.finance/en/';
-            }
-            if (props.txHash) {
-                return getEtherscanLink(props.txHash);
-            }
-            return '';
-        });
-
         return {
             icon,
             title,
-            link,
         };
     },
 });

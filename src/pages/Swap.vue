@@ -76,7 +76,7 @@ import { SOR } from '@balancer-labs/sor';
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
-import { CancelledTransaction, CancelledTransactionType, scale, isAddress } from '@/utils/helpers';
+import { CancelledTransaction, CancelledTransactionType, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Swapper from '@/web3/swapper';
@@ -399,6 +399,7 @@ export default defineComponent({
                     store.dispatch('ui/notify', {
                         text: 'Couldn\'t unlock token',
                         type: 'warning',
+                        link: 'https://help.balancer.finance',
                     });
                 }
                 return;
@@ -417,11 +418,11 @@ export default defineComponent({
             const text = transactionReceipt.status === 1
                 ? 'Unlocked'
                 : 'Unlock failed';
-            const { txHash } = transactionReceipt;
+            const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
                 text,
                 type,
-                txHash,
+                link,
             });
         }
 
@@ -432,6 +433,7 @@ export default defineComponent({
                     store.dispatch('ui/notify', {
                         text: 'Couldn\'t swap tokens',
                         type: 'warning',
+                        link: 'https://help.balancer.finance',
                     });
                 }
                 return;
@@ -450,11 +452,11 @@ export default defineComponent({
             const text = transactionReceipt.status === 1
                 ? 'Swapped'
                 : 'Swap failed';
-            const { txHash } = transactionReceipt;
+            const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
                 text,
                 type,
-                txHash,
+                link,
             });
         }
         
