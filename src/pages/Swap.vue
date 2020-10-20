@@ -113,8 +113,6 @@ export default defineComponent({
 
         const router = useRouter();
         const store = useStore();
-        const assets = store.state.assets.metadata;
-        const { allowances } = store.state.account;
 
         let swaps: any[][] = [];
 
@@ -137,6 +135,8 @@ export default defineComponent({
         });
 
         const isUnlocked = computed(() => {
+            const { allowances } = store.state.account;
+            const { metadata } = store.state.assets;
             if (tokenInAddressInput.value === 'ether') {
                 return true;
             }
@@ -144,7 +144,7 @@ export default defineComponent({
             if (!tokenInAddressInput.value) {
                 return false;
             }
-            const decimals = assets[tokenInAddressInput.value].decimals;
+            const decimals = metadata[tokenInAddressInput.value].decimals;
             if (!allowances[exchangeProxyAddress]) {
                 return false;
             }
@@ -289,6 +289,7 @@ export default defineComponent({
         }
 
         async function unlock(): Promise<void> {
+            buttonLoading.value = true;
             const provider = await store.getters['account/provider'];
             const tokenInAddress = tokenInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
@@ -300,20 +301,21 @@ export default defineComponent({
         }
 
         async function swap(): Promise<void> {
+            const { metadata } = store.state.assets;
             buttonLoading.value = true;
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
             const provider = await store.getters['account/provider'];
             if (activeToken.value === 'input') {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = assets[tokenInAddress].decimals;
+                const tokenInDecimals = metadata[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
                 const tx = await Swapper.swapIn(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
                 handleTx(tx, 'swap', {});
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = assets[tokenInAddress].decimals;
+                const tokenInDecimals = metadata[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
                 const tx = await Swapper.swapOut(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmountMax);
                 handleTx(tx, 'swap', {});
@@ -337,6 +339,7 @@ export default defineComponent({
         }
 
         async function onAmountChange(amount: string): Promise<void> {
+            const { metadata } = store.state.assets;
             const isInputActive = activeToken.value === 'input';
             if (!amount) {
                 if (isInputActive) {
@@ -356,8 +359,8 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
-            const tokenInDecimals = assets[tokenInAddress].decimals;
-            const tokenOutDecimals = assets[tokenOutAddress].decimals;
+            const tokenInDecimals = metadata[tokenInAddress].decimals;
+            const tokenOutDecimals = metadata[tokenOutAddress].decimals;
 
             swapsLoading.value = true;
             if (isInputActive) {
@@ -372,7 +375,7 @@ export default defineComponent({
                 );
                 swaps = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
-                const tokenOutPrecision = assets[tokenOutAddress].precision;
+                const tokenOutPrecision = metadata[tokenOutAddress].precision;
                 tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
             } else {
                 const tokenOutAmountRaw = new BigNumber(amount);
@@ -386,7 +389,7 @@ export default defineComponent({
                 );
                 swaps = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
-                const tokenInPrecision = assets[tokenInAddress].precision;
+                const tokenInPrecision = metadata[tokenInAddress].precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
             swapsLoading.value = false;
@@ -456,12 +459,13 @@ export default defineComponent({
         }
 
         function getInitialPair(): any {
+            const { metadata } = store.state.assets;
             let assetIn = router.currentRoute.value.params.assetIn as string;
             let assetOut = router.currentRoute.value.params.assetOut as string;
             if (!assetIn || !assetOut) {
                 return {
-                    assetIn: getAssetAddressBySymbol(assets, 'ETH'),
-                    assetOut: getAssetAddressBySymbol(assets, 'USDC'),
+                    assetIn: getAssetAddressBySymbol(metadata, 'ETH'),
+                    assetOut: getAssetAddressBySymbol(metadata, 'USDC'),
                 };
             }
             if (isAddress(assetIn)) {

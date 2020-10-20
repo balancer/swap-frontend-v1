@@ -149,7 +149,7 @@ const actions = {
     unlock: async({ commit }: any, { token, spender }: any): Promise<void> => {
         const allowances = {};
         allowances[spender] = {};
-        allowances[spender][token] = MaxUint256;
+        allowances[spender][token] = MaxUint256.toString();
         commit('addAllowances', allowances);
     },
     saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
