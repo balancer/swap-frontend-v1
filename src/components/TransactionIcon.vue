@@ -5,8 +5,9 @@
 <script>
 import { defineComponent, toRefs, computed } from 'vue';
 
-import errorIcon from '@/assets/errorIcon.svg';
+import pendingIcon from '@/assets/pendingIcon.svg';
 import successIcon from '@/assets/successIcon.svg';
+import errorIcon from '@/assets/errorIcon.svg';
 
 export default defineComponent({
     props: {
@@ -20,8 +21,7 @@ export default defineComponent({
 
         const statusIcon = computed(() => {
             if (status.value === 0) {
-                // TODO 'pending' icon
-                return '';
+                return pendingIcon;
             }
             if (status.value === 1) {
                 return successIcon;
