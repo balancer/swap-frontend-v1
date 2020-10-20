@@ -266,14 +266,6 @@ export default defineComponent({
             }
         }
 
-        async function connect(): Promise<void> {
-            store.dispatch('account/connect', 'injected');
-        }
-
-        async function disconnect(): Promise<void> {
-            store.dispatch('account/disconnect');
-        }
-
         async function togglePair(): Promise<void> {
             const tokenInAddress = tokenOutAddressInput.value;
             const tokenInAmount = tokenOutAmountInput.value;
@@ -517,8 +509,6 @@ export default defineComponent({
 
             handleAmountChange,
             handleAssetSelect,
-            connect,
-            disconnect,
             togglePair,
             unlock,
             swap,
