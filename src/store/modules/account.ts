@@ -91,7 +91,7 @@ const actions = {
         const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
         if (connectorKey) {
             const connector = lock.getConnector(connectorKey);
-            const isLoggedIn = await connector.isLoggedIn();
+            const isLoggedIn = connector.isLoggedIn();
             if (isLoggedIn) {
                 await connector.logout();
             }
