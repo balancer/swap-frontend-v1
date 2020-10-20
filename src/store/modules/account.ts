@@ -1,4 +1,3 @@
-import { MaxUint256 } from '@ethersproject/constants';
 import { WebSocketProvider, Web3Provider } from '@ethersproject/providers';
 
 import Ethereum from '@/api/ethereum';
@@ -49,9 +48,9 @@ const mutations = {
             status: TransactionStatus.PENDING,
         });
     },
-    setTransaction: (_state: any, minedTransaction: any): void => {
-        const hash = minedTransaction.transactionHash;
-        const status = minedTransaction.status === 1
+    addTransactionReceipt: (_state: any, transactionReceipt: any): void => {
+        const hash = transactionReceipt.transactionHash;
+        const status = transactionReceipt.status === 1
             ? TransactionStatus.OK
             : TransactionStatus.FAILED;
         const transactionIndex = _state.transactions
@@ -130,7 +129,7 @@ const actions = {
         commit('clean');
     },
     fetchState: async({ commit, state, getters, rootState }: any): Promise<void> => {
-        const provider = await getters.provider;
+        const provider = await getters.readProvider;
         const { address } = state;
         const { metadata } = rootState.assets;
         const assets = Object.keys(metadata);
@@ -140,23 +139,17 @@ const actions = {
         commit('addAllowances', allowances);
     },
     fetchAssets: async({ commit, state, getters }: any, assets: string[]): Promise<void> => {
-        const provider = await getters.provider;
+        const provider = await getters.readProvider;
         const { address } = state;
         const { balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
-    unlock: async({ commit }: any, { token, spender }: any): Promise<void> => {
-        const allowances = {};
-        allowances[spender] = {};
-        allowances[spender][token] = MaxUint256.toString();
-        commit('addAllowances', allowances);
-    },
     saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
         commit('addTransaction', transaction);
     },
-    updateTransaction: async({ commit }: any, transaction: any): Promise<void> => {
-        commit('setTransaction', transaction);
+    saveTransactionReceipt: async({ commit }: any, transactionReceipt: any): Promise<void> => {
+        commit('addTransactionReceipt', transactionReceipt);
     },
 };
 
@@ -170,6 +163,9 @@ const getters = {
         }
         const fallbackProvider = new WebSocketProvider(config.alchemyUrl);
         return fallbackProvider;
+    },
+    readProvider: (): any => {
+        return new WebSocketProvider(config.alchemyUrl);
     },
 };
 

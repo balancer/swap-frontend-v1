@@ -294,10 +294,7 @@ export default defineComponent({
             const tokenInAddress = tokenInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
             const tx = await Helper.unlock(provider, tokenInAddress, spender);
-            handleTx(tx, 'unlock', {
-                token: tokenInAddress,
-                spender,
-            });
+            handleUnlockTransaction(tx, tokenInAddress);
         }
 
         async function swap(): Promise<void> {
@@ -312,13 +309,13 @@ export default defineComponent({
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const minAmount = new BigNumber(0);
                 const tx = await Swapper.swapIn(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
-                handleTx(tx, 'swap', {});
+                handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInDecimals = metadata[tokenInAddress].decimals;
                 const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
                 const tx = await Swapper.swapOut(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmountMax);
-                handleTx(tx, 'swap', {});
+                handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             }
         }
 
@@ -395,37 +392,32 @@ export default defineComponent({
             swapsLoading.value = false;
         }
 
-        async function handleTx(tx: any, txType: string, txMeta: any): Promise<void> {
-            if (tx instanceof CancelledTransaction) {
+        async function handleUnlockTransaction(transaction: any, assetIn: string): Promise<void> {
+            if (transaction instanceof CancelledTransaction) {
                 buttonLoading.value = false;
-                if (tx.type === CancelledTransactionType.REVERTED) {
+                if (transaction.type === CancelledTransactionType.REVERTED) {
                     store.dispatch('ui/notify', {
-                        text: 'Couldn\'t swap tokens',
+                        text: 'Couldn\'t unlock token',
                         type: 'warning',
                     });
                 }
                 return;
             }
-            store.dispatch('account/saveTransaction', tx);
-            const minedTx = await tx.wait(1);
-            buttonLoading.value = false;
-            notify(minedTx, txType);
-            updateState(minedTx, txType, txMeta);
-        }
+            store.dispatch('account/saveTransaction', transaction);
 
-        async function notify(minedTx: any, txType: string): Promise<void> {
-            store.dispatch('account/updateTransaction', minedTx);
-            const type = minedTx.status === 1
+            const provider = store.getters['account/readProvider'];
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            buttonLoading.value = false;
+            store.dispatch('account/fetchAssets', [ assetIn ]);
+            store.dispatch('account/saveTransactionReceipt', transactionReceipt);
+
+            const type = transactionReceipt.status === 1
                 ? 'success'
                 : 'error';
-            const text = txType === 'swap'
-                ? type === 'success'
-                    ? 'Swap completed'
-                    : 'Swap failed'
-                : type === 'success'
-                    ? 'Unlock completed'
-                    : 'Unlock failed';
-            const txHash = minedTx.transactionHash;
+            const text = transactionReceipt.status === 1
+                ? 'Unlocked'
+                : 'Unlock failed';
+            const { txHash } = transactionReceipt;
             store.dispatch('ui/notify', {
                 text,
                 type,
@@ -433,13 +425,37 @@ export default defineComponent({
             });
         }
 
-        async function updateState(minedTx: any, txType: string, txMeta: any): Promise<void> {
-            if (minedTx.status !== 1) {
+        async function handleSwapTransaction(transaction: any, assetIn: string, assetOut: string): Promise<void> {
+            if (transaction instanceof CancelledTransaction) {
+                buttonLoading.value = false;
+                if (transaction.type === CancelledTransactionType.REVERTED) {
+                    store.dispatch('ui/notify', {
+                        text: 'Couldn\'t swap tokens',
+                        type: 'warning',
+                    });
+                }
                 return;
             }
-            if (txType === 'unlock') {
-                store.dispatch('account/unlock', txMeta);
-            }
+            store.dispatch('account/saveTransaction', transaction);
+
+            const provider = store.getters['account/readProvider'];
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            buttonLoading.value = false;
+            store.dispatch('account/fetchAssets', [ assetIn, assetOut ]);
+            store.dispatch('account/saveTransactionReceipt', transactionReceipt);
+
+            const type = transactionReceipt.status === 1
+                ? 'success'
+                : 'error';
+            const text = transactionReceipt.status === 1
+                ? 'Swapped'
+                : 'Swap failed';
+            const { txHash } = transactionReceipt;
+            store.dispatch('ui/notify', {
+                text,
+                type,
+                txHash,
+            });
         }
         
         async function fetchTokenMetadata(assetIn: string, assetOut: string): Promise<void> {
