@@ -28,8 +28,8 @@
                             class="transaction-icon"
                             :status="transaction.status"
                         />
-                        <div class="transaction-hash">
-                            {{ formatTxHash(transaction.hash) }}
+                        <div class="transaction-text">
+                            {{ transaction.text }}
                         </div>
                     </div>
                     <div class="transaction-link">
@@ -179,7 +179,7 @@ export default defineComponent({
     height: 20px;
 }
 
-.transaction-hash {
+.transaction-text {
     margin-left: 8px;
 }
 

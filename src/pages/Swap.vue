@@ -384,7 +384,7 @@ export default defineComponent({
             swapsLoading.value = false;
         }
 
-        async function handleUnlockTransaction(transaction: any, assetIn: string): Promise<void> {
+        async function handleUnlockTransaction(transaction: any, asset: string): Promise<void> {
             if (transaction instanceof CancelledTransaction) {
                 buttonLoading.value = false;
                 if (transaction.type === CancelledTransactionType.REVERTED) {
@@ -396,19 +396,25 @@ export default defineComponent({
                 }
                 return;
             }
-            store.dispatch('account/saveTransaction', transaction);
+
+            const { metadata } = store.state.assets;
+            const assetSymbol = metadata[asset].symbol;
+            store.dispatch('account/saveTransaction', {
+                transaction,
+                text: `Unlock ${assetSymbol}`,
+            });
 
             const provider = store.getters['account/readProvider'];
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
-            store.dispatch('account/fetchAssets', [ assetIn ]);
+            store.dispatch('account/fetchAssets', [ asset ]);
             store.dispatch('account/saveTransactionReceipt', transactionReceipt);
 
             const type = transactionReceipt.status === 1
                 ? 'success'
                 : 'error';
             const text = transactionReceipt.status === 1
-                ? 'Unlocked'
+                ? `Unlocked ${assetSymbol}`
                 : 'Unlock failed';
             const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
@@ -430,7 +436,13 @@ export default defineComponent({
                 }
                 return;
             }
-            store.dispatch('account/saveTransaction', transaction);
+            const { metadata } = store.state.assets;
+            const assetInSymbol = metadata[assetIn].symbol;
+            const assetOutSymbol = metadata[assetOut].symbol;
+            store.dispatch('account/saveTransaction', {
+                transaction,
+                text: `Swap ${assetInSymbol} for ${assetOutSymbol}`,
+            });
 
             const provider = store.getters['account/readProvider'];
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
@@ -442,7 +454,7 @@ export default defineComponent({
                 ? 'success'
                 : 'error';
             const text = transactionReceipt.status === 1
-                ? 'Swapped'
+                ? `Swapped ${assetInSymbol} for ${assetOutSymbol}`
                 : 'Swap failed';
             const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {

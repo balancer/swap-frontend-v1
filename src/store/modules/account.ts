@@ -41,10 +41,11 @@ const mutations = {
             }
         }
     },
-    addTransaction: (_state: any, transaction: any): void => {
-        const { hash } = transaction;
+    addTransaction: (_state: any, transactionData: any): void => {
+        const { transaction, text } = transactionData;
         _state.transactions.push({
-            hash,
+            text,
+            hash: transaction.hash,
             status: TransactionStatus.PENDING,
         });
     },
@@ -55,10 +56,7 @@ const mutations = {
             : TransactionStatus.FAILED;
         const transactionIndex = _state.transactions
             .findIndex((transaction: any) => transaction.hash === hash);
-        _state.transactions[transactionIndex] = {
-            hash,
-            status,
-        };
+        _state.transactions[transactionIndex].status = status;
     },
     clean: (_state: any): void => {
         _state.proxy = '';
@@ -145,8 +143,8 @@ const actions = {
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
-    saveTransaction: async({ commit }: any, transaction: any): Promise<void> => {
-        commit('addTransaction', transaction);
+    saveTransaction: async({ commit }: any, transactionData: any): Promise<void> => {
+        commit('addTransaction', transactionData);
     },
     saveTransactionReceipt: async({ commit }: any, transactionReceipt: any): Promise<void> => {
         commit('addTransactionReceipt', transactionReceipt);
