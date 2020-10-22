@@ -17,6 +17,12 @@ const router = createRouter({
 
 const app = createApp(App);
 
+app.directive('autofocus', {
+    mounted(el) {
+        el.focus();
+    },
+});
+
 app.use(router);
 app.use(store);
 
