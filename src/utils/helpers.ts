@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
+import { ErrorCode } from '@ethersproject/logger';
 
 import config from '@/config';
 
@@ -62,7 +63,7 @@ export function getCancelledTx(txError: any): CancelledTransaction {
     if (errorCode === 4001 || errorCode === -32603) {
         return new CancelledTransaction(CancelledTransactionType.REJECTED);
     }
-    if (errorCode === -32016) {
+    if (errorCode === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
         return new CancelledTransaction(CancelledTransactionType.REVERTED);
     }
     return new CancelledTransaction(CancelledTransactionType.UNKNOWN);
