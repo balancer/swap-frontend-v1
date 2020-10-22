@@ -114,8 +114,6 @@ import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 // eslint-disable-next-line no-undef
 const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 // eslint-disable-next-line no-undef
-const APP_SWAP_COST = process.env.APP_SWAP_COST || '100000';
-// eslint-disable-next-line no-undef
 const APP_MAX_POOLS = process.env.APP_MAX_POOLS || '4';
 
 enum Validation {
