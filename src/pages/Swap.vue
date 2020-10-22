@@ -36,8 +36,16 @@
                     }"
                 />
             </div>
-            <div class="status-label">
-                {{ statusLabel }}
+            <div class="price-message">
+                {{ priceMessage }}
+            </div>
+            <div class="slippage-message">
+                <div v-if="slippage">
+                    Slippage: {{ (slippage * 100).toFixed(2) }}% (minimal)
+                </div>
+            </div>
+            <div class="validation-message">
+                {{ validationMessage }}
             </div>
             <Button
                 v-if="isUnlocked"
@@ -79,6 +87,7 @@ import config from '@/config';
 import { CancelledTransaction, CancelledTransactionType, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
+import { getSlippage } from '@/utils/slippage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 
@@ -121,6 +130,7 @@ export default defineComponent({
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
+        const slippage = ref(0);
         const buttonLoading = ref(false);
         const swapsLoading = ref(true);
 
@@ -200,16 +210,24 @@ export default defineComponent({
             return validation.value !== Validation.NONE;
         });
 
-        const statusLabel = computed(() => {
-            if (validation.value === Validation.NONE) {
-                const { metadata } = store.state.assets;
-                const assetInMetadata = metadata[tokenInAddressInput.value];
-                const assetOutMetadata = metadata[tokenOutAddressInput.value];
-                const assetInAmount = new BigNumber(tokenInAmountInput.value);
-                const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
-                const price = assetOutAmount.div(assetInAmount);
-                return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
+        const priceMessage = computed(() => {
+            if (validation.value === Validation.INVALID_INPUT ||
+                validation.value === Validation.NO_SWAPS) {
+                return '';
             }
+            const { metadata } = store.state.assets;
+            const assetInMetadata = metadata[tokenInAddressInput.value];
+            const assetOutMetadata = metadata[tokenOutAddressInput.value];
+            if (!assetInMetadata || !assetOutMetadata) {
+                return '';
+            }
+            const assetInAmount = new BigNumber(tokenInAmountInput.value);
+            const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
+            const price = assetOutAmount.div(assetInAmount);
+            return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
+        });
+
+        const validationMessage = computed(() => {
             if (validation.value === Validation.INVALID_INPUT) {
                 return 'Invalid input';
             }
@@ -225,6 +243,7 @@ export default defineComponent({
             if (validation.value === Validation.NO_SWAPS) {
                 return 'Insufficient liquidity';
             }
+            return '';
         });
 
         const activeInput = computed(() => {
@@ -316,15 +335,14 @@ export default defineComponent({
             const multicallAddress = config.addresses.multicall;
             const subgraphUrl = config.subgraphUrl;
 
-            const sorInstance = new SOR(
+            sor = new SOR(
                 provider,
                 new BigNumber(APP_GAS_PRICE),
                 parseInt(APP_MAX_POOLS),
             );
-            await sorInstance.fetchSubgraphPools(subgraphUrl);
-            sor = sorInstance;
+            await sor.fetchSubgraphPools(subgraphUrl);
             await onAmountChange(activeInput.value);
-            await sorInstance.fetchOnChainPools(multicallAddress);
+            await sor.fetchOnChainPools(multicallAddress);
         }
 
         async function onAmountChange(amount: string): Promise<void> {
@@ -338,7 +356,7 @@ export default defineComponent({
                 }
             }
 
-            if (!sor) {
+            if (!sor || !sor.isSubgraphFetched) {
                 return;
             }
 
@@ -348,6 +366,7 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
+
             const tokenInDecimals = metadata[tokenInAddress].decimals;
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
 
@@ -355,6 +374,7 @@ export default defineComponent({
             if (isInputActive) {
                 const tokenInAmountRaw = new BigNumber(amount);
                 const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
+
                 const [tradeSwaps, tradeAmount] = await sor.getSwaps(
                     tokenInAddress,
                     tokenOutAddress,
@@ -369,6 +389,7 @@ export default defineComponent({
             } else {
                 const tokenOutAmountRaw = new BigNumber(amount);
                 const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
+
                 const [tradeSwaps, tradeAmount] = await sor.getSwaps(
                     tokenInAddress,
                     tokenOutAddress,
@@ -381,6 +402,16 @@ export default defineComponent({
                 const tokenInPrecision = metadata[tokenInAddress].precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
+
+            const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
+            const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
+            const slippageNumber = getSlippage(
+                sor.subgraphPools.pools,
+                swaps,
+                isInputActive,
+                tokenOutAmount,
+            );
+            slippage.value = slippageNumber.toNumber();
             swapsLoading.value = false;
         }
 
@@ -509,7 +540,9 @@ export default defineComponent({
             tokenOutAddressInput,
             tokenOutAmountInput,
 
-            statusLabel,
+            priceMessage,
+            slippage,
+            validationMessage,
 
             chevronIcon,
 
@@ -553,6 +586,47 @@ export default defineComponent({
 
 .chevron-icon {
     margin-top: 8px;
+}
+
+.validation-message {
+    margin-top: 16px;
+    min-height: 16.5px;
+    font-size: 14px;
+    color: var(--error);
+}
+
+.slippage-message {
+    min-height: 21px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.slippage-message > div {
+    display: flex;
+    align-items: center;
+}
+
+.slippage-control {
+    margin: 0 4px;
+}
+
+.slippage-input {
+    width: 24px;
+    text-align: right;
+    font-size: 14px;
+    background: var(--background-secondary);
+    border: 1px solid var(--outline);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    outline: none;
+}
+
+.price-message {
+    margin-top: 16px;
+    min-height: 16.5px;
+    font-size: 14px;
 }
 
 .status-label {
