@@ -41,7 +41,22 @@
             </div>
             <div class="slippage-message">
                 <div v-if="slippage">
-                    Slippage: {{ (slippage * 100).toFixed(2) }}% (minimal)
+                    Slippage: {{ (slippage * 100).toFixed(2) }}% (minimal) +
+                    <input
+                        v-if="slippageBufferInputShown"
+                        v-model="slippageBufferInput"
+                        v-autofocus
+                        class="slippage-input slippage-control"
+                        @blur="hideSlippageBufferInput"
+                        @keyup.enter="hideSlippageBufferInput"
+                    >
+                    <ButtonText
+                        v-else
+                        class="slippage-control"
+                        :text="`${slippageBufferInput}%`"
+                        @click="showSlippageBufferInput"
+                    />
+                    (additional buffer)
                 </div>
             </div>
             <div class="validation-message">
@@ -93,6 +108,7 @@ import Helper from '@/web3/helper';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
+import ButtonText from '@/components/ButtonText.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 
 // eslint-disable-next-line no-undef
@@ -115,6 +131,7 @@ export default defineComponent({
     components: {
         AssetInput,
         Button,
+        ButtonText,
         ModalAssetSelector,
     },
     setup() {
@@ -130,9 +147,11 @@ export default defineComponent({
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
+        const slippageBufferInput = ref('0.5');
         const slippage = ref(0);
         const buttonLoading = ref(false);
         const swapsLoading = ref(true);
+        const slippageBufferInputShown = ref(false);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -270,6 +289,18 @@ export default defineComponent({
             onAmountChange(activeInput.value);
         });
 
+        function showSlippageBufferInput(): void {
+            slippageBufferInputShown.value = true;
+        }
+
+        function hideSlippageBufferInput(): void {
+            slippageBufferInputShown.value = false;
+            const slippageBufferValidation = validateNumberInput(slippageBufferInput.value);
+            if (slippageBufferValidation !== ValidationError.NONE) {
+                slippageBufferInput.value = '0.5';
+            }
+        }
+
         function handleAmountChange(input: string, amount: string): void {
             activeToken.value = input;
             onAmountChange(amount);
@@ -313,18 +344,22 @@ export default defineComponent({
             buttonLoading.value = true;
             const tokenInAddress = tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value;
+            const tokenInDecimals = metadata[tokenInAddress].decimals;
+            const tokenOutDecimals = metadata[tokenOutAddress].decimals;
+            const slippageBuffer = parseFloat(slippageBufferInput.value) / 100;
             const provider = await store.getters['account/provider'];
             if (activeToken.value === 'input') {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = metadata[tokenInAddress].decimals;
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
-                const minAmount = new BigNumber(0);
+                const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
+                const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
+                const minAmount = tokenOutAmount.div(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInDecimals = metadata[tokenInAddress].decimals;
-                const tokenInAmountMax = scale(tokenInAmountNumber, tokenInDecimals);
+                const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
+                const tokenInAmountMax = tokenInAmount.times(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmountMax);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             }
@@ -539,6 +574,7 @@ export default defineComponent({
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
+            slippageBufferInput,
 
             priceMessage,
             slippage,
@@ -548,10 +584,13 @@ export default defineComponent({
 
             buttonLoading,
             swapsLoading,
+            slippageBufferInputShown,
             isModalOpen,
             isUnlocked,
             isDisabled,
 
+            showSlippageBufferInput,
+            hideSlippageBufferInput,
             handleAmountChange,
             handleAssetSelect,
             togglePair,
