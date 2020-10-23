@@ -211,7 +211,7 @@ export default defineComponent({
     .amount-wrapper {
         width: 160px;
     }
-    
+
     .amount {
         width: 120px;
     }

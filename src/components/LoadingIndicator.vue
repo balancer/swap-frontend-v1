@@ -22,7 +22,7 @@ svg {
     vertical-align: middle;
     width: 20px;
     height: 20px;
-    animation: rotation 1s cubic-bezier(.79,.14,.15,.86) infinite;
+    animation: rotation 1s cubic-bezier(0.79, 0.14, 0.15, 0.86) infinite;
 }
 
 path {
@@ -33,7 +33,7 @@ path {
     from {
         transform: rotate(0deg);
     }
-  
+
     to {
         transform: rotate(360deg);
     }
