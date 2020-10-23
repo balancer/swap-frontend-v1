@@ -369,8 +369,9 @@ export default defineComponent({
                 provider,
                 new BigNumber(APP_GAS_PRICE),
                 parseInt(APP_MAX_POOLS),
+                config.chainId,
             );
-            await sor.fetchSubgraphPools(subgraphUrl);
+            await sor.fetchSubgraphPools();
             await onAmountChange(activeInput.value);
             await sor.fetchOnChainPools();
             await onAmountChange(activeInput.value);
@@ -411,7 +412,6 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactIn',
                     tokenInAmount,
-                    false,
                 );
                 swaps = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
@@ -426,7 +426,6 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactOut',
                     tokenOutAmount,
-                    false,
                 );
                 swaps = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
