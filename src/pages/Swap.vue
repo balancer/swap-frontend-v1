@@ -94,12 +94,13 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
+import { ErrorCode } from '@ethersproject/logger';
 import { SOR } from '@balancer-labs/sor';
 
 import chevronIcon from '@/assets/chevronIcon.svg';
 
 import config from '@/config';
-import { CancelledTransaction, CancelledTransactionType, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
+import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import { getSlippage } from '@/utils/slippage';
@@ -450,9 +451,9 @@ export default defineComponent({
         }
 
         async function handleUnlockTransaction(transaction: any, asset: string): Promise<void> {
-            if (transaction instanceof CancelledTransaction) {
+            if (transaction.code) {
                 buttonLoading.value = false;
-                if (transaction.type === CancelledTransactionType.REVERTED) {
+                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
                     store.dispatch('ui/notify', {
                         text: 'Couldn\'t unlock token',
                         type: 'warning',
@@ -490,9 +491,9 @@ export default defineComponent({
         }
 
         async function handleSwapTransaction(transaction: any, assetIn: string, assetOut: string): Promise<void> {
-            if (transaction instanceof CancelledTransaction) {
+            if (transaction.code) {
                 buttonLoading.value = false;
-                if (transaction.type === CancelledTransactionType.REVERTED) {
+                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
                     store.dispatch('ui/notify', {
                         text: 'Couldn\'t swap tokens',
                         type: 'warning',

@@ -3,8 +3,6 @@ import { Contract } from '@ethersproject/contracts';
 
 import ERC20Abi from '../abi/ERC20.json';
 
-import { getCancelledTx } from '@/utils/helpers';
-
 export default class Helper {
     static async unlock(
         provider: any,
@@ -15,7 +13,7 @@ export default class Helper {
         try {
             return await assetContract.approve(spender, MaxUint256);
         } catch(e) {
-            return getCancelledTx(e);
+            return e;
         }
     }
 }

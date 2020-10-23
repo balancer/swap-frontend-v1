@@ -5,9 +5,9 @@ import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
 import { ETH_KEY } from '@/utils/assets';
-import { getCancelledTx } from '@/utils/helpers';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+const exchangeProxyAddress = config.addresses.exchangeProxy;
 
 export default class Swapper {
     static async swapIn(
@@ -26,18 +26,19 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        return await sendTransaction(
-            provider,
-            'multihopBatchSwapExactIn',
-            [
+        const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
+        try {
+            return await exchangeProxyContract.multihopBatchSwapExactIn(
                 swaps,
                 tokenInAddress,
                 tokenOutAddress,
                 tokenInAmount.toString(),
                 tokenOutAmountMin.toString(),
-            ],
-            overrides,
-        );
+                overrides,
+            );
+        } catch(e) {
+            return e;
+        }
     }
 
     static async swapOut(
@@ -55,31 +56,17 @@ export default class Swapper {
         if (tokenOutAddress === ETH_KEY) {
             tokenOutAddress = ETH_ADDRESS;
         }
-        return await sendTransaction(
-            provider,
-            'multihopBatchSwapExactOut',
-            [
+        const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
+        try {
+            return await exchangeProxyContract.multihopBatchSwapExactOut(
                 swaps,
                 tokenInAddress,
                 tokenOutAddress,
                 tokenInAmountMax.toString(),
-            ],
-            overrides,
-        );
-    }
-}
-
-async function sendTransaction(
-    provider: any,
-    functionName: string,
-    params: any[],
-    overrides: any,
-): Promise<any> {
-    const exchangeProxyAddress = config.addresses.exchangeProxy;
-    const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
-    try {
-        return await exchangeProxyContract[functionName](...params, overrides);
-    } catch(e) {
-        return getCancelledTx(e);
+                overrides,
+            );
+        } catch(e) {
+            return e;
+        }
     }
 }
