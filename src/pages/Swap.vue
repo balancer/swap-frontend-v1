@@ -374,6 +374,7 @@ export default defineComponent({
             await sor.fetchSubgraphPools(subgraphUrl);
             await onAmountChange(activeInput.value);
             await sor.fetchOnChainPools(multicallAddress);
+            await onAmountChange(activeInput.value);
         }
 
         async function onAmountChange(amount: string): Promise<void> {
@@ -433,12 +434,15 @@ export default defineComponent({
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
 
+            const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
+            const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
             const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
             const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
             const slippageNumber = getSlippage(
                 sor.subgraphPools.pools,
                 swaps,
                 isExactIn.value,
+                tokenInAmount,
                 tokenOutAmount,
             );
             slippage.value = slippageNumber.toNumber();

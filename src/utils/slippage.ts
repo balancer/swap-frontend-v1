@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 
 import { scale } from '@/utils/helpers';
 
-export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenOutAmount: BigNumber): BigNumber {
+export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenInAmount: BigNumber, tokenOutAmount: BigNumber): BigNumber {
     let spotAmount = new BigNumber(0);
     for (let i = 0; i < swaps.length; i++) {
         const swap = swaps[i];
@@ -27,7 +27,10 @@ export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenO
             spotAmount = spotAmount.plus(swapAmount.times(spotPrice));
         }
     }
-    const expectedSlippage = spotAmount.minus(tokenOutAmount).div(spotAmount);
+    const amountDifference = isExactIn
+        ? spotAmount.minus(tokenOutAmount)
+        : tokenInAmount.minus(spotAmount);
+    const expectedSlippage = amountDifference.div(spotAmount);
     return expectedSlippage;
 }
 
