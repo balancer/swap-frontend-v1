@@ -17,7 +17,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        repository: Destiner/actions_test
+        repository: Destiner/balancer-frontend
         ref: backup
         path: branch
         fetch-depth: 0
