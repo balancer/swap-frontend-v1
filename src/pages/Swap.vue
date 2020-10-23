@@ -229,10 +229,6 @@ export default defineComponent({
         });
 
         const priceMessage = computed(() => {
-            if (validation.value === Validation.INVALID_INPUT ||
-                validation.value === Validation.NO_SWAPS) {
-                return '';
-            }
             const { metadata } = store.state.assets;
             const assetInMetadata = metadata[tokenInAddressInput.value];
             const assetOutMetadata = metadata[tokenOutAddressInput.value];
@@ -241,6 +237,9 @@ export default defineComponent({
             }
             const assetInAmount = new BigNumber(tokenInAmountInput.value);
             const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
+            if (assetInAmount.isNaN() || assetOutAmount.isNaN() || assetInAmount.isZero()) {
+                return '';
+            }
             const price = assetOutAmount.div(assetInAmount);
             return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
         });
