@@ -379,12 +379,13 @@ export default defineComponent({
 
         async function onAmountChange(amount: string): Promise<void> {
             const { metadata } = store.state.assets;
-            if (!amount) {
+            if (validateNumberInput(amount) !== ValidationError.NONE) {
                 if (isExactIn.value) {
                     tokenOutAmountInput.value = '';
                 } else {
                     tokenInAmountInput.value = '';
                 }
+                return;
             }
 
             if (!sor || !sor.isSubgraphFetched) {
