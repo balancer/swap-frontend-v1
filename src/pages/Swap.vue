@@ -41,7 +41,7 @@
             </div>
             <div class="slippage-message">
                 <div v-if="slippage">
-                    Slippage: {{ (slippage * 100).toFixed(2) }}% (minimal) +
+                    Slippage: {{ (slippage * 100).toFixed(2) }}% (expected) +
                     <input
                         v-if="slippageBufferInputShown"
                         v-model="slippageBufferInput"
