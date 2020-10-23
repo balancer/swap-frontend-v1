@@ -4,15 +4,15 @@
             <div>
                 <div class="input-label">
                     Send
-                    <span v-if="activeToken === 'output'">(approximate)</span>
+                    <span v-if="!isExactIn">(approximate)</span>
                 </div>
                 <AssetInput
                     v-model:address="tokenInAddressInput"
                     v-model:amount="tokenInAmountInput"
                     :modal-key="'input'"
-                    :loading="swapsLoading && activeToken === 'output'"
+                    :loading="swapsLoading && !isExactIn"
                     @change="value => {
-                        handleAmountChange('input', value);
+                        handleAmountChange(true, value);
                     }"
                 />
             </div>
@@ -24,15 +24,15 @@
             <div>
                 <div class="input-label">
                     Receive
-                    <span v-if="activeToken === 'input'">(approximate)</span>
+                    <span v-if="isExactIn">(approximate)</span>
                 </div>
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
                     v-model:amount="tokenOutAmountInput"
                     :modal-key="'output'"
-                    :loading="swapsLoading && activeToken === 'input'"
+                    :loading="swapsLoading && isExactIn"
                     @change="value => {
-                        handleAmountChange('output', value);
+                        handleAmountChange(false, value);
                     }"
                 />
             </div>
@@ -140,7 +140,7 @@ export default defineComponent({
 
         let swaps: any[][] = [];
 
-        const activeToken = ref('input');
+        const isExactIn = ref(true);
         const tokenInAddressInput = ref('');
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
@@ -186,7 +186,7 @@ export default defineComponent({
 
         const validation = computed(() => {
             // Invalid input
-            const amountValue = activeToken.value === 'input'
+            const amountValue = isExactIn.value
                 ? tokenInAmountInput.value
                 : tokenOutAmountInput.value;
             const error = validateNumberInput(amountValue);
@@ -264,7 +264,7 @@ export default defineComponent({
         });
 
         const activeInput = computed(() => {
-            if (activeToken.value === 'input') {
+            if (isExactIn.value) {
                 return tokenInAmountInput.value;
             } else {
                 return tokenOutAmountInput.value;
@@ -299,8 +299,8 @@ export default defineComponent({
             }
         }
 
-        function handleAmountChange(input: string, amount: string): void {
-            activeToken.value = input;
+        function handleAmountChange(exactIn: boolean, amount: string): void {
+            isExactIn.value = exactIn;
             onAmountChange(amount);
         }
 
@@ -319,9 +319,7 @@ export default defineComponent({
             const tokenInAmount = tokenOutAmountInput.value;
             const tokenOutAddress = tokenInAddressInput.value;
             const tokenOutAmount = tokenInAmountInput.value;
-            activeToken.value = activeToken.value === 'input'
-                ? 'output'
-                : 'input';
+            isExactIn.value = !isExactIn.value;
             tokenInAddressInput.value = tokenInAddress;
             tokenInAmountInput.value = tokenInAmount;
             tokenOutAddressInput.value = tokenOutAddress;
@@ -346,7 +344,7 @@ export default defineComponent({
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
             const slippageBuffer = parseFloat(slippageBufferInput.value) / 100;
             const provider = await store.getters['account/provider'];
-            if (activeToken.value === 'input') {
+            if (isExactIn.value) {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
@@ -380,9 +378,8 @@ export default defineComponent({
 
         async function onAmountChange(amount: string): Promise<void> {
             const { metadata } = store.state.assets;
-            const isInputActive = activeToken.value === 'input';
             if (!amount) {
-                if (isInputActive) {
+                if (isExactIn.value) {
                     tokenOutAmountInput.value = '';
                 } else {
                     tokenInAmountInput.value = '';
@@ -404,7 +401,7 @@ export default defineComponent({
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
 
             swapsLoading.value = true;
-            if (isInputActive) {
+            if (isExactIn.value) {
                 const tokenInAmountRaw = new BigNumber(amount);
                 const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
 
@@ -441,7 +438,7 @@ export default defineComponent({
             const slippageNumber = getSlippage(
                 sor.subgraphPools.pools,
                 swaps,
-                isInputActive,
+                isExactIn.value,
                 tokenOutAmount,
             );
             slippage.value = slippageNumber.toNumber();
@@ -567,7 +564,7 @@ export default defineComponent({
         }
 
         return {
-            activeToken,
+            isExactIn,
             tokenInAddressInput,
             tokenInAmountInput,
             tokenOutAddressInput,
