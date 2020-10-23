@@ -364,7 +364,6 @@ export default defineComponent({
 
         async function initSor(): Promise<void> {
             const provider = await store.getters['account/provider'];
-            const multicallAddress = config.addresses.multicall;
             const subgraphUrl = config.subgraphUrl;
 
             sor = new SOR(
@@ -374,7 +373,7 @@ export default defineComponent({
             );
             await sor.fetchSubgraphPools(subgraphUrl);
             await onAmountChange(activeInput.value);
-            await sor.fetchOnChainPools(multicallAddress);
+            await sor.fetchOnChainPools();
             await onAmountChange(activeInput.value);
         }
 
