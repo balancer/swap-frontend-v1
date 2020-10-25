@@ -363,7 +363,6 @@ export default defineComponent({
 
         async function initSor(): Promise<void> {
             const provider = await store.getters['account/provider'];
-            const subgraphUrl = config.subgraphUrl;
 
             sor = new SOR(
                 provider,
