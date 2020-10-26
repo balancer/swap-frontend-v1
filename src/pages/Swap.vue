@@ -371,7 +371,6 @@ export default defineComponent({
                 config.chainId,
             );
             await sor.fetchSubgraphPools();
-            await onAmountChange(activeInput.value);
             await sor.fetchOnChainPools();
             await onAmountChange(activeInput.value);
         }
@@ -387,7 +386,7 @@ export default defineComponent({
                 return;
             }
 
-            if (!sor || !sor.isSubgraphFetched) {
+            if (!sor || !sor.isOnChainFetched) {
                 return;
             }
 
