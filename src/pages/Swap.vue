@@ -38,6 +38,11 @@
             </div>
             <div class="price-message">
                 {{ priceMessage }}
+                <PopupSwapRoute
+                    v-if="priceMessage"
+                    class="route-popup"
+                    :swaps="swaps"
+                />
             </div>
             <div class="slippage-message">
                 <div v-if="slippage">
@@ -111,6 +116,7 @@ import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
+import PopupSwapRoute from '@/components/PopupSwapRoute.vue';
 
 // eslint-disable-next-line no-undef
 const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -132,14 +138,13 @@ export default defineComponent({
         Button,
         ButtonText,
         ModalAssetSelector,
+        PopupSwapRoute,
     },
     setup() {
         let sor: SOR | undefined = undefined;
 
         const router = useRouter();
         const store = useStore();
-
-        let swaps: any[][] = [];
 
         const isExactIn = ref(true);
         const tokenInAddressInput = ref('');
@@ -151,6 +156,7 @@ export default defineComponent({
         const buttonLoading = ref(false);
         const swapsLoading = ref(true);
         const slippageBufferInputShown = ref(false);
+        const swaps = ref([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -218,7 +224,7 @@ export default defineComponent({
                 return Validation.INSUFFICIENT_BALANCE;
             }
             // No swaps
-            if (swapsLoading.value || swaps.length === 0) {
+            if (swapsLoading.value || swaps.value.length === 0) {
                 return Validation.NO_SWAPS;
             }
             return Validation.NONE;
@@ -350,13 +356,13 @@ export default defineComponent({
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
                 const minAmount = tokenOutAmount.div(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapIn(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
+                const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const tokenInAmountMax = tokenInAmount.times(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapOut(provider, swaps, tokenInAddress, tokenOutAddress, tokenInAmountMax);
+                const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             }
         }
@@ -411,7 +417,8 @@ export default defineComponent({
                     'swapExactIn',
                     tokenInAmount,
                 );
-                swaps = tradeSwaps;
+                // @ts-ignore
+                swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
                 const tokenOutPrecision = metadata[tokenOutAddress].precision;
                 tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
@@ -425,7 +432,8 @@ export default defineComponent({
                     'swapExactOut',
                     tokenOutAmount,
                 );
-                swaps = tradeSwaps;
+                // @ts-ignore
+                swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
                 const tokenInPrecision = metadata[tokenInAddress].precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
@@ -437,7 +445,7 @@ export default defineComponent({
             const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
             const slippageNumber = getSlippage(
                 sor.subgraphPools.pools,
-                swaps,
+                swaps.value,
                 isExactIn.value,
                 tokenInAmount,
                 tokenOutAmount,
@@ -572,6 +580,7 @@ export default defineComponent({
             tokenOutAmountInput,
             slippageBufferInput,
 
+            swaps,
             priceMessage,
             slippage,
             validationMessage,
@@ -662,6 +671,11 @@ export default defineComponent({
     margin-top: 16px;
     min-height: 16.5px;
     font-size: 14px;
+    display: flex;
+}
+
+.route-popup {
+    margin-left: 4px;
 }
 
 .status-label {
