@@ -27,10 +27,10 @@ export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenI
             spotAmount = spotAmount.plus(swapAmount.times(spotPrice));
         }
     }
-    const amountDifference = isExactIn
-        ? spotAmount.minus(tokenOutAmount)
-        : tokenInAmount.minus(spotAmount);
-    const expectedSlippage = amountDifference.div(spotAmount);
+    const one = new BigNumber(1);
+    const expectedSlippage = isExactIn
+        ? one.minus(tokenOutAmount.div(spotAmount))
+        : one.minus(spotAmount.div(tokenInAmount));
     return expectedSlippage;
 }
 
