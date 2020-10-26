@@ -36,10 +36,12 @@
                     }"
                 />
             </div>
-            <div class="price-message">
-                {{ priceMessage }}
+            <div class="rate-message">
+                <span @click="toggleRate">
+                    {{ rateMessage }}
+                </span>
                 <PopupSwapRoute
-                    v-if="priceMessage"
+                    v-if="rateMessage"
                     class="route-popup"
                     :swaps="swaps"
                 />
@@ -146,6 +148,7 @@ export default defineComponent({
         const router = useRouter();
         const store = useStore();
 
+        const isInRate = ref(true);
         const isExactIn = ref(true);
         const tokenInAddressInput = ref('');
         const tokenInAmountInput = ref('10');
@@ -234,11 +237,11 @@ export default defineComponent({
             return validation.value !== Validation.NONE;
         });
 
-        const priceMessage = computed(() => {
+        const rateMessage = computed(() => {
             const { metadata } = store.state.assets;
-            const assetInMetadata = metadata[tokenInAddressInput.value];
-            const assetOutMetadata = metadata[tokenOutAddressInput.value];
-            if (!assetInMetadata || !assetOutMetadata) {
+            const assetIn = metadata[tokenInAddressInput.value];
+            const assetOut = metadata[tokenOutAddressInput.value];
+            if (!assetIn || !assetOut) {
                 return '';
             }
             const assetInAmount = new BigNumber(tokenInAmountInput.value);
@@ -246,8 +249,13 @@ export default defineComponent({
             if (assetInAmount.isNaN() || assetOutAmount.isNaN() || assetInAmount.isZero()) {
                 return '';
             }
-            const price = assetOutAmount.div(assetInAmount);
-            return `1 ${assetInMetadata.symbol} = ${price.toFixed(4)} ${assetOutMetadata.symbol}`;
+            const rate = isInRate.value
+                ? assetOutAmount.div(assetInAmount)
+                : assetInAmount.div(assetOutAmount);
+            const rateString = isInRate.value
+                ? `1 ${assetIn.symbol} = ${rate.toFixed(4)} ${assetOut.symbol}`
+                : `1 ${assetOut.symbol} = ${rate.toFixed(4)} ${assetIn.symbol}`;
+            return rateString;
         });
 
         const validationMessage = computed(() => {
@@ -292,6 +300,10 @@ export default defineComponent({
         watch(tokenOutAddressInput, () => {
             onAmountChange(activeInput.value);
         });
+
+        function toggleRate(): void {
+            isInRate.value = !isInRate.value;
+        }
 
         function showSlippageBufferInput(): void {
             slippageBufferInputShown.value = true;
@@ -581,7 +593,7 @@ export default defineComponent({
             slippageBufferInput,
 
             swaps,
-            priceMessage,
+            rateMessage,
             slippage,
             validationMessage,
 
@@ -594,6 +606,7 @@ export default defineComponent({
             isUnlocked,
             isDisabled,
 
+            toggleRate,
             showSlippageBufferInput,
             hideSlippageBufferInput,
             handleAmountChange,
@@ -667,11 +680,12 @@ export default defineComponent({
     outline: none;
 }
 
-.price-message {
+.rate-message {
     margin-top: 16px;
     min-height: 16.5px;
     font-size: 14px;
     display: flex;
+    cursor: pointer;
 }
 
 .route-popup {
