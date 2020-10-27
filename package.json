@@ -15,7 +15,7 @@
     "stylelint": "stylelint \"src/**/*.vue\""
   },
   "dependencies": {
-    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/ethersv5-dist-custom-multicall",
+    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/bal-246-new-filter-pools-methods",
     "@bonustrack/lock": "github:snapshot-labs/lock#5b9f0592731c0105bb47f8b7bf78b4f164e27c3e",
     "@ethersproject/address": "^5.0.5",
     "@ethersproject/constants": "^5.0.5",

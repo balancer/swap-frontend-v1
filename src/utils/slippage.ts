@@ -1,7 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-import { scale } from '@/utils/helpers';
-
 export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenInAmount: BigNumber, tokenOutAmount: BigNumber): BigNumber {
     let spotAmount = new BigNumber(0);
     for (let i = 0; i < swaps.length; i++) {
@@ -50,18 +48,12 @@ function getPoolPair(pools: any[], poolId: string, tokenInAddress: string, token
     const tokenIn: any = pool.tokens.find((token: any) => token.address === tokenInAddress);
     const tokenOut: any = pool.tokens.find((token: any) => token.address === tokenOutAddress);
 
-    const { id, swapFee } = pool;
-    const balanceIn = scale(new BigNumber(tokenIn.balance), tokenIn.decimals);
-    const balanceOut = scale(new BigNumber(tokenOut.balance), tokenOut.decimals);
-    const weightIn = new BigNumber(tokenIn.denormWeight);
-    const weightOut = new BigNumber(tokenOut.denormWeight);
-
     return {
-        id,
-        swapFee,
-        balanceIn,
-        balanceOut,
-        weightIn,
-        weightOut,
+        id: pool.id,
+        swapFee: pool.swapFee,
+        balanceIn: tokenIn.balance,
+        balanceOut: tokenOut.balance,
+        weightIn: tokenIn.denormWeight,
+        weightOut: tokenIn.denormWeight,
     };
 }

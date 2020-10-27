@@ -293,12 +293,34 @@ export default defineComponent({
             initSor();
         });
 
-        watch(tokenInAddressInput, () => {
-            onAmountChange(activeInput.value);
+        watch(tokenInAddressInput, async () => {
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
+
+            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+                swapsLoading.value = true;
+                await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
+            }
+            await onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, () => {
-            onAmountChange(activeInput.value);
+        watch(tokenOutAddressInput, async () => {
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
+
+            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+                swapsLoading.value = true;
+                await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
+            }
+            await onAmountChange(activeInput.value);
         });
 
         function toggleRate(): void {
@@ -381,6 +403,12 @@ export default defineComponent({
 
         async function initSor(): Promise<void> {
             const provider = await store.getters['account/provider'];
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
 
             sor = new SOR(
                 provider,
@@ -388,8 +416,7 @@ export default defineComponent({
                 parseInt(APP_MAX_POOLS),
                 config.chainId,
             );
-            await sor.fetchSubgraphPools();
-            await sor.fetchOnChainPools();
+            await sor.fetchPairPools(tokenInAddress, tokenOutAddress);
             await onAmountChange(activeInput.value);
         }
 
@@ -404,16 +431,16 @@ export default defineComponent({
                 return;
             }
 
-            if (!sor || !sor.isOnChainFetched) {
-                return;
-            }
-
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
             const tokenOutAddress = tokenOutAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
+
+            if (!sor || !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+                return;
+            }
 
             const tokenInDecimals = metadata[tokenInAddress].decimals;
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
@@ -428,6 +455,7 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactIn',
                     tokenInAmount,
+                    false,
                 );
                 // @ts-ignore
                 swaps.value = tradeSwaps;
@@ -443,6 +471,7 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactOut',
                     tokenOutAmount,
+                    false,
                 );
                 // @ts-ignore
                 swaps.value = tradeSwaps;
@@ -456,7 +485,7 @@ export default defineComponent({
             const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
             const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
             const slippageNumber = getSlippage(
-                sor.subgraphPools.pools,
+                sor.onChainCache.pools,
                 swaps.value,
                 isExactIn.value,
                 tokenInAmount,
