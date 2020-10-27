@@ -55,6 +55,10 @@ export default defineComponent({
     position: relative;
 }
 
+.icon-wrapper {
+    height: 16px;
+}
+
 .icon-wrapper > img {
     width: 16px;
     height: 16px;
