@@ -1,15 +1,19 @@
 <template>
-    <img :src="statusIcon">
+    <Icon
+        class="icon"
+        :title="statusIcon"
+    />
 </template>
 
 <script>
 import { defineComponent, toRefs, computed } from 'vue';
 
-import pendingIcon from '@/assets/pendingIcon.svg';
-import successIcon from '@/assets/successIcon.svg';
-import errorIcon from '@/assets/errorIcon.svg';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
+    components: {
+        Icon,
+    },
     props: {
         status: {
             type: Number,
@@ -21,13 +25,13 @@ export default defineComponent({
 
         const statusIcon = computed(() => {
             if (status.value === 0) {
-                return pendingIcon;
+                return 'pending';
             }
             if (status.value === 1) {
-                return successIcon;
+                return 'success';
             }
             if (status.value === 2) {
-                return errorIcon;
+                return 'error';
             }
         });
 
@@ -37,3 +41,10 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.icon {
+    width: 24px;
+    height: 24px;
+}
+</style>

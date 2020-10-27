@@ -13,10 +13,10 @@
                 {{ formatAddress(address) }}
             </div>
         </div>
-        <img
+        <Icon
             class="chevron-icon"
-            :src="chevronIcon"
-        >
+            :title="'chevron'"
+        />
     </div>
     <Button
         v-else
@@ -30,16 +30,16 @@
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import chevronIcon from '@/assets/chevronIcon.svg';
-
 import { formatAddress } from '@/utils/helpers';
 
 import Button from '@/components/Button.vue';
+import Icon from '@/components/Icon.vue';
 import Jazzicon from '@/components/Jazzicon.vue';
 
 export default defineComponent({
     components: {
         Button,
+        Icon,
         Jazzicon,
     },
     setup() {
@@ -62,7 +62,6 @@ export default defineComponent({
         }
 
         return {
-            chevronIcon,
             address,
             formatAddress,
             openAccountModal,

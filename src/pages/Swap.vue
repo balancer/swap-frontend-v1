@@ -16,11 +16,11 @@
                     }"
                 />
             </div>
-            <img
+            <Icon
                 class="chevron-icon"
-                :src="chevronIcon"
+                :title="'chevron'"
                 @click="togglePair"
-            >
+            />
             <div>
                 <div class="input-label">
                     Receive
@@ -104,8 +104,6 @@ import { getAddress } from '@ethersproject/address';
 import { ErrorCode } from '@ethersproject/logger';
 import { SOR } from '@balancer-labs/sor';
 
-import chevronIcon from '@/assets/chevronIcon.svg';
-
 import config from '@/config';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { getAssetAddressBySymbol } from '@/utils/assets';
@@ -117,6 +115,7 @@ import Helper from '@/web3/helper';
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
 import ButtonText from '@/components/ButtonText.vue';
+import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import PopupSwapRoute from '@/components/PopupSwapRoute.vue';
 
@@ -139,6 +138,7 @@ export default defineComponent({
         AssetInput,
         Button,
         ButtonText,
+        Icon,
         ModalAssetSelector,
         PopupSwapRoute,
     },
@@ -597,8 +597,6 @@ export default defineComponent({
             slippage,
             validationMessage,
 
-            chevronIcon,
-
             buttonLoading,
             swapsLoading,
             slippageBufferInputShown,
@@ -643,6 +641,8 @@ export default defineComponent({
 
 .chevron-icon {
     margin-top: 8px;
+    width: 24px;
+    height: 24px;
 }
 
 .validation-message {

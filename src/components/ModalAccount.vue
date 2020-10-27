@@ -32,12 +32,16 @@
                             {{ transaction.text }}
                         </div>
                     </div>
-                    <div class="transaction-link">
+                    <div>
                         <a
+                            class="transaction-link"
                             :href="getEtherscanLink(transaction.hash)"
                             target="_blank"
                         >
-                            <img :src="externalLinkIcon">
+                            <Icon
+                                class="transaction-link-icon"
+                                :title="'externalLink'"
+                            />
                         </a>
                     </div>
                 </div>
@@ -80,13 +84,12 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import externalLinkIcon from '@/assets/externalLinkIcon.svg';
-
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, getEtherscanLink } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
+import Icon from '@/components/Icon.vue';
 import ModalBase from '@/components/ModalBase.vue';
 import TransactionIcon from '@/components/TransactionIcon.vue';
 
@@ -94,6 +97,7 @@ export default defineComponent({
     components: {
         AssetIcon,
         ButtonText,
+        Icon,
         ModalBase,
         TransactionIcon,
     },
@@ -136,7 +140,6 @@ export default defineComponent({
             address,
             transactions,
             balances: accountBalances,
-            externalLinkIcon,
             formatAddress,
             formatTxHash,
             getEtherscanLink,
@@ -183,7 +186,11 @@ export default defineComponent({
     margin-left: 8px;
 }
 
-.transaction-link > a > img {
+.transaction-link {
+    color: var(--text-primary);
+}
+
+.transaction-link-icon {
     height: 12px;
     width: 12px;
 }

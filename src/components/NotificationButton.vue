@@ -12,10 +12,10 @@
             }"
         >
             {{ text }}
-            <img
+            <Icon
                 class="icon"
-                :src="externalLinkIcon"
-            >
+                :title="'externalLink'"
+            />
         </div>
     </a>
 </template>
@@ -23,9 +23,12 @@
 <script>
 import { defineComponent, computed } from 'vue';
 
-import externalLinkIcon from '@/assets/externalLinkIcon.svg';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
+    components: {
+        Icon,
+    },
     props: {
         type: {
             type: String,
@@ -48,7 +51,6 @@ export default defineComponent({
 
         return {
             text,
-            externalLinkIcon,
         };
     },
 });
@@ -84,6 +86,5 @@ a {
 .icon {
     margin-left: 4px;
     width: 8px;
-    height: 8px;
 }
 </style>

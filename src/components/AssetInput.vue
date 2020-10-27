@@ -29,10 +29,10 @@
                 />
                 <span class="asset-symbol">{{ symbol }}</span>
             </div>
-            <img
+            <Icon
                 class="chevron-icon"
-                :src="chevronIcon"
-            >
+                :title="'chevron'"
+            />
         </div>
     </div>
 </template>
@@ -42,17 +42,17 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import chevronIcon from '@/assets/chevronIcon.svg';
-
 import { scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
     components: {
         AssetIcon,
         ButtonText,
+        Icon,
     },
     props: {
         modalKey: {
@@ -106,7 +106,6 @@ export default defineComponent({
         }
 
         return {
-            chevronIcon,
             symbol,
             setMax,
             handleInputChange,

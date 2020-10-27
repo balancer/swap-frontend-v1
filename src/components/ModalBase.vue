@@ -10,11 +10,11 @@
                     <div>
                         {{ title }}
                     </div>
-                    <img
-                        :src="closeIcon"
+                    <Icon
                         class="close-icon"
+                        :title="'close'"
                         @click="$emit('close')"
-                    >
+                    />
                 </div>
                 <slot
                     class="header-bottom"
@@ -31,9 +31,12 @@
 <script>
 import { defineComponent } from 'vue';
 
-import closeIcon from '@/assets/closeIcon.svg';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
+    components: {
+        Icon,
+    },
     props: {
         title: {
             type: String,
@@ -41,11 +44,6 @@ export default defineComponent({
         },
     },
     emits: ['close'],
-    setup() {
-        return {
-            closeIcon,
-        };
-    },
 });
 </script>
 

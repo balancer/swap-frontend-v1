@@ -1,7 +1,10 @@
 <template>
     <div class="popup-wrapper">
         <div class="icon-wrapper">
-            <img :src="infoIcon">
+            <Icon
+                class="icon"
+                :title="'info'"
+            />
         </div>
         <div class="popup">
             <div class="header">
@@ -27,9 +30,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import infoIcon from '@/assets/infoIcon.svg';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
+    components: {
+        Icon,
+    },
     props: {
         swaps: {
             type: Array,
@@ -43,8 +49,6 @@ export default defineComponent({
 
         return {
             formatAddress,
-
-            infoIcon,
         };
     },
 });
@@ -59,7 +63,7 @@ export default defineComponent({
     height: 16px;
 }
 
-.icon-wrapper > img {
+.icon {
     width: 16px;
     height: 16px;
 }
@@ -93,7 +97,7 @@ export default defineComponent({
 }
 
 .hop:not(:last-child)::after {
-    content: '>';
+    content: '⭢';
     margin: 0 4px;
 }
 </style>

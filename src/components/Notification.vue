@@ -7,7 +7,10 @@
             error: type === 'error',
         }"
     >
-        <img :src="icon">
+        <Icon
+            :title="icon"
+            class="icon"
+        />
         <div class="body">
             <div class="body-title">
                 {{ title }}
@@ -29,13 +32,12 @@
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
 
-import successIcon from '@/assets/successIcon.svg';
-import errorIcon from '@/assets/errorIcon.svg';
-
-import NotificationButton from './NotificationButton.vue';
+import Icon from '@/components/Icon.vue';
+import NotificationButton from '@/components/NotificationButton.vue';
 
 export default defineComponent({
     components: {
+        Icon,
         NotificationButton,
     },
     props: {
@@ -54,21 +56,19 @@ export default defineComponent({
     },
     setup(props) {
         const icon = computed(() => {
-            const iconMap = {
-                'success': successIcon,
-                'warning': errorIcon,
-                'error': errorIcon,
-            };
-            return iconMap[props.type];
+            if (props.type === 'success') {
+                return 'success';
+            } else {
+                return 'error';
+            }
         });
 
         const title = computed(() => {
-            const titleMap = {
-                'success': 'Success',
-                'warning': 'Error',
-                'error': 'Error',
-            };
-            return titleMap[props.type];
+            if (props.type === 'success') {
+                return 'Success';
+            } else {
+                return 'Error';
+            }
         });
 
         return {
@@ -97,6 +97,11 @@ export default defineComponent({
     align-items: center;
     animation-name: slide;
     animation-duration: 10000ms;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
 }
 
 .success {
