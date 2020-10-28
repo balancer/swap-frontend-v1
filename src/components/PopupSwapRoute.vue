@@ -20,7 +20,13 @@
                     :key="hop"
                     class="hop"
                 >
-                    {{ formatAddress(hop.pool) }}
+                    <a
+                        :href="getPoolLink(hop.pool)"
+                        target="_blank"
+                        class="pool-link"
+                    >
+                        {{ formatAddress(hop.pool) }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -29,6 +35,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
+import { formatAddress, getPoolLink } from '@/utils/helpers';
 
 import Icon from '@/components/Icon.vue';
 
@@ -43,12 +51,9 @@ export default defineComponent({
         },
     },
     setup() {
-        function formatAddress(address: string): string {
-            return `${address.substr(0, 6)}…${address.substr(38)}`;
-        }
-
         return {
             formatAddress,
+            getPoolLink,
         };
     },
 });
@@ -70,18 +75,46 @@ export default defineComponent({
 
 .popup {
     width: 240px;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    padding: 8px;
-    position: absolute;
     z-index: 1;
-    bottom: 125%;
+    bottom: 100%;
     left: 50%;
     margin-left: -129px;
-    border: 1px solid var(--outline);
-    display: none;
+    margin-bottom: 8px;
+    padding: 8px;
+    position: absolute;
+    display: flex;
     flex-direction: column;
     align-items: center;
+    visibility: hidden;
+    border: 1px solid var(--outline);
+    background-color: var(--background-secondary);
+    border-radius: var(--border-radius);
+}
+
+.popup:hover {
+    visibility: visible;
+}
+
+.popup::before {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -8px;
+    content: "";
+    border-style: solid;
+    border-color: var(--outline) transparent transparent transparent;
+    border-width: 8px;
+}
+
+.popup::after {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -7px;
+    content: "";
+    border-style: solid;
+    border-color: var(--background-secondary) transparent transparent transparent;
+    border-width: 7px;
 }
 
 .header {
@@ -89,7 +122,7 @@ export default defineComponent({
 }
 
 .icon-wrapper:hover + .popup {
-    display: flex;
+    visibility: visible;
 }
 
 .swap {
@@ -99,5 +132,9 @@ export default defineComponent({
 .hop:not(:last-child)::after {
     content: '⭢';
     margin: 0 4px;
+}
+
+.pool-link {
+    color: var(--info);
 }
 </style>
