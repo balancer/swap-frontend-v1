@@ -21,7 +21,6 @@ export function getSlippage(pools: any, swaps: any[], isExactIn: boolean, tokenI
             const swapAmount = swap.length === 1
                 ? new BigNumber(swap[0].swapAmount)
                 : new BigNumber(swap[1].swapAmount);
-
             spotAmount = spotAmount.plus(swapAmount.times(spotPrice));
         }
     }
@@ -54,6 +53,6 @@ function getPoolPair(pools: any[], poolId: string, tokenInAddress: string, token
         balanceIn: tokenIn.balance,
         balanceOut: tokenOut.balance,
         weightIn: tokenIn.denormWeight,
-        weightOut: tokenIn.denormWeight,
+        weightOut: tokenOut.denormWeight,
     };
 }
