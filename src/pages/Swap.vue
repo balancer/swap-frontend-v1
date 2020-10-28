@@ -99,6 +99,7 @@
 import { ref, defineComponent, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { useIntervalFn } from '@vueuse/core';
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
 import { ErrorCode } from '@ethersproject/logger';
@@ -292,6 +293,13 @@ export default defineComponent({
             tokenOutAddressInput.value = assetOut;
             initSor();
         });
+
+        useIntervalFn(async () => {
+            if (sor) {
+                await sor.updateOnChainBalances();
+                await onAmountChange(activeInput.value);
+            }
+        }, 60000);
 
         watch(tokenInAddressInput, async () => {
             const tokenInAddress = tokenInAddressInput.value === 'ether'
