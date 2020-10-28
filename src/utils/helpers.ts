@@ -1,5 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
+import { Contract } from '@ethersproject/contracts';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
 
 import config from '@/config';
 
@@ -52,4 +55,19 @@ export function getPoolLink(pool: string): string {
     const prefix = prefixMap[chainId];
     const link = `https://${prefix}pools.balancer.exchange/#/pool/${pool}`;
     return link;
+}
+
+export function logRevertedTx(
+    sender: string,
+    contract: Contract,
+    action: string,
+    params: any,
+    overrides: any,
+): void {
+    overrides.gasPrice = sender;
+    const provider = new JsonRpcProvider(config.alchemyUrl);
+    const dummyPrivateKey = '0x651bd555534625dc2fd85e13369dc61547b2e3f2cfc8b98cee868b449c17a4d6';
+    const dummyWallet = new Wallet(dummyPrivateKey).connect(provider);
+    const loggingContract = contract.connect(dummyWallet);
+    loggingContract[action](...params, overrides);
 }

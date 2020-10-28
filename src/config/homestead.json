@@ -3,7 +3,8 @@
     "chainId": 1,
     "defaultPrecision": 2,
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
-    "alchemyUrl": "wss://eth-mainnet.ws.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
+    "alchemyUrl": "https://eth-mainnet.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
+    "alchemyWsUrl": "wss://eth-mainnet.ws.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
     "addresses": {
         "bFactory": "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd",
         "bActions": "0xde4A25A0b9589689945d842c5ba0CF4f0D4eB3ac",

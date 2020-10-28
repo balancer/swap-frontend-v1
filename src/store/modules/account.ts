@@ -159,11 +159,11 @@ const getters = {
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
-        const fallbackProvider = new WebSocketProvider(config.alchemyUrl);
+        const fallbackProvider = new WebSocketProvider(config.alchemyWsUrl);
         return fallbackProvider;
     },
     readProvider: (): any => {
-        return new WebSocketProvider(config.alchemyUrl);
+        return new WebSocketProvider(config.alchemyWsUrl);
     },
 };
 

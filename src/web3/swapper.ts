@@ -1,9 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { Contract } from '@ethersproject/contracts';
+import { ErrorCode } from '@ethersproject/logger';
+import { Web3Provider } from '@ethersproject/providers';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
+import { logRevertedTx } from '@/utils/helpers';
 import { ETH_KEY } from '@/utils/assets';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
@@ -11,7 +14,7 @@ const exchangeProxyAddress = config.addresses.exchangeProxy;
 
 export default class Swapper {
     static async swapIn(
-        provider: any,
+        provider: Web3Provider,
         swaps: any[][],
         tokenInAddress: string,
         tokenOutAddress: string,
@@ -37,12 +40,28 @@ export default class Swapper {
                 overrides,
             );
         } catch(e) {
+            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
+                const sender = await provider.getSigner().getAddress();
+                logRevertedTx(
+                    sender,
+                    exchangeProxyContract,
+                    'multihopBatchSwapExactIn',
+                    [
+                        swaps,
+                        tokenInAddress,
+                        tokenOutAddress,
+                        tokenInAmount.toString(),
+                        tokenOutAmountMin.toString(),
+                    ],
+                    overrides,
+                );
+            }
             return e;
         }
     }
 
     static async swapOut(
-        provider: any,
+        provider: Web3Provider,
         swaps: any[][],
         tokenInAddress: string,
         tokenOutAddress: string,
@@ -66,6 +85,21 @@ export default class Swapper {
                 overrides,
             );
         } catch(e) {
+            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
+                const sender = await provider.getSigner().getAddress();
+                logRevertedTx(
+                    sender,
+                    exchangeProxyContract,
+                    'multihopBatchSwapExactOut',
+                    [
+                        swaps,
+                        tokenInAddress,
+                        tokenOutAddress,
+                        tokenInAmountMax.toString(),
+                    ],
+                    overrides,
+                );
+            }
             return e;
         }
     }
