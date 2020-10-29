@@ -1,10 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 
 import config from '@/config';
+import wsProvider from '@/utils/provider';
 
 export function formatAddress(address: string, length = 8): string {
     const ellipsizedAddress = `${address.substr(0, 2 + length / 2)}…${address.substr(42 - length / 2)}`;
@@ -65,9 +65,8 @@ export function logRevertedTx(
     overrides: any,
 ): void {
     overrides.gasPrice = sender;
-    const provider = new JsonRpcProvider(config.alchemyUrl);
     const dummyPrivateKey = '0x651bd555534625dc2fd85e13369dc61547b2e3f2cfc8b98cee868b449c17a4d6';
-    const dummyWallet = new Wallet(dummyPrivateKey).connect(provider);
+    const dummyWallet = new Wallet(dummyPrivateKey).connect(wsProvider);
     const loggingContract = contract.connect(dummyWallet);
     loggingContract[action](...params, overrides);
 }

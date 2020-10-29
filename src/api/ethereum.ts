@@ -1,11 +1,11 @@
 import { Provider, Contract } from 'ethcall';
-import { BaseProvider } from '@ethersproject/providers';
 
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
 import config from '@/config';
 import { ETH_KEY } from '@/utils/assets';
+import wsProvider from '@/utils/provider';
 
 export type Allowances = Record<string, Record<string, string>>;
 
@@ -26,9 +26,9 @@ export interface TokenMetadata {
 }
 
 export default class Ethereum {
-    static async fetchAccountState(provider: BaseProvider, address: string, assets: string[]): Promise<AccountState> {
+    static async fetchAccountState(address: string, assets: string[]): Promise<AccountState> {
         const ethcallProvider = new Provider();
-        await ethcallProvider.init(provider);
+        await ethcallProvider.init(wsProvider);
         const calls = [];
         // Fetch balances and allowances
         const exchangeProxyAddress = config.addresses.exchangeProxy;
@@ -73,9 +73,9 @@ export default class Ethereum {
         return { allowances, balances, proxy };
     }
 
-    static async fetchTokenMetadata(provider: BaseProvider, assets: string[]): Promise<Record<string, TokenMetadata>> {
+    static async fetchTokenMetadata(assets: string[]): Promise<Record<string, TokenMetadata>> {
         const ethcallProvider = new Provider();
-        await ethcallProvider.init(provider);
+        await ethcallProvider.init(wsProvider);
         const calls = [];
         // Fetch token metadata
         for (const tokenAddress of assets) {

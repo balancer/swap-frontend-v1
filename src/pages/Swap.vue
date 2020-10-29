@@ -106,6 +106,7 @@ import { ErrorCode } from '@ethersproject/logger';
 import { SOR } from '@balancer-labs/sor';
 
 import config from '@/config';
+import wsProvider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
@@ -415,7 +416,6 @@ export default defineComponent({
         }
 
         async function initSor(): Promise<void> {
-            const provider = await store.getters['account/provider'];
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -424,7 +424,7 @@ export default defineComponent({
                 : tokenOutAddressInput.value;
 
             sor = new SOR(
-                provider,
+                wsProvider,
                 new BigNumber(APP_GAS_PRICE),
                 parseInt(APP_MAX_POOLS),
                 config.chainId,
@@ -528,8 +528,7 @@ export default defineComponent({
                 text: `Unlock ${assetSymbol}`,
             });
 
-            const provider = store.getters['account/readProvider'];
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             store.dispatch('account/fetchAssets', [ asset ]);
             store.dispatch('account/saveTransactionReceipt', transactionReceipt);
@@ -568,8 +567,7 @@ export default defineComponent({
                 text: `Swap ${assetInSymbol} for ${assetOutSymbol}`,
             });
 
-            const provider = store.getters['account/readProvider'];
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             store.dispatch('account/fetchAssets', [ assetIn, assetOut ]);
             store.dispatch('account/saveTransactionReceipt', transactionReceipt);

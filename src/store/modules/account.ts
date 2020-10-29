@@ -1,11 +1,10 @@
-import { WebSocketProvider, Web3Provider, Provider } from '@ethersproject/providers';
+import { ActionContext } from 'vuex';
+import { Web3Provider, Provider } from '@ethersproject/providers';
 
 import Ethereum, { Allowances, Balances } from '@/api/ethereum';
-import lock from '@/utils/connectors';
 import { RootState } from '@/store';
-import config from '@/config';
-import { ActionContext } from 'vuex';
-
+import lock from '@/utils/connectors';
+import wsProvider from '@/utils/provider';
 
 const LS_CONNECTOR_KEY = 'connector';
 
@@ -35,7 +34,7 @@ interface TransactionData {
     text: string;
     transaction: {
         hash: string;
-    }
+    };
 }
 
 const mutations = {
@@ -152,20 +151,18 @@ const actions = {
     clean: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
         commit('clean');
     },
-    fetchState: async({ commit, state, getters, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
-        const provider = await getters.readProvider;
+    fetchState: async({ commit, state, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
         const { address } = state;
         const { metadata } = rootState.assets;
         const assets = Object.keys(metadata);
-        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
+        const { proxy, balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('setProxy', proxy);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
-    fetchAssets: async({ commit, state, getters }: ActionContext<AccountState, RootState>, assets: string[]): Promise<void> => {
-        const provider = await getters.readProvider;
+    fetchAssets: async({ commit, state }: ActionContext<AccountState, RootState>, assets: string[]): Promise<void> => {
         const { address } = state;
-        const { balances, allowances } = await Ethereum.fetchAccountState(provider, address, assets);
+        const { balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
@@ -185,11 +182,7 @@ const getters = {
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
-        const fallbackProvider = new WebSocketProvider(config.alchemyWsUrl);
-        return fallbackProvider;
-    },
-    readProvider: (): Provider => {
-        return new WebSocketProvider(config.alchemyWsUrl);
+        return wsProvider;
     },
 };
 
