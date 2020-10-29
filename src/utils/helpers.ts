@@ -57,6 +57,10 @@ export function getPoolLink(pool: string): string {
     return link;
 }
 
+export function getTrustwalletLink(address: string): string {
+    return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+}
+
 export function logRevertedTx(
     sender: string,
     contract: Contract,

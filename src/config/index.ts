@@ -10,7 +10,7 @@ interface Connector {
     options: any;
 }
 
-interface Token {
+export interface TokenMetadata {
     address: string;
     name: string;
     symbol: string;
@@ -35,7 +35,7 @@ interface Config {
         weth: string;
         multicall: string;
     };
-    tokens: Record<string, Token>;
+    tokens: Record<string, TokenMetadata>;
     connectors: Record<string, Connector>;
 }
 

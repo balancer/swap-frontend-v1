@@ -1,6 +1,6 @@
-import Ethereum, { TokenMetadata } from '@/api/ethereum';
+import Ethereum from '@/api/ethereum';
 import { RootState } from '@/store';
-import config from '@/config';
+import config, { TokenMetadata } from '@/config';
 import { ActionContext } from 'vuex';
 
 export interface AssetState {

@@ -3,8 +3,9 @@ import { Provider, Contract } from 'ethcall';
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
-import config from '@/config';
+import config, { TokenMetadata } from '@/config';
 import { ETH_KEY } from '@/utils/assets';
+import { getTrustwalletLink } from '@/utils/helpers';
 import wsProvider from '@/utils/provider';
 
 export type Allowances = Record<string, Record<string, string>>;
@@ -15,14 +16,6 @@ export interface AccountState {
     allowances: Allowances;
     balances: Balances;
     proxy: string;
-}
-
-export interface TokenMetadata {
-    address: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-    hasIcon: boolean;
 }
 
 export default class Ethereum {
@@ -89,7 +82,7 @@ export default class Ethereum {
         }
         // Fetch data
         const data = await ethcallProvider.all(calls);
-        const metadata = {};
+        const metadata: Record<string, TokenMetadata> = {};
         for (let i = 0; i < assets.length; i++) {
             const tokenAddress = assets[i];
             const name = data[3 * i];
@@ -100,7 +93,9 @@ export default class Ethereum {
                 name,
                 symbol,
                 decimals,
+                precision: config.defaultPrecision,
                 hasIcon: true,
+                logoUrl: getTrustwalletLink(tokenAddress),
             };
         }
         return metadata;

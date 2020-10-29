@@ -31,10 +31,7 @@ export default defineComponent({
             if (!assetMetadata) {
                 return defaultIcon;
             }
-            if (!assetMetadata.hasIcon) {
-                return defaultIcon;
-            }
-            return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+            return assetMetadata.logoUrl;
         });
 
         return {

@@ -1,4 +1,4 @@
-import { TokenMetadata } from '@/api/ethereum';
+import { TokenMetadata } from '@/config';
 
 export const ETH_KEY = 'ether';
 
