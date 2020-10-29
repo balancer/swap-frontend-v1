@@ -30,6 +30,7 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import config from '@/config';
+import { RootState } from '@/store';
 
 import ModalBase from '@/components/ModalBase.vue';
 
@@ -38,7 +39,7 @@ export default defineComponent({
         ModalBase,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const connectors = computed(() => {
             return Object.keys(config.connectors).map(connectorKey => {

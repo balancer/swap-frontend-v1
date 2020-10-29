@@ -113,6 +113,7 @@ import { ValidationError, validateNumberInput } from '@/utils/validation';
 import { getSlippage } from '@/utils/slippage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
+import { RootState } from '@/store';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
@@ -156,7 +157,7 @@ export default defineComponent({
         let sor: SOR | undefined = undefined;
 
         const router = useRouter();
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const isInRate = ref(true);
         const isExactIn = ref(true);

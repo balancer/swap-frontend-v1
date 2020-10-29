@@ -30,6 +30,7 @@
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import { RootState } from '@/store';
 import { formatAddress } from '@/utils/helpers';
 
 import Button from '@/components/Button.vue';
@@ -43,7 +44,7 @@ export default defineComponent({
         Jazzicon,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const address = computed(() => {
             const { web3Provider, address } = store.state.account;

@@ -42,6 +42,7 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
@@ -74,7 +75,7 @@ export default defineComponent({
     },
     emits: ['update:amount', 'change'],
     setup(props, { emit }) {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const symbol = computed(() => {
             const assets = store.state.assets.metadata;

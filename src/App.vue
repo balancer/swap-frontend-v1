@@ -19,8 +19,10 @@
 import { defineComponent, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
-import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
+import { RootState } from '@/store';
+
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
 import ModalConnectorSelector from '@/components/ModalConnectorSelector.vue';
 import Notification from '@/components/Notification.vue';
@@ -34,7 +36,7 @@ export default defineComponent({
         Notification,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const isAccountModalOpen = computed(() => store.state.ui.modal.account.isOpen);
         const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);

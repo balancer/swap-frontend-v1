@@ -47,6 +47,7 @@ import { defineComponent, onMounted, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
+import { RootState } from '@/store';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -58,7 +59,7 @@ export default defineComponent({
     },
     emits: ['select'],
     setup(props, { emit }) {
-        const store = useStore();
+        const store = useStore<RootState>();
         const { metadata } = store.state.assets;
         const { balances } = store.state.account;
 

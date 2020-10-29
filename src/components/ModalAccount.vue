@@ -84,6 +84,7 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, getEtherscanLink } from '@/utils/helpers';
 
@@ -102,7 +103,7 @@ export default defineComponent({
         TransactionIcon,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
         const { metadata } = store.state.assets;
         const { address, transactions, balances } = store.state.account;
 
