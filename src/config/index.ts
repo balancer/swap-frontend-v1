@@ -48,6 +48,4 @@ const network = process.env.APP_CHAIN_ID || 1;
 
 const config: Config = configs[network];
 
-console.log(network, configs, config);
-
 export default config;
