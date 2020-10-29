@@ -307,7 +307,7 @@ export default defineComponent({
             }
         }, 60000);
 
-        watch(tokenInAddressInput, async () => {
+        watch(tokenInAddressInput, async (newValue, oldValue) => {
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -315,14 +315,14 @@ export default defineComponent({
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
 
-            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress) && oldValue) {
                 swapsLoading.value = true;
                 await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
             }
             await onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, async () => {
+        watch(tokenOutAddressInput, async (newValue, oldValue) => {
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -330,7 +330,7 @@ export default defineComponent({
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
 
-            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress) && oldValue) {
                 swapsLoading.value = true;
                 await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
             }
