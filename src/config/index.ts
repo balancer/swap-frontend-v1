@@ -1,5 +1,5 @@
-import homesteadAssets from 'assets/generated/dex/registry.homestead.json';
-import kovanAssets from 'assets/generated/dex/registry.kovan.json';
+import homesteadAssets from '@balancer-labs/assets/generated/dex/registry.homestead.json';
+import kovanAssets from '@balancer-labs/assets/generated/dex/registry.kovan.json';
 
 import homestead from './homestead.json';
 import kovan from './kovan.json';
