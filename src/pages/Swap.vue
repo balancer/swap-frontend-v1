@@ -612,12 +612,12 @@ export default defineComponent({
             let assetIn = 
                 router.currentRoute.value.params.assetIn as string ||
                 localStorage.getItem(ASSET_INPUT_KEY) ||
-                getAssetAddressBySymbol(metadata, 'ETH') ||
+                getAssetAddressBySymbol(metadata, 'DAI') ||
                 config.addresses.weth;
             let assetOut = 
                 router.currentRoute.value.params.assetOut as string ||
                 localStorage.getItem(ASSET_OUTPUT_KEY) ||
-                getAssetAddressBySymbol(metadata, 'USDC') ||
+                getAssetAddressBySymbol(metadata, 'BAL') ||
                 config.addresses.weth;
             if (isAddress(assetIn)) {
                 assetIn = getAddress(assetIn);
