@@ -126,6 +126,9 @@ const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 // eslint-disable-next-line no-undef
 const APP_MAX_POOLS = process.env.APP_MAX_POOLS || '4';
 
+const ASSET_INPUT_KEY = 'input_asset';
+const ASSET_OUTPUT_KEY = 'output_asset';
+
 enum Validation {
     NONE,
     INVALID_INPUT,
@@ -308,6 +311,7 @@ export default defineComponent({
         }, 60000);
 
         watch(tokenInAddressInput, async (newValue, oldValue) => {
+            localStorage.setItem(ASSET_INPUT_KEY, newValue);
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -323,6 +327,7 @@ export default defineComponent({
         });
 
         watch(tokenOutAddressInput, async (newValue, oldValue) => {
+            localStorage.setItem(ASSET_OUTPUT_KEY, newValue);
             const tokenInAddress = tokenInAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
@@ -604,14 +609,16 @@ export default defineComponent({
 
         function getInitialPair(): Pair {
             const { metadata } = store.state.assets;
-            let assetIn = router.currentRoute.value.params.assetIn as string;
-            let assetOut = router.currentRoute.value.params.assetOut as string;
-            if (!assetIn || !assetOut) {
-                return {
-                    assetIn: getAssetAddressBySymbol(metadata, 'ETH') || config.addresses.weth,
-                    assetOut: getAssetAddressBySymbol(metadata, 'USDC') || config.addresses.weth,
-                };
-            }
+            let assetIn = 
+                router.currentRoute.value.params.assetIn as string ||
+                localStorage.getItem(ASSET_INPUT_KEY) ||
+                getAssetAddressBySymbol(metadata, 'ETH') ||
+                config.addresses.weth;
+            let assetOut = 
+                router.currentRoute.value.params.assetOut as string ||
+                localStorage.getItem(ASSET_OUTPUT_KEY) ||
+                getAssetAddressBySymbol(metadata, 'USDC') ||
+                config.addresses.weth;
             if (isAddress(assetIn)) {
                 assetIn = getAddress(assetIn);
             }
