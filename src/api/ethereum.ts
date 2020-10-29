@@ -1,4 +1,5 @@
 import { Provider, Contract } from 'ethcall';
+import { BaseProvider } from '@ethersproject/providers';
 
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
@@ -6,8 +7,26 @@ import erc20Abi from '../abi/ERC20.json';
 import config from '@/config';
 import { ETH_KEY } from '@/utils/assets';
 
+export type Allowances = Record<string, Record<string, string>>;
+
+export type Balances = Record<string, string>;
+
+export interface AccountState {
+    allowances: Allowances;
+    balances: Balances;
+    proxy: string;
+}
+
+export interface TokenMetadata {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    hasIcon: boolean;
+}
+
 export default class Ethereum {
-    static async fetchAccountState(provider: any, address: string, assets: string[]): Promise<any> {
+    static async fetchAccountState(provider: BaseProvider, address: string, assets: string[]): Promise<AccountState> {
         const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];
@@ -54,7 +73,7 @@ export default class Ethereum {
         return { allowances, balances, proxy };
     }
 
-    static async fetchTokenMetadata(provider: any, assets: string[]): Promise<any> {
+    static async fetchTokenMetadata(provider: BaseProvider, assets: string[]): Promise<Record<string, TokenMetadata>> {
         const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];

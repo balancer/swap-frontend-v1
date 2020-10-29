@@ -1,8 +1,14 @@
 import { createStore } from 'vuex';
 
-import account from './modules/account';
-import assets from './modules/assets';
-import ui from './modules/ui';
+import account, { AccountState } from './modules/account';
+import assets, { AssetState } from './modules/assets';
+import ui, { UIState } from './modules/ui';
+
+export interface RootState {
+	account: AccountState;
+	assets: AssetState;
+	ui: UIState;
+}
 
 const store = createStore({
     modules: {

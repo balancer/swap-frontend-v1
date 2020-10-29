@@ -1,11 +1,16 @@
+import { TokenMetadata } from '@/api/ethereum';
+
 export const ETH_KEY = 'ether';
 
-export function getAssetAddressBySymbol(assets: any, symbol: string): any {
+export function getAssetAddressBySymbol(assets: TokenMetadata[], symbol: string): string | undefined {
     const asset = getAssetBySymbol(assets, symbol);
+    if (!asset) {
+        return;
+    }
     return asset.address;
 }
 
-function getAssetBySymbol(assets: any[], symbol: string): any {
+function getAssetBySymbol(assets: TokenMetadata[], symbol: string): TokenMetadata | undefined {
     const assetAddress = Object.keys(assets).find(assetAddress => {
         const asset = assets[assetAddress];
         return asset.symbol === symbol;

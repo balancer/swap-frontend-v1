@@ -1,51 +1,75 @@
+import { RootState } from '@/store';
 import { sleep } from '@/utils/helpers';
+import { ActionContext } from 'vuex';
+
+export interface UIState {
+    modal: {
+        asset: {
+            isOpen: boolean;
+            key: string;
+        };
+        account: {
+            isOpen: boolean;
+        };
+        connector: {
+            isOpen: boolean;
+        };
+    };
+    notification: Notification | null;
+}
+
+interface Notification {
+    text: string;
+    type: 'success' | 'error';
+    link: string;
+}
 
 const mutations = {
-    setAssetModalOpen: (_state: any, isOpen: boolean): void => {
+    setAssetModalOpen: (_state: UIState, isOpen: boolean): void => {
         _state.modal.asset.isOpen = isOpen;
     },
-    setAssetModalKey: (_state: any, key: string): void => {
+    setAssetModalKey: (_state: UIState, key: string): void => {
         _state.modal.asset.key= key;
     },
-    setAccountModal: (_state: any, isOpen: boolean): void => {
+    setAccountModal: (_state: UIState, isOpen: boolean): void => {
         _state.modal.account.isOpen = isOpen;
     },
-    setConnectorModal: (_state: any, isOpen: boolean): void => {
+    setConnectorModal: (_state: UIState, isOpen: boolean): void => {
         _state.modal.connector.isOpen = isOpen;
     },
-    setNotification: (_state: any, notification: any): void => {
+    setNotification: (_state: UIState, notification: Notification): void => {
         _state.notification = notification;
     },
 };
 
 const actions = {
-    openAssetModal: ({ commit }: any, key: string): void => {
+    openAssetModal: ({ commit }: ActionContext<UIState, RootState>, key: string): void => {
         commit('setAssetModalOpen', true);
         commit('setAssetModalKey', key);
     },
-    closeAssetModal: ({ commit }: any): void => {
+    closeAssetModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setAssetModalOpen', false);
     },
-    openAccountModal: ({ commit }: any): void => {
+    openAccountModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setAccountModal', true);
     },
-    closeAccountModal: ({ commit }: any): void => {
+    closeAccountModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setAccountModal', false);
     },
-    openConnectorModal: ({ commit }: any): void => {
+    openConnectorModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setConnectorModal', true);
     },
-    closeConnectorModal: ({ commit }: any): void => {
+    closeConnectorModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setConnectorModal', false);
     },
-    notify: async ({ commit }: any, notification: any): Promise<void> => {
+    notify: async ({ commit }: ActionContext<UIState, RootState>, notification: Notification): Promise<void> => {
         commit('setNotification', notification);
         await sleep(10 * 1000);
         commit('setNotification', null);
     },
 };
 
-function state(): any {
+function state(): UIState {
     return {
         modal: {
             asset: {

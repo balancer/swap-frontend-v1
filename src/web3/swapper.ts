@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Contract } from '@ethersproject/contracts';
 import { ErrorCode } from '@ethersproject/logger';
 import { Web3Provider } from '@ethersproject/providers';
+import { Swap } from '@balancer-labs/sor/dist/types';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
@@ -15,7 +16,7 @@ const exchangeProxyAddress = config.addresses.exchangeProxy;
 export default class Swapper {
     static async swapIn(
         provider: Web3Provider,
-        swaps: any[][],
+        swaps: Swap[][],
         tokenInAddress: string,
         tokenOutAddress: string,
         tokenInAmount: BigNumber,
@@ -62,7 +63,7 @@ export default class Swapper {
 
     static async swapOut(
         provider: Web3Provider,
-        swaps: any[][],
+        swaps: Swap[][],
         tokenInAddress: string,
         tokenOutAddress: string,
         tokenInAmountMax: BigNumber,

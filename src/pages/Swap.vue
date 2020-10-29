@@ -134,6 +134,11 @@ enum Validation {
     NO_SWAPS,
 }
 
+interface Pair {
+    assetIn: string;
+    assetOut: string;
+}
+
 export default defineComponent({
     components: {
         AssetInput,
@@ -582,7 +587,7 @@ export default defineComponent({
                 link,
             });
         }
-        
+
         async function fetchTokenMetadata(assetIn: string, assetOut: string): Promise<void> {
             const { metadata } = store.state.assets;
             const unknownTokens = [];
@@ -599,14 +604,14 @@ export default defineComponent({
             await store.dispatch('account/fetchAssets', unknownTokens);
         }
 
-        function getInitialPair(): any {
+        function getInitialPair(): Pair {
             const { metadata } = store.state.assets;
             let assetIn = router.currentRoute.value.params.assetIn as string;
             let assetOut = router.currentRoute.value.params.assetOut as string;
             if (!assetIn || !assetOut) {
                 return {
-                    assetIn: getAssetAddressBySymbol(metadata, 'ETH'),
-                    assetOut: getAssetAddressBySymbol(metadata, 'USDC'),
+                    assetIn: getAssetAddressBySymbol(metadata, 'ETH') || config.addresses.weth,
+                    assetOut: getAssetAddressBySymbol(metadata, 'USDC') || config.addresses.weth,
                 };
             }
             if (isAddress(assetIn)) {
