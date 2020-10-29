@@ -2,10 +2,10 @@
   "name": "balancer-frontend",
   "version": "1.0.0",
   "description": "Balancer Protocol Frontend",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "repository": {
     "type": "git",
-    "url": "git://github.com/balancer-labsl/balancer-frontend.git"
+    "url": "git://github.com/balancer-labs/balancer-frontend.git"
   },
   "scripts": {
     "build": "webpack",
