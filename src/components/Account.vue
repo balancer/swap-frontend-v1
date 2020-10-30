@@ -48,8 +48,8 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const address = computed(() => {
-            const { web3Provider, address } = store.state.account;
-            if (!web3Provider || !address) {
+            const { web3Connector, address } = store.state.account;
+            if (!web3Connector || !address) {
                 return '';
             }
             return address;

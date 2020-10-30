@@ -15,7 +15,7 @@ enum TransactionStatus {
 }
 
 export interface AccountState {
-    web3Provider: boolean;
+    web3Connector: string;
     address: string;
     chainId: number;
     proxy: string;
@@ -38,8 +38,8 @@ interface TransactionData {
 }
 
 const mutations = {
-    setWeb3Provider: (_state: AccountState, hasProvider: boolean): void => {
-        _state.web3Provider = hasProvider;
+    setWeb3Connector: (_state: AccountState, connector: string): void => {
+        _state.web3Connector = connector;
     },
     setAddress: (_state: AccountState, address: string): void => {
         _state.address = address;
@@ -92,20 +92,22 @@ const mutations = {
 };
 
 const actions = {
-    init: async({ dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
+    init: async({ commit, dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
         // Save Web3 provider if available
         const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
         if (connectorKey) {
             const connector = lock.getConnector(connectorKey);
             const provider = await connector.connect();
+            commit('setWeb3Connector', connectorKey);
             dispatch('saveWeb3Provider', provider);
         }
     },
-    connect: async({ dispatch }: ActionContext<AccountState, RootState>, connectorKey: string): Promise<void> => {
+    connect: async({ commit, dispatch }: ActionContext<AccountState, RootState>, connectorKey: string): Promise<void> => {
         const connector = lock.getConnector(connectorKey);
         const provider = await connector.connect();
         if (provider) {
             localStorage.setItem(LS_CONNECTOR_KEY, connectorKey);
+            commit('setWeb3Connector', connectorKey);
             dispatch('saveWeb3Provider', provider);
         }
     },
@@ -119,7 +121,7 @@ const actions = {
             }
             localStorage.removeItem(LS_CONNECTOR_KEY);
         }
-        commit('setWeb3Provider', false);
+        commit('setWeb3Connector', '');
         commit('setAddress', '');
         commit('setChainId', 0);
     },
@@ -143,7 +145,6 @@ const actions = {
         const web3Provider = new Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
-        commit('setWeb3Provider', true);
         commit('setAddress', accounts[0]);
         commit('setChainId', network.chainId);
         dispatch('fetchState');
@@ -176,9 +177,8 @@ const actions = {
 
 const getters = {
     provider: async(state: AccountState): Promise<Provider> => {
-        if (state.web3Provider) {
-            const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY) || 'injected';
-            const connector = lock.getConnector(connectorKey);
+        if (state.web3Connector) {
+            const connector = lock.getConnector(state.web3Connector);
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
@@ -188,7 +188,7 @@ const getters = {
 
 function state(): AccountState {
     return {
-        web3Provider: false,
+        web3Connector: '',
         address: '',
         chainId: 0,
         proxy: '',

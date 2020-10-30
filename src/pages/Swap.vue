@@ -175,8 +175,8 @@ export default defineComponent({
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
         const account = computed(() => {
-            const { web3Provider, address } = store.state.account;
-            if (!web3Provider || !address) {
+            const { web3Connector, address } = store.state.account;
+            if (!web3Connector || !address) {
                 return '';
             }
             return address;
