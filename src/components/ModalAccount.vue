@@ -4,8 +4,36 @@
         @close="close"
     >
         <template #default>
-            <div class="address">
-                Address: {{ formatAddress(address) }}
+            <div class="account">
+                <div class="account-info">
+                    <div>
+                        <Jazzicon
+                            :address="address"
+                            :size="40"
+                        />
+                    </div>
+                    <div class="account-wallet">
+                        <div class="account-address">
+                            {{ formatAddress(address) }}
+                            <Icon
+                                class="account-icon"
+                                :title="'clipboard'"
+                                @click="copyAddress"
+                            />
+                            <a
+                                class="transaction-link"
+                                :href="getAccountLink(address)"
+                                target="_blank"
+                            >
+                                <Icon
+                                    class="account-icon"
+                                    :title="'externalLink'"
+                                />
+                            </a>
+                        </div>
+                        <span class="account-connector">{{ walletType }}</span>
+                    </div>
+                </div>
                 <ButtonText
                     :text="'disconnect'"
                     @click="disconnect"
@@ -86,11 +114,13 @@ import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
-import { formatAddress, formatTxHash, getEtherscanLink } from '@/utils/helpers';
+import { formatAddress, formatTxHash, getEtherscanLink, getAccountLink } from '@/utils/helpers';
+import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
+import Jazzicon from '@/components/Jazzicon.vue';
 import ModalBase from '@/components/ModalBase.vue';
 import TransactionIcon from '@/components/TransactionIcon.vue';
 
@@ -99,13 +129,18 @@ export default defineComponent({
         AssetIcon,
         ButtonText,
         Icon,
+        Jazzicon,
         ModalBase,
         TransactionIcon,
     },
     setup() {
         const store = useStore<RootState>();
         const { metadata } = store.state.assets;
-        const { address, transactions, balances } = store.state.account;
+        const { web3Connector, address, transactions, balances } = store.state.account;
+
+        const walletType = computed(() => {
+            return config.connectors[web3Connector].name;
+        });
 
         const accountBalances = computed(() => {
             return Object.keys(balances)
@@ -128,6 +163,10 @@ export default defineComponent({
                 filter(balance => balance.amount !== '');
         });
 
+        function copyAddress(): void {
+            navigator.clipboard.writeText(address);
+        }
+
         function disconnect(): void {
             close();
             store.dispatch('account/disconnect');
@@ -138,12 +177,17 @@ export default defineComponent({
         }
 
         return {
+            walletType,
             address,
             transactions,
             balances: accountBalances,
+
             formatAddress,
             formatTxHash,
             getEtherscanLink,
+            getAccountLink,
+
+            copyAddress,
             disconnect,
             close,
         };
@@ -152,11 +196,39 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.address {
+.account {
     margin: 16px;
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+}
+
+.account-info {
+    display: flex;
+}
+
+.account-wallet {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+}
+
+.account-address {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.account-icon {
+    height: 18px;
+    width: 18px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.account-connector {
+    color: var(--text-secondary);
+    font-size: 14px;
 }
 
 .transactions {
