@@ -16,6 +16,18 @@ export function formatTxHash(txHash: string, length = 16): string {
     return ellipsizedHash;
 }
 
+export function formatDate(timestamp: number): string {
+    const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+    };
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', options);
+}
+
 export function isAddress(value: string): boolean {
     try {
         getAddress(value);

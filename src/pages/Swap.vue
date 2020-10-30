@@ -519,7 +519,10 @@ export default defineComponent({
             const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             store.dispatch('account/fetchAssets', [ asset ]);
-            store.dispatch('account/saveTransactionReceipt', transactionReceipt);
+            store.dispatch('account/saveMinedTransaction', {
+                receipt: transactionReceipt,
+                timestamp: Date.now(),
+            });
 
             const type = transactionReceipt.status === 1
                 ? 'success'
@@ -558,7 +561,10 @@ export default defineComponent({
             const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             store.dispatch('account/fetchAssets', [ assetIn, assetOut ]);
-            store.dispatch('account/saveTransactionReceipt', transactionReceipt);
+            store.dispatch('account/saveMinedTransaction', {
+                receipt: transactionReceipt,
+                timestamp: Date.now(),
+            });
 
             const type = transactionReceipt.status === 1
                 ? 'success'

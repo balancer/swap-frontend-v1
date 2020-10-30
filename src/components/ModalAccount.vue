@@ -69,7 +69,10 @@
                             </div>
                             <div class="transaction-data">
                                 <span class="transaction-text">{{ transaction.text }}</span>
-                                <span class="transaction-date">26 Oct, 2020 8:32 AM</span>
+                                <div class="transaction-date">
+                                    <span v-if="transaction.timestamp > 0">{{ formatDate(transaction.timestamp) }}</span>
+                                    <span v-else>Mining…</span>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -91,13 +94,13 @@
                     class="balances"
                 >
                     <div
-                        v-if="accountBalances.length === 0"
+                        v-if="balances.length === 0"
                         class="balances-empty"
                     >
                         No assets found
                     </div>
                     <div
-                        v-for="balance in accountBalances"
+                        v-for="balance in balances"
                         :key="balance.address"
                         class="balance"
                     >
@@ -134,7 +137,7 @@ import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
-import { formatAddress, formatTxHash, getEtherscanLink, getAccountLink } from '@/utils/helpers';
+import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
 import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
@@ -162,8 +165,6 @@ export default defineComponent({
 
         const activeTab = ref('transactions');
 
-        console.log('modal account, setup', balances);
-
         const tabs = [{
             id: 'transactions',
             title: 'Recent Transactions',
@@ -177,8 +178,7 @@ export default defineComponent({
         });
 
         const accountBalances = computed(() => {
-            console.log('ab computed', balances);
-            const b = Object.keys(balances)
+            return Object.keys(balances)
                 .map(assetAddress => {
                     const assetMetadata = metadata[assetAddress];
                     const { address, name, symbol, decimals, precision } = assetMetadata;
@@ -196,8 +196,6 @@ export default defineComponent({
                     };
                 }).
                 filter(balance => balance.amount !== '');
-            console.log('ab computed res', b);
-            return b;
         });
 
         function handleToggleSelect(optionId: string): void {
@@ -223,10 +221,11 @@ export default defineComponent({
             activeTab,
             tabs,
             transactions,
-            accountBalances,
+            balances: accountBalances,
 
             formatAddress,
             formatTxHash,
+            formatDate,
             getEtherscanLink,
             getAccountLink,
 

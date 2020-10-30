@@ -28,6 +28,7 @@ interface Transaction {
     text: string;
     hash: string;
     status: TransactionStatus;
+    timestamp: number;
 }
 
 interface TransactionData {
@@ -35,6 +36,11 @@ interface TransactionData {
     transaction: {
         hash: string;
     };
+}
+
+interface MinedTransaction {
+    receipt: any;
+    timestamp: number;
 }
 
 const mutations = {
@@ -72,16 +78,19 @@ const mutations = {
             text,
             hash: transaction.hash,
             status: TransactionStatus.PENDING,
+            timestamp: 0,
         });
     },
-    addTransactionReceipt: (_state: AccountState, transactionReceipt: any): void => {
-        const hash = transactionReceipt.transactionHash;
-        const status = transactionReceipt.status === 1
+    addMinedTransaction: (_state: AccountState, transaction: MinedTransaction): void => {
+        const { receipt, timestamp } = transaction;
+        const hash = receipt.transactionHash;
+        const status = receipt.status === 1
             ? TransactionStatus.OK
             : TransactionStatus.FAILED;
         const transactionIndex = _state.transactions
             .findIndex(transaction => transaction.hash === hash);
         _state.transactions[transactionIndex].status = status;
+        _state.transactions[transactionIndex].timestamp = timestamp;
     },
     clean: (_state: AccountState): void => {
         _state.proxy = '';
@@ -170,8 +179,8 @@ const actions = {
     saveTransaction: async({ commit }: ActionContext<AccountState, RootState>, transactionData: TransactionData): Promise<void> => {
         commit('addTransaction', transactionData);
     },
-    saveTransactionReceipt: async({ commit }: ActionContext<AccountState, RootState>, transactionReceipt: any): Promise<void> => {
-        commit('addTransactionReceipt', transactionReceipt);
+    saveMinedTransaction: async({ commit }: ActionContext<AccountState, RootState>, transaction: MinedTransaction): Promise<void> => {
+        commit('addMinedTransaction', transaction);
     },
 };
 
