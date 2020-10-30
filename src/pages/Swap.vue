@@ -306,41 +306,19 @@ export default defineComponent({
 
         useIntervalFn(async () => {
             if (sor) {
-                await sor.updateOnChainBalances();
+                await sor.fetchPools();
                 await onAmountChange(activeInput.value);
             }
         }, 60000);
 
-        watch(tokenInAddressInput, async (newValue, oldValue) => {
-            localStorage.setItem(ASSET_INPUT_KEY, newValue);
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenOutAddressInput.value;
-
-            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress) && oldValue) {
-                swapsLoading.value = true;
-                await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
-            }
-            await onAmountChange(activeInput.value);
+        watch(tokenInAddressInput, () => {
+            localStorage.setItem(ASSET_INPUT_KEY, tokenInAddressInput.value);
+            onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, async (newValue, oldValue) => {
-            localStorage.setItem(ASSET_OUTPUT_KEY, newValue);
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenOutAddressInput.value;
-
-            if (sor && !sor.hasPairPools(tokenInAddress, tokenOutAddress) && oldValue) {
-                swapsLoading.value = true;
-                await sor.fetchPairPools(tokenInAddress, tokenOutAddress, false);
-            }
-            await onAmountChange(activeInput.value);
+        watch(tokenOutAddressInput, () => {
+            localStorage.setItem(ASSET_OUTPUT_KEY, tokenOutAddressInput.value);
+            onAmountChange(activeInput.value);
         });
 
         function toggleRate(): void {
@@ -422,20 +400,13 @@ export default defineComponent({
         }
 
         async function initSor(): Promise<void> {
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
-                ? config.addresses.weth
-                : tokenOutAddressInput.value;
-
             sor = new SOR(
                 wsProvider,
                 new BigNumber(APP_GAS_PRICE),
                 parseInt(APP_MAX_POOLS),
                 config.chainId,
             );
-            await sor.fetchPairPools(tokenInAddress, tokenOutAddress);
+            await sor.fetchPools();
             await onAmountChange(activeInput.value);
         }
 
@@ -457,7 +428,7 @@ export default defineComponent({
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
 
-            if (!sor || !sor.hasPairPools(tokenInAddress, tokenOutAddress)) {
+            if (!sor || sor.onChainCache.pools.length === 0) {
                 return;
             }
 
@@ -474,7 +445,6 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactIn',
                     tokenInAmount,
-                    false,
                 );
                 // @ts-ignore
                 swaps.value = tradeSwaps;
@@ -490,7 +460,6 @@ export default defineComponent({
                     tokenOutAddress,
                     'swapExactOut',
                     tokenOutAmount,
-                    false,
                 );
                 // @ts-ignore
                 swaps.value = tradeSwaps;
