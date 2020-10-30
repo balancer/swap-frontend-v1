@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@balancer-labs/assets": "github:balancer-labs/assets#master",
-    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/bal-260-ipfs-replacement-of-subgraph",
+    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/bal-263-useful-pool-filter",
     "@ethersproject/address": "^5.0.5",
     "@ethersproject/constants": "^5.0.5",
     "@ethersproject/contracts": "^5.0.5",

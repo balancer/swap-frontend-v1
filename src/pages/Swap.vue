@@ -406,6 +406,15 @@ export default defineComponent({
                 parseInt(APP_MAX_POOLS),
                 config.chainId,
             );
+
+            const tokenInAddress = tokenInAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenInAddressInput.value;
+            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+                ? config.addresses.weth
+                : tokenOutAddressInput.value;
+            await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress, 'swapExactIn');
+            await onAmountChange(activeInput.value);
             await sor.fetchPools();
             await onAmountChange(activeInput.value);
         }
@@ -428,7 +437,9 @@ export default defineComponent({
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
 
-            if (!sor || sor.onChainCache.pools.length === 0) {
+            const swapType = isExactIn.value ? 'swapExactIn' : 'swapExactOut';
+            if (!sor || (!sor.isAllFetched && !sor.poolsForPairsCache[`${tokenInAddress.toLowerCase()}${tokenOutAddress.toLowerCase()}${swapType}`])) {
+                swapsLoading.value = true;
                 return;
             }
 
@@ -467,20 +478,22 @@ export default defineComponent({
                 const tokenInPrecision = metadata[tokenInAddress].precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
+            swapsLoading.value = false;
 
             const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
             const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
             const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
             const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
-            const slippageNumber = getSlippage(
-                sor.onChainCache.pools,
-                swaps.value,
-                isExactIn.value,
-                tokenInAmount,
-                tokenOutAmount,
-            );
-            slippage.value = slippageNumber.toNumber();
-            swapsLoading.value = false;
+            if (sor.onChainCache.pools.length > 0) {
+                const slippageNumber = getSlippage(
+                    sor.onChainCache.pools,
+                    swaps.value,
+                    isExactIn.value,
+                    tokenInAmount,
+                    tokenOutAmount,
+                );
+                slippage.value = slippageNumber.toNumber();
+            }
         }
 
         async function handleUnlockTransaction(transaction: any, asset: string): Promise<void> {
