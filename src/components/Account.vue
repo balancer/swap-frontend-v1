@@ -8,6 +8,7 @@
             <Jazzicon
                 class="account-icon"
                 :address="address"
+                :size="16"
             />
             <div class="account-address">
                 {{ formatAddress(address) }}
