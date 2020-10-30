@@ -16,7 +16,7 @@
     "connectors": {
         "injected": {
             "id": "injected",
-            "name": "MetaMask"
+            "name": "Browser Wallet"
         },
         "walletconnect": {
             "id": "walletconnect",
