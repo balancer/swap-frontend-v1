@@ -10,13 +10,10 @@
                 class="connector"
                 @click="select(connector.key)"
             >
-                <img
-                    :src="
-                        `https://raw.githubusercontent.com/bonustrack/lock/master/connectors/assets/${connector.key}.png`
-                    "
-                    height="20"
-                    width="20"
-                >
+                <ConnectorIcon
+                    :connector="connector.key"
+                    class="connector-icon"
+                />
                 <div class="connector-title">
                     {{ connector.title }}
                 </div>
@@ -32,10 +29,12 @@ import { useStore } from 'vuex';
 import config from '@/config';
 import { RootState } from '@/store';
 
+import ConnectorIcon from '@/components/ConnectorIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
     components: {
+        ConnectorIcon,
         ModalBase,
     },
     setup() {
@@ -79,6 +78,11 @@ export default defineComponent({
 
 .connector:hover {
     background: var(--outline);
+}
+
+.connector-icon {
+    width: 20px;
+    height: 20px;
 }
 
 .connector-title {
