@@ -6,17 +6,23 @@
         <template #default>
             <div class="account">
                 <div class="account-info">
-                    <div>
+                    <div class="account-icon">
                         <Jazzicon
                             :address="address"
                             :size="40"
                         />
+                        <div class="connector-icon-wrapper">
+                            <ConnectorIcon
+                                :connector="connectorKey"
+                                class="connector-icon"
+                            />
+                        </div>
                     </div>
                     <div class="account-wallet">
                         <div class="account-address">
                             {{ formatAddress(address) }}
                             <Icon
-                                class="account-icon"
+                                class="account-wallet-icon"
                                 :title="'clipboard'"
                                 @click="copyAddress"
                             />
@@ -26,12 +32,12 @@
                                 target="_blank"
                             >
                                 <Icon
-                                    class="account-icon"
+                                    class="account-wallet-icon"
                                     :title="'externalLink'"
                                 />
                             </a>
                         </div>
-                        <span class="account-connector">{{ walletType }}</span>
+                        <span class="connector-name">{{ connectorName }}</span>
                     </div>
                 </div>
                 <ButtonText
@@ -142,6 +148,7 @@ import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
+import ConnectorIcon from '@/components/ConnectorIcon.vue';
 import Icon from '@/components/Icon.vue';
 import Jazzicon from '@/components/Jazzicon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -152,6 +159,7 @@ export default defineComponent({
     components: {
         AssetIcon,
         ButtonText,
+        ConnectorIcon,
         Icon,
         Jazzicon,
         ModalBase,
@@ -173,7 +181,7 @@ export default defineComponent({
             title: 'Wallet',
         }];
 
-        const walletType = computed(() => {
+        const connectorName = computed(() => {
             return config.connectors[web3Connector].name;
         });
 
@@ -216,7 +224,8 @@ export default defineComponent({
         }
 
         return {
-            walletType,
+            connectorKey: web3Connector,
+            connectorName,
             address,
             activeTab,
             tabs,
@@ -243,11 +252,34 @@ export default defineComponent({
     margin: 16px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: end;
 }
 
 .account-info {
     display: flex;
+}
+
+.account-icon {
+    height: 40px;
+    position: relative;
+}
+
+.connector-icon-wrapper {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+}
+
+.connector-icon {
+    width: 16px;
+    height: 16px;
 }
 
 .account-wallet {
@@ -262,14 +294,14 @@ export default defineComponent({
     font-size: 20px;
 }
 
-.account-icon {
+.account-wallet-icon {
     height: 18px;
     width: 18px;
     margin-left: 8px;
     cursor: pointer;
 }
 
-.account-connector {
+.connector-name {
     color: var(--text-secondary);
     font-size: 14px;
 }
