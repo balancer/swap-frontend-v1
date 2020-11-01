@@ -8,6 +8,12 @@
                 Pool Management
             </a>
             <a
+                href="https://claim.balancer.finance"
+                target="_blank"
+            >
+                Claim BAL
+            </a>
+            <a
                 href="https://vote.balancer.finance/"
                 target="_blank"
             >
