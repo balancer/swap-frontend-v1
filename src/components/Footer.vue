@@ -1,6 +1,6 @@
 <template>
     <div class="footer">
-        <div class="links">
+        <div class="links links-left">
             <a
                 href="https://pools.balancer.exchange/"
                 target="_blank"
@@ -8,19 +8,19 @@
                 Pool Management
             </a>
             <a
-                href="https://claim.balancer.finance"
-                target="_blank"
-            >
-                Claim BAL
-            </a>
-            <a
                 href="https://vote.balancer.finance/"
                 target="_blank"
             >
                 Governance
             </a>
+            <a
+                href="https://claim.balancer.finance"
+                target="_blank"
+            >
+                Claim BAL
+            </a>
         </div>
-        <div class="links">
+        <div class="links links-right">
             <a
                 href="https://discord.com/invite/ARJWaeF"
                 target="_blank"
@@ -63,5 +63,25 @@ a {
 
 a:hover {
     color: var(--text-primary);
+}
+
+@media only screen and (max-width: 768px) {
+    .footer {
+        height: 96px;
+    }
+
+    .links {
+        display: flex;
+        flex-direction: column;
+        margin: 0 16px;
+    }
+
+    a {
+        margin: 4px;
+    }
+
+    .links-right > a {
+        text-align: right;
+    }
 }
 </style>
