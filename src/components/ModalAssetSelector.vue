@@ -57,6 +57,12 @@ export default defineComponent({
         AssetIcon,
         ModalBase,
     },
+    props: {
+        hidden: {
+            type: Array,
+            default: (): any[] => [],
+        },
+    },
     emits: ['select'],
     setup(props, { emit }) {
         const store = useStore<RootState>();
@@ -110,6 +116,11 @@ export default defineComponent({
         const visibleAssets = computed(() => {
             return assets.value
                 .filter(asset => {
+                    // Filter by "hidden" prop
+                    if (props.hidden.includes(asset.address)) {
+                        return false;
+                    }
+                    // Filter by query
                     const queryString = query.value.toLowerCase();
                     if (!queryString) {
                         return true;
@@ -123,6 +134,7 @@ export default defineComponent({
                     if (asset.symbol.toLowerCase().includes(queryString)) {
                         return true;
                     }
+                    return false;
                 });
         });
 
