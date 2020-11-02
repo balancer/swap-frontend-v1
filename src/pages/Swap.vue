@@ -40,7 +40,7 @@
                 <span @click="toggleRate">
                     {{ rateMessage }}
                 </span>
-                <PopupSwapRoute
+                <PopupRoute
                     v-if="rateMessage"
                     class="route-popup"
                     :swaps="swaps"
@@ -121,7 +121,7 @@ import Button from '@/components/Button.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
-import PopupSwapRoute from '@/components/PopupSwapRoute.vue';
+import PopupRoute from '@/components/swap/PopupRoute.vue';
 
 // eslint-disable-next-line no-undef
 const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -153,7 +153,7 @@ export default defineComponent({
         ButtonText,
         Icon,
         ModalAssetSelector,
-        PopupSwapRoute,
+        PopupRoute,
     },
     setup() {
         let sor: SOR | undefined = undefined;
