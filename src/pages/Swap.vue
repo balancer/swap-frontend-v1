@@ -46,26 +46,10 @@
                     :swaps="swaps"
                 />
             </div>
-            <div class="slippage-message">
-                <div v-if="slippage">
-                    Slippage: {{ (slippage * 100).toFixed(2) }}% (expected) +
-                    <input
-                        v-if="slippageBufferInputShown"
-                        v-model="slippageBufferInput"
-                        v-autofocus
-                        class="slippage-input slippage-control"
-                        @blur="hideSlippageBufferInput"
-                        @keyup.enter="hideSlippageBufferInput"
-                    >
-                    <ButtonText
-                        v-else
-                        class="slippage-control"
-                        :text="`${slippageBufferInput}%`"
-                        @click="showSlippageBufferInput"
-                    />
-                    (additional buffer)
-                </div>
-            </div>
+            <Slippage
+                v-model:buffer="slippageBuffer"
+                :value="slippage"
+            />
             <div class="validation-message">
                 {{ validationMessage }}
             </div>
@@ -118,10 +102,10 @@ import { RootState } from '@/store';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
-import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import PopupRoute from '@/components/swap/PopupRoute.vue';
+import Slippage from '@/components/swap/Slippage.vue';
 
 // eslint-disable-next-line no-undef
 const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -150,10 +134,10 @@ export default defineComponent({
     components: {
         AssetInput,
         Button,
-        ButtonText,
         Icon,
         ModalAssetSelector,
         PopupRoute,
+        Slippage,
     },
     setup() {
         let sor: SOR | undefined = undefined;
@@ -167,11 +151,10 @@ export default defineComponent({
         const tokenInAmountInput = ref('10');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
-        const slippageBufferInput = ref('0.5');
         const slippage = ref(0);
+        const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
         const swapsLoading = ref(true);
-        const slippageBufferInputShown = ref(false);
         const swaps = ref([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
@@ -341,18 +324,6 @@ export default defineComponent({
             isInRate.value = !isInRate.value;
         }
 
-        function showSlippageBufferInput(): void {
-            slippageBufferInputShown.value = true;
-        }
-
-        function hideSlippageBufferInput(): void {
-            slippageBufferInputShown.value = false;
-            const slippageBufferValidation = validateNumberInput(slippageBufferInput.value);
-            if (slippageBufferValidation !== ValidationError.NONE) {
-                slippageBufferInput.value = '0.5';
-            }
-        }
-
         function handleAmountChange(exactIn: boolean, amount: string): void {
             isExactIn.value = exactIn;
             onAmountChange(amount);
@@ -396,20 +367,20 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value;
             const tokenInDecimals = metadata[tokenInAddress].decimals;
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
-            const slippageBuffer = parseFloat(slippageBufferInput.value) / 100;
+            const slippageBufferRate = parseFloat(slippageBuffer.value) / 100;
             const provider = await store.getters['account/provider'];
             if (isExactIn.value) {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
-                const minAmount = tokenOutAmount.div(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
+                const minAmount = tokenOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             } else {
                 const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
                 const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
-                const tokenInAmountMax = tokenInAmount.times(1 + slippageBuffer).integerValue(BigNumber.ROUND_DOWN);
+                const tokenInAmountMax = tokenInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             }
@@ -646,23 +617,20 @@ export default defineComponent({
             tokenInAmountInput,
             tokenOutAddressInput,
             tokenOutAmountInput,
-            slippageBufferInput,
 
             swaps,
             rateMessage,
             slippage,
+            slippageBuffer,
             validationMessage,
 
             buttonLoading,
             swapsLoading,
-            slippageBufferInputShown,
             isModalOpen,
             isUnlocked,
             isDisabled,
 
             toggleRate,
-            showSlippageBufferInput,
-            hideSlippageBufferInput,
             handleAmountChange,
             handleAssetSelect,
             togglePair,
@@ -706,34 +674,6 @@ export default defineComponent({
     min-height: 16.5px;
     font-size: 14px;
     color: var(--error);
-}
-
-.slippage-message {
-    min-height: 21px;
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-}
-
-.slippage-message > div {
-    display: flex;
-    align-items: center;
-}
-
-.slippage-control {
-    margin: 0 4px;
-}
-
-.slippage-input {
-    width: 24px;
-    text-align: right;
-    font-size: 14px;
-    background: var(--background-secondary);
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
-    color: var(--text-primary);
-    outline: none;
 }
 
 .rate-message {
