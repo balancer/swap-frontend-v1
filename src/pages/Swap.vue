@@ -551,6 +551,10 @@ export default defineComponent({
 
             const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
+            if (transactionReceipt.status === 1) {
+                tokenInAmountInput.value = '';
+                tokenOutAmountInput.value = '';
+            }
             store.dispatch('account/fetchAssets', [ assetIn, assetOut ]);
             store.dispatch('account/saveMinedTransaction', {
                 receipt: transactionReceipt,
