@@ -136,6 +136,7 @@ enum Validation {
     INVALID_INPUT,
     NO_ACCOUNT,
     WRONG_NETWORK,
+    INVALID_PAIR,
     INSUFFICIENT_BALANCE,
     NO_SWAPS,
 }
@@ -224,6 +225,17 @@ export default defineComponent({
             if (config.chainId !== chainId) {
                 return Validation.WRONG_NETWORK;
             }
+            // Invalid pair (WETH/ETH)
+            if (tokenInAddressInput.value === 'ether' &&
+                tokenOutAddressInput.value === config.addresses.weth
+            ) {
+                return Validation.INVALID_PAIR;
+            }
+            if (tokenOutAddressInput.value === 'ether' &&
+                tokenInAddressInput.value === config.addresses.weth
+            ) {
+                return Validation.INVALID_PAIR;
+            }
             // Insufficient balance
             const { balances } = store.state.account;
             const { metadata } = store.state.assets;
@@ -279,6 +291,9 @@ export default defineComponent({
             }
             if (validation.value === Validation.WRONG_NETWORK) {
                 return 'Change network to continue';
+            }
+            if (validation.value === Validation.INVALID_PAIR) {
+                return 'Invalid pair, please wrap manually';
             }
             if (validation.value === Validation.INSUFFICIENT_BALANCE) {
                 return 'Insufficient balance';
@@ -437,6 +452,10 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === 'ether'
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
+
+            if (tokenInAddress === tokenOutAddress) {
+                return;
+            }
 
             const swapType = isExactIn.value ? 'swapExactIn' : 'swapExactOut';
             if (!sor || (!sor.isAllFetched && !sor.poolsForPairsCache[`${tokenInAddress.toLowerCase()}${tokenOutAddress.toLowerCase()}${swapType}`])) {
