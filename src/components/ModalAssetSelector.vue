@@ -15,7 +15,7 @@
         </template>
         <template #default>
             <div
-                v-for="asset in assets"
+                v-for="asset in visibleAssets"
                 :key="asset.address"
                 class="asset"
                 @click="select(asset.address)"
@@ -84,7 +84,7 @@ export default defineComponent({
         });
 
         const assets = computed(() => {
-            return Object.keys(metadata)
+            const assets = Object.keys(metadata)
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];
                     const { address, name, symbol, decimals, precision } = asset;
@@ -100,7 +100,15 @@ export default defineComponent({
                         symbol,
                         amount,
                     };
-                })
+                });
+
+            const ownedAssets = assets.filter(asset => asset.amount);
+            const notOwnedAssets = assets.filter(asset => !asset.amount);
+            return [...ownedAssets, ...notOwnedAssets];
+        });
+
+        const visibleAssets = computed(() => {
+            return assets.value
                 .filter(asset => {
                     const queryString = query.value.toLowerCase();
                     if (!queryString) {
@@ -130,7 +138,7 @@ export default defineComponent({
         return {
             query,
             queryEl,
-            assets,
+            visibleAssets,
             select,
             close,
         };
