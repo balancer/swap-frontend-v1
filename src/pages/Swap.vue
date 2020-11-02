@@ -559,6 +559,10 @@ export default defineComponent({
                 receipt: transactionReceipt,
                 timestamp: Date.now(),
             });
+            if (sor) {
+                sor.fetchPools();
+                onAmountChange(activeInput.value);
+            }
 
             const type = transactionReceipt.status === 1
                 ? 'success'
