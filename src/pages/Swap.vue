@@ -89,6 +89,7 @@ import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
 import { ErrorCode } from '@ethersproject/logger';
 import { SOR } from '@balancer-labs/sor';
+import { Swap } from '@balancer-labs/sor/dist/types';
 
 import config from '@/config';
 import wsProvider from '@/utils/provider';
@@ -155,7 +156,7 @@ export default defineComponent({
         const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
         const swapsLoading = ref(true);
-        const swaps = ref([]);
+        const swaps = ref<Swap[][]>([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -448,7 +449,6 @@ export default defineComponent({
                     'swapExactIn',
                     tokenInAmount,
                 );
-                // @ts-ignore
                 swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
                 const tokenOutPrecision = metadata[tokenOutAddress].precision;
@@ -463,7 +463,6 @@ export default defineComponent({
                     'swapExactOut',
                     tokenOutAmount,
                 );
-                // @ts-ignore
                 swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
                 const tokenInPrecision = metadata[tokenInAddress].precision;
