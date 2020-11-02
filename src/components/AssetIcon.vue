@@ -8,6 +8,7 @@ import { useStore } from 'vuex';
 
 import defaultIcon from '@/assets/defaultAssetIcon.svg';
 
+import { ETH_KEY } from '@/utils/assets';
 import config from '@/config';
 import { RootState } from '@/store';
 
@@ -26,7 +27,7 @@ export default defineComponent({
             const { metadata } = store.state.assets;
             const assetMetadata = metadata[address];
 
-            if (address === 'ether') {
+            if (address === ETH_KEY) {
                 address = config.addresses.weth;
             }
             if (!assetMetadata) {

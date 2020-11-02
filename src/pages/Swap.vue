@@ -109,7 +109,7 @@ import { SOR } from '@balancer-labs/sor';
 import config from '@/config';
 import wsProvider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
-import { getAssetAddressBySymbol } from '@/utils/assets';
+import { ETH_KEY, getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import { getSlippage } from '@/utils/slippage';
 import Swapper from '@/web3/swapper';
@@ -187,7 +187,7 @@ export default defineComponent({
         const isUnlocked = computed(() => {
             const { allowances } = store.state.account;
             const { metadata } = store.state.assets;
-            if (tokenInAddressInput.value === 'ether') {
+            if (tokenInAddressInput.value === ETH_KEY) {
                 return true;
             }
             const exchangeProxyAddress = config.addresses.exchangeProxy;
@@ -226,12 +226,12 @@ export default defineComponent({
                 return Validation.WRONG_NETWORK;
             }
             // Invalid pair (WETH/ETH)
-            if (tokenInAddressInput.value === 'ether' &&
+            if (tokenInAddressInput.value === ETH_KEY &&
                 tokenOutAddressInput.value === config.addresses.weth
             ) {
                 return Validation.INVALID_PAIR;
             }
-            if (tokenOutAddressInput.value === 'ether' &&
+            if (tokenOutAddressInput.value === ETH_KEY &&
                 tokenInAddressInput.value === config.addresses.weth
             ) {
                 return Validation.INVALID_PAIR;
@@ -423,10 +423,10 @@ export default defineComponent({
                 config.chainId,
             );
 
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
+            const tokenInAddress = tokenInAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+            const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
             await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress, 'swapExactIn');
@@ -446,10 +446,10 @@ export default defineComponent({
                 return;
             }
 
-            const tokenInAddress = tokenInAddressInput.value === 'ether'
+            const tokenInAddress = tokenInAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === 'ether'
+            const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
 

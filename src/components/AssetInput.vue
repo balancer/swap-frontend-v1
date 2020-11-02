@@ -2,7 +2,7 @@
     <div class="input">
         <div class="amount-wrapper">
             <ButtonText
-                v-if="modalKey === 'input' && address !== 'ether'"
+                v-if="modalKey === 'input' && address !== ETH_KEY"
                 :text="'max'"
                 @click="setMax"
             />
@@ -43,6 +43,7 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
+import { ETH_KEY } from '@/utils/assets';
 import { scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
@@ -107,6 +108,7 @@ export default defineComponent({
         }
 
         return {
+            ETH_KEY,
             symbol,
             setMax,
             handleInputChange,
