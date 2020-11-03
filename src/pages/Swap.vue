@@ -401,7 +401,7 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
-            await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress, 'swapExactIn');
+            await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
             await onAmountChange(activeInput.value);
@@ -429,8 +429,7 @@ export default defineComponent({
                 return;
             }
 
-            const swapType = isExactIn.value ? 'swapExactIn' : 'swapExactOut';
-            if (!sor || (!sor.isAllFetched && !sor.poolsForPairsCache[`${tokenInAddress.toLowerCase()}${tokenOutAddress.toLowerCase()}${swapType}`])) {
+            if (!sor || !sor.hasDataForPair(tokenInAddress, tokenOutAddress)) {
                 swapsLoading.value = true;
                 return;
             }
