@@ -36,6 +36,7 @@ interface Config {
         multicall: string;
     };
     tokens: Record<string, TokenMetadata>;
+    untrusted: string[];
     connectors: Record<string, Connector>;
 }
 
