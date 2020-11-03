@@ -21,7 +21,7 @@ export interface AccountState {
 export default class Ethereum {
     static async fetchAccountState(address: string, assets: string[]): Promise<AccountState> {
         const ethcallProvider = new Provider();
-        const provider = new JsonRpcProvider(config.alchemyUrl);
+        const provider = new JsonRpcProvider(config.alchemyUrl, config.chainId);
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch balances and allowances
@@ -69,7 +69,7 @@ export default class Ethereum {
 
     static async fetchTokenMetadata(assets: string[]): Promise<Record<string, TokenMetadata>> {
         const ethcallProvider = new Provider();
-        const provider = new JsonRpcProvider(config.alchemyUrl);
+        const provider = new JsonRpcProvider(config.alchemyUrl, config.chainId);
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch token metadata
