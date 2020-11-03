@@ -101,24 +101,26 @@ const mutations = {
 };
 
 const actions = {
-    init: async({ commit, dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
+    init: async({ dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
         // Save Web3 provider if available
         const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
-        if (connectorKey) {
-            const connector = lock.getConnector(connectorKey);
-            const provider = await connector.connect();
-            commit('setWeb3Connector', connectorKey);
-            dispatch('saveWeb3Provider', provider);
-        }
+        dispatch('connect', connectorKey);
     },
     connect: async({ commit, dispatch }: ActionContext<AccountState, RootState>, connectorKey: string): Promise<void> => {
-        const connector = lock.getConnector(connectorKey);
-        const provider = await connector.connect();
-        if (provider) {
-            localStorage.setItem(LS_CONNECTOR_KEY, connectorKey);
-            commit('setWeb3Connector', connectorKey);
-            dispatch('saveWeb3Provider', provider);
+        if (!connectorKey) {
+            return;
         }
+        const connector = lock.getConnector(connectorKey);
+        if (!connector) {
+            return;
+        }
+        commit('setWeb3Connector', connectorKey);
+        const provider = await connector.connect();
+        if (!provider) {
+            return;
+        }
+        dispatch('saveWeb3Provider', provider);
+        localStorage.setItem(LS_CONNECTOR_KEY, connectorKey);
     },
     disconnect: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
         const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);

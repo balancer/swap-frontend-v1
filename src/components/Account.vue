@@ -23,6 +23,8 @@
         v-else
         :text="'Connect'"
         :primary="true"
+        :loading="loading"
+        :disabled="loading"
         @click="openConnectorModal"
     />
 </template>
@@ -55,6 +57,11 @@ export default defineComponent({
             return address;
         });
 
+        const loading = computed(() => {
+            const { web3Connector, address } = store.state.account;
+            return !!web3Connector && !address;
+        });
+
         function openAccountModal(): void {
             store.dispatch('ui/openAccountModal');
         }
@@ -65,6 +72,7 @@ export default defineComponent({
 
         return {
             address,
+            loading,
             formatAddress,
             openAccountModal,
             openConnectorModal,
