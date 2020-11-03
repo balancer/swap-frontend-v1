@@ -18,6 +18,7 @@
                 v-for="asset in visibleAssets"
                 :key="asset.address"
                 class="asset"
+                :class="{ incompatible: isIncompatible(asset.address) }"
                 @click="select(asset.address)"
             >   
                 <div class="asset-meta">
@@ -30,6 +31,12 @@
                     </div>
                     <div class="asset-symbol">
                         {{ asset.symbol }}
+                    </div>
+                    <div
+                        v-if="isIncompatible(asset.address)"
+                        class="asset-incompatible"
+                    >
+                        Incompatible
                     </div>
                 </div>
                 <div class="asset-amount">
@@ -48,6 +55,7 @@ import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
 import { RootState } from '@/store';
+import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -139,6 +147,9 @@ export default defineComponent({
         });
 
         function select(assetAddress: string): void {
+            if (isIncompatible(assetAddress)) {
+                return;
+            }
             emit('select', assetAddress);
             close();
         }
@@ -147,12 +158,17 @@ export default defineComponent({
             store.dispatch('ui/closeAssetModal');
         }
 
+        function isIncompatible(assetAddress: string): boolean {
+            return config.untrusted.includes(assetAddress);
+        }
+
         return {
             query,
             queryEl,
             visibleAssets,
             select,
             close,
+            isIncompatible,
         };
     },
 });
@@ -180,8 +196,16 @@ export default defineComponent({
     cursor: pointer;
 }
 
+.asset.incompatible {
+    cursor: not-allowed;
+}
+
 .asset:hover {
     background: var(--outline);
+}
+
+.asset.incompatible:hover {
+    background: transparent;
 }
 
 .asset-meta {
@@ -205,5 +229,10 @@ export default defineComponent({
 .asset-symbol {
     padding-left: 8px;
     color: var(--text-secondary);
+}
+
+.asset-incompatible {
+    padding-left: 8px;
+    color: var(--error);
 }
 </style>
