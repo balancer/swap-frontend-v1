@@ -3,8 +3,13 @@
         <div class="pair">
             <div>
                 <div class="input-label">
-                    Send
-                    <span v-if="!isExactIn">(approximate)</span>
+                    <div>
+                        Send
+                        <span v-if="!isExactIn">(approximate)</span>
+                    </div>
+                    <div>
+                        {{ assetInBalanceLabel }}
+                    </div>
                 </div>
                 <AssetInput
                     v-model:address="tokenInAddressInput"
@@ -23,8 +28,13 @@
             />
             <div>
                 <div class="input-label">
-                    Receive
-                    <span v-if="isExactIn">(approximate)</span>
+                    <div>
+                        Receive
+                        <span v-if="isExactIn">(approximate)</span>
+                    </div>
+                    <div>
+                        {{ assetOutBalanceLabel }}
+                    </div>
                 </div>
                 <AssetInput
                     v-model:address="tokenOutAddressInput"
@@ -167,6 +177,55 @@ export default defineComponent({
                 return '';
             }
             return address;
+        });
+
+        const assetInBalanceLabel = computed(() => {
+            const { balances } = store.state.account;
+            const { metadata } = store.state.assets;
+            if (!balances || !metadata) {
+                return '';
+            }
+
+            const assetMetadata = metadata[tokenInAddressInput.value];
+            const balance = balances[tokenInAddressInput.value];
+            const balanceNumber = new BigNumber(balance);
+            if (!assetMetadata || !balance) {
+                return '';
+            }
+
+            const assetSymbol = assetMetadata.symbol;
+            const assetDecimals = assetMetadata.decimals;
+            const assetPrecision = assetMetadata.precision;
+            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
+            const balanceShort = balanceShortNumber.isInteger()
+                ? balanceShortNumber.toString()
+                : balanceShortNumber.toFixed(assetPrecision);
+            return `Balance: ${balanceShort} ${assetSymbol}`;
+        });
+
+        const assetOutBalanceLabel = computed(() => {
+            const { balances } = store.state.account;
+            const { metadata } = store.state.assets;
+
+            if (!balances || !metadata) {
+                return '';
+            }
+
+            const assetMetadata = metadata[tokenOutAddressInput.value];
+            const balance = balances[tokenOutAddressInput.value];
+            const balanceNumber = new BigNumber(balance);
+            if (!assetMetadata || !balance) {
+                return '';
+            }
+
+            const assetSymbol = assetMetadata.symbol;
+            const assetDecimals = assetMetadata.decimals;
+            const assetPrecision = assetMetadata.precision;
+            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
+            const balanceShort = balanceShortNumber.isInteger()
+                ? balanceShortNumber.toString()
+                : balanceShortNumber.toFixed(assetPrecision);
+            return `Balance: ${balanceShort} ${assetSymbol}`;
         });
 
         const isUnlocked = computed(() => {
@@ -623,6 +682,8 @@ export default defineComponent({
 
         return {
             isExactIn,
+            assetInBalanceLabel,
+            assetOutBalanceLabel,
             tokenInAddressInput,
             tokenInAmountInput,
             tokenOutAddressInput,
@@ -669,6 +730,8 @@ export default defineComponent({
 
 .input-label {
     margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
     color: var(--text-secondary);
     font-size: 14px;
 }
