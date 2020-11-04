@@ -118,6 +118,7 @@ const ASSET_OUTPUT_KEY = 'output_asset';
 
 enum Validation {
     NONE,
+    EMPTY_INPUT,
     INVALID_INPUT,
     NO_ACCOUNT,
     WRONG_NETWORK,
@@ -197,6 +198,9 @@ export default defineComponent({
                 ? tokenInAmountInput.value
                 : tokenOutAmountInput.value;
             const error = validateNumberInput(amountValue);
+            if (error === ValidationError.EMPTY) {
+                return Validation.EMPTY_INPUT;
+            }
             if (error !== ValidationError.NONE) {
                 return Validation.INVALID_INPUT;
             }
@@ -267,6 +271,9 @@ export default defineComponent({
         });
 
         const validationMessage = computed(() => {
+            if (validation.value === Validation.EMPTY_INPUT) {
+                return 'Enter swap amount';
+            }
             if (validation.value === Validation.INVALID_INPUT) {
                 return 'Invalid swap amount';
             }
