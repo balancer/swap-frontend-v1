@@ -8,16 +8,16 @@
                 Pool Management
             </a>
             <a
-                href="https://vote.balancer.finance/"
-                target="_blank"
-            >
-                Governance
-            </a>
-            <a
                 href="https://claim.balancer.finance"
                 target="_blank"
             >
-                Claim BAL
+                Claim
+            </a>
+            <a
+                href="https://vote.balancer.finance/"
+                target="_blank"
+            >
+                Vote
             </a>
         </div>
         <div class="links links-right">
