@@ -194,21 +194,16 @@ export default defineComponent({
 
         const validation = computed(() => {
             // Invalid input
-            const error = validateNumberInput(activeInput.value);
-            if (error === ValidationError.EMPTY) {
+            const inputError = validateNumberInput(activeInput.value);
+            if (inputError === ValidationError.EMPTY) {
                 return Validation.EMPTY_INPUT;
             }
-            if (error !== ValidationError.NONE) {
+            if (inputError !== ValidationError.NONE) {
                 return Validation.INVALID_INPUT;
             }
-            // No account
-            if (!account.value) {
-                return Validation.NO_ACCOUNT;
-            }
-            // Wrong network
-            const { chainId } = store.state.account;
-            if (config.chainId !== chainId) {
-                return Validation.WRONG_NETWORK;
+            // No swaps
+            if (swapsLoading.value || swaps.value.length === 0) {
+                return Validation.NO_SWAPS;
             }
             // Invalid pair (WETH/ETH)
             if (tokenInAddressInput.value === ETH_KEY &&
@@ -221,6 +216,15 @@ export default defineComponent({
             ) {
                 return Validation.ETH_WETH_PAIR;
             }
+            // No account
+            if (!account.value) {
+                return Validation.NO_ACCOUNT;
+            }
+            // Wrong network
+            const { chainId } = store.state.account;
+            if (config.chainId !== chainId) {
+                return Validation.WRONG_NETWORK;
+            }
             // Insufficient balance
             const { balances } = store.state.account;
             const { metadata } = store.state.assets;
@@ -232,12 +236,8 @@ export default defineComponent({
             const assetInDecimals = assetInMetadata.decimals;
             const assetInAmountRaw = new BigNumber(tokenInAmountInput.value);
             const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
-            if (assetInAmount.gt(assetInBalance)) {
+            if (!assetInBalance || assetInAmount.gt(assetInBalance)) {
                 return Validation.INSUFFICIENT_BALANCE;
-            }
-            // No swaps
-            if (swapsLoading.value || swaps.value.length === 0) {
-                return Validation.NO_SWAPS;
             }
             return Validation.NONE;
         });
