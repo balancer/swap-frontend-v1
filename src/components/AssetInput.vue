@@ -2,7 +2,7 @@
     <div class="input">
         <div class="amount-wrapper">
             <ButtonText
-                v-if="modalKey === 'input' && address !== ETH_KEY"
+                v-if="isMaxLabelShown"
                 :text="'max'"
                 @click="setMax"
             />
@@ -87,6 +87,26 @@ export default defineComponent({
             return asset.symbol;
         });
 
+        const isMaxLabelShown = computed(() => {
+            if (props.modalKey !== 'input') {
+                return false;
+            }
+            if (props.address === ETH_KEY) {
+                return false;
+            }
+            const assets = store.state.assets.metadata;
+            const { balances } = store.state.account;
+            if (!balances) {
+                return false;
+            }
+            const balance = balances[props.address];
+            const assetMetadata = assets[props.address];
+            if (!balance || !assetMetadata) {
+                return false;
+            }
+            return true;
+        });
+
         function setMax(): void {
             const assets = store.state.assets.metadata;
             const { balances } = store.state.account;
@@ -108,8 +128,8 @@ export default defineComponent({
         }
 
         return {
-            ETH_KEY,
             symbol,
+            isMaxLabelShown,
             setMax,
             handleInputChange,
             openModal,
