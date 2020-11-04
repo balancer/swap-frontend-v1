@@ -121,7 +121,7 @@ enum Validation {
     INVALID_INPUT,
     NO_ACCOUNT,
     WRONG_NETWORK,
-    INVALID_PAIR,
+    ETH_WETH_PAIR,
     INSUFFICIENT_BALANCE,
     NO_SWAPS,
 }
@@ -213,12 +213,12 @@ export default defineComponent({
             if (tokenInAddressInput.value === ETH_KEY &&
                 tokenOutAddressInput.value === config.addresses.weth
             ) {
-                return Validation.INVALID_PAIR;
+                return Validation.ETH_WETH_PAIR;
             }
             if (tokenOutAddressInput.value === ETH_KEY &&
                 tokenInAddressInput.value === config.addresses.weth
             ) {
-                return Validation.INVALID_PAIR;
+                return Validation.ETH_WETH_PAIR;
             }
             // Insufficient balance
             const { balances } = store.state.account;
@@ -268,7 +268,7 @@ export default defineComponent({
 
         const validationMessage = computed(() => {
             if (validation.value === Validation.INVALID_INPUT) {
-                return 'Invalid input';
+                return 'Invalid swap amount';
             }
             if (validation.value === Validation.NO_ACCOUNT) {
                 return 'Connect account to continue';
@@ -276,14 +276,14 @@ export default defineComponent({
             if (validation.value === Validation.WRONG_NETWORK) {
                 return 'Change network to continue';
             }
-            if (validation.value === Validation.INVALID_PAIR) {
-                return 'Invalid pair, please wrap manually';
+            if (validation.value === Validation.ETH_WETH_PAIR) {
+                return 'Please wrap ether manually';
             }
             if (validation.value === Validation.INSUFFICIENT_BALANCE) {
-                return 'Insufficient balance';
+                return 'Not enough funds';
             }
             if (validation.value === Validation.NO_SWAPS) {
-                return 'Insufficient liquidity';
+                return 'Not enough liquidity';
             }
             return '';
         });
