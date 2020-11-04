@@ -194,10 +194,7 @@ export default defineComponent({
 
         const validation = computed(() => {
             // Invalid input
-            const amountValue = isExactIn.value
-                ? tokenInAmountInput.value
-                : tokenOutAmountInput.value;
-            const error = validateNumberInput(amountValue);
+            const error = validateNumberInput(activeInput.value);
             if (error === ValidationError.EMPTY) {
                 return Validation.EMPTY_INPUT;
             }
