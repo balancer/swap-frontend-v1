@@ -135,6 +135,7 @@ const actions = {
         commit('setWeb3Connector', '');
         commit('setAddress', '');
         commit('setChainId', 0);
+        commit('clean');
     },
     saveWeb3Provider: async({ commit, dispatch }: ActionContext<AccountState, RootState>, provider: any): Promise<void> => {
         if (provider.removeAllListeners) {
@@ -142,9 +143,11 @@ const actions = {
         }
         if (provider && provider.on) {
             provider.on('chainChanged', async () => {
+                commit('clean');
                 dispatch('saveWeb3Provider', provider);
             });
             provider.on('accountsChanged', async () => {
+                commit('clean');
                 dispatch('saveWeb3Provider', provider);
             });
             provider.on('disconnect', async () => {
@@ -156,7 +159,6 @@ const actions = {
         const accounts = await web3Provider.listAccounts();
         commit('setAddress', accounts[0]);
         commit('setChainId', network.chainId);
-        commit('clean');
         dispatch('fetchState');
     },
     fetchState: async({ commit, state, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
