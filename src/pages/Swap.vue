@@ -752,8 +752,9 @@ export default defineComponent({
 .rate-message {
     margin-top: 16px;
     min-height: 16.5px;
-    font-size: 14px;
     display: flex;
+    font-size: 14px;
+    color: var(--text-secondary);
     cursor: pointer;
 }
 

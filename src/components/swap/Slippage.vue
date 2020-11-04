@@ -83,6 +83,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     font-size: 14px;
+    color: var(--text-secondary);
 }
 
 .label {

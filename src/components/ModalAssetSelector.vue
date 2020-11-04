@@ -235,4 +235,8 @@ export default defineComponent({
     padding-left: 8px;
     color: var(--error);
 }
+
+.asset-amount {
+    font-weight: bold;
+}
 </style>

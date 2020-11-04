@@ -186,6 +186,7 @@ export default defineComponent({
     background: transparent;
     color: var(--text-primary);
     font-size: 16px;
+    font-weight: bold;
     text-align: right;
     outline: none;
 }

@@ -408,4 +408,8 @@ export default defineComponent({
     font-size: 14px;
     color: var(--text-secondary);
 }
+
+.asset-amount {
+    font-weight: bold;
+}
 </style>
