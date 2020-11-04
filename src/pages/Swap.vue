@@ -451,11 +451,13 @@ export default defineComponent({
         }
 
         async function initSor(): Promise<void> {
+            const poolsUrl = 'https://cloudflare-ipfs.com/ipns/balancer-team-bucket.storage.fleek.co/balancer-exchange/pools';
             sor = new SOR(
                 wsProvider,
                 new BigNumber(APP_GAS_PRICE),
                 parseInt(APP_MAX_POOLS),
                 config.chainId,
+                poolsUrl,
             );
 
             const tokenInAddress = tokenInAddressInput.value === ETH_KEY
