@@ -50,16 +50,16 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const address = computed(() => {
-            const { web3Connector, address } = store.state.account;
-            if (!web3Connector || !address) {
+            const { connector, address } = store.state.account;
+            if (!connector || !connector.id || !address) {
                 return '';
             }
             return address;
         });
 
         const loading = computed(() => {
-            const { web3Connector, address } = store.state.account;
-            return !!web3Connector && !address;
+            const { connector, address } = store.state.account;
+            return !!connector && !!connector.id && !address;
         });
 
         function openAccountModal(): void {

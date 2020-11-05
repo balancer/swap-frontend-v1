@@ -6,16 +6,16 @@
         <template #default>
             <div
                 v-for="connector in connectors"
-                :key="connector.key"
+                :key="connector.id"
                 class="connector"
-                @click="select(connector.key)"
+                @click="select(connector.id)"
             >
                 <ConnectorIcon
-                    :connector="connector.key"
+                    :connector="connector.id"
                     class="connector-icon"
                 />
                 <div class="connector-title">
-                    {{ connector.title }}
+                    {{ connector.name }}
                 </div>
             </div>
         </template>
@@ -28,6 +28,7 @@ import { useStore } from 'vuex';
 
 import config from '@/config';
 import { RootState } from '@/store';
+import { getConnectorName } from '@/utils/connectors';
 
 import ConnectorIcon from '@/components/ConnectorIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -41,18 +42,17 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const connectors = computed(() => {
-            return Object.keys(config.connectors).map(connectorKey => {
-                const connector = config.connectors[connectorKey];
+            return Object.keys(config.connectors).map(connectorId => {
                 return {
-                    key: connector.id,
-                    title: connector.name,
+                    id: connectorId,
+                    name: getConnectorName(connectorId),
                 };
             });
         });
 
-        function select(connectorKey: string): void {
+        function select(connectorId: string): void {
             close();
-            store.dispatch('account/connect', connectorKey);
+            store.dispatch('account/connect', connectorId);
         }
 
         function close(): void {

@@ -11,13 +11,32 @@ const lock = new Lock();
 
 const connectors = { injected, fortmatic, portis, walletconnect, walletlink };
 
-for (const connectorKey in connectors) {
+for (const connectorId in connectors) {
     const connector = {
-        key: connectorKey,
-        connector: connectors[connectorKey],
-        options: config.connectors[connectorKey].options,
+        key: connectorId,
+        connector: connectors[connectorId],
+        options: config.connectors[connectorId],
     };
     lock.addConnector(connector);
+}
+
+export function getConnectorName(connectorId: string): string {
+    if (connectorId === 'injected') {
+        return 'Browser Wallet';
+    }
+    if (connectorId === 'fortmatic') {
+        return 'Fortmatic';
+    }
+    if (connectorId === 'portis') {
+        return 'Portis';
+    }
+    if (connectorId === 'walletconnect') {
+        return 'Walletconnect';
+    }
+    if (connectorId === 'walletlink') {
+        return 'Walletlink';
+    }
+    return 'Unknown';
 }
 
 export default lock;

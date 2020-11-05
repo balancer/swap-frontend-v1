@@ -13,7 +13,7 @@
                         />
                         <div class="connector-icon-wrapper">
                             <ConnectorIcon
-                                :connector="connectorKey"
+                                :connector="connector.id"
                                 class="connector-icon"
                             />
                         </div>
@@ -37,7 +37,7 @@
                                 />
                             </a>
                         </div>
-                        <span class="connector-name">{{ connectorName }}</span>
+                        <span class="connector-name">{{ connector.name }}</span>
                     </div>
                 </div>
                 <ButtonText
@@ -144,7 +144,6 @@ import { useStore } from 'vuex';
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
-import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
@@ -169,7 +168,7 @@ export default defineComponent({
     setup() {
         const store = useStore<RootState>();
         const { metadata } = store.state.assets;
-        const { web3Connector, address, transactions, balances } = store.state.account;
+        const { connector, address, transactions, balances } = store.state.account;
 
         const activeTab = ref('transactions');
 
@@ -180,10 +179,6 @@ export default defineComponent({
             id: 'wallet',
             title: 'Wallet',
         }];
-
-        const connectorName = computed(() => {
-            return config.connectors[web3Connector].name;
-        });
 
         const accountBalances = computed(() => {
             return Object.keys(balances)
@@ -224,8 +219,7 @@ export default defineComponent({
         }
 
         return {
-            connectorKey: web3Connector,
-            connectorName,
+            connector,
             address,
             activeTab,
             tabs,
