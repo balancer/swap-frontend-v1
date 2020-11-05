@@ -49,8 +49,6 @@ export default defineComponent({
             });
         });
 
-        console.log('modal conn', connectors);
-
         function select(connectorId: string): void {
             close();
             store.dispatch('account/connect', connectorId);

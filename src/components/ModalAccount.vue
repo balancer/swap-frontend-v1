@@ -168,8 +168,6 @@ export default defineComponent({
         const { metadata } = store.state.assets;
         const { connector, address, transactions, balances } = store.state.account;
 
-        console.log('modal acc', connector);
-
         const activeTab = ref('transactions');
 
         const tabs = [{
