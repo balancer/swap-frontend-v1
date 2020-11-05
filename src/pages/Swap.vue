@@ -119,9 +119,9 @@ import PopupRoute from '@/components/swap/PopupRoute.vue';
 import Slippage from '@/components/swap/Slippage.vue';
 
 // eslint-disable-next-line no-undef
-const APP_GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
-// eslint-disable-next-line no-undef
-const APP_MAX_POOLS = process.env.APP_MAX_POOLS || '4';
+const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
+const SWAP_COST = new BigNumber('100000');
+const MAX_POOLS = 4;
 
 const ASSET_INPUT_KEY = 'input_asset';
 const ASSET_OUTPUT_KEY = 'output_asset';
@@ -381,6 +381,9 @@ export default defineComponent({
 
         watch(tokenOutAddressInput, () => {
             localStorage.setItem(ASSET_OUTPUT_KEY, tokenOutAddressInput.value);
+            if (sor) {
+                sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
+            }
             onAmountChange(activeInput.value);
         });
 
@@ -454,8 +457,8 @@ export default defineComponent({
             const poolsUrl = 'https://cloudflare-ipfs.com/ipns/balancer-team-bucket.storage.fleek.co/balancer-exchange/pools';
             sor = new SOR(
                 wsProvider,
-                new BigNumber(APP_GAS_PRICE),
-                parseInt(APP_MAX_POOLS),
+                new BigNumber(GAS_PRICE),
+                MAX_POOLS,
                 config.chainId,
                 poolsUrl,
             );
@@ -466,6 +469,7 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
+            await sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
             await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
