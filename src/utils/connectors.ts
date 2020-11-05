@@ -58,10 +58,10 @@ export function getConnectorName(connectorId: string): string {
         return 'Portis';
     }
     if (connectorId === 'walletconnect') {
-        return 'Walletconnect';
+        return 'WalletConnect';
     }
     if (connectorId === 'walletlink') {
-        return 'Walletlink';
+        return 'WalletLink';
     }
     return 'Unknown';
 }
