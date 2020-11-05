@@ -22,6 +22,22 @@ for (const connectorId in connectors) {
 
 export function getConnectorName(connectorId: string): string {
     if (connectorId === 'injected') {
+        const provider = window.ethereum;
+        if (provider.isMetaMask) {
+            return 'MetaMask';
+        }
+        if (provider.isImToken) {
+            return 'imToken';
+        }
+        if (provider.isStatus) {
+            return 'Status';
+        }
+        if (provider.isTrust) {
+            return 'Trust Wallet';
+        }
+        if (provider.isFrame) {
+            return 'Frame';
+        }
         return 'Browser Wallet';
     }
     if (connectorId === 'fortmatic') {
