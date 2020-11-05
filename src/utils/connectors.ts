@@ -5,6 +5,17 @@ import portis from '@snapshot-labs/lock/connectors/portis';
 import walletconnect from '@snapshot-labs/lock/connectors/walletconnect';
 import walletlink from '@snapshot-labs/lock/connectors/walletlink';
 
+import fortmaticLogo from '@/assets/connector/fortmatic.png';
+import frameLogo from '@/assets/connector/frame.png';
+import imtokenLogo from '@/assets/connector/imtoken.png';
+import metamaskLogo from '@/assets/connector/metamask.png';
+import portisLogo from '@/assets/connector/portis.png';
+import statusLogo from '@/assets/connector/status.png';
+import trustwalletLogo from '@/assets/connector/trustwallet.png';
+import walletconnectLogo from '@/assets/connector/walletconnect.png';
+import walletlinkLogo from '@/assets/connector/walletlink.png';
+import web3Logo from '@/assets/connector/web3.png';
+
 import config from '@/config';
 
 const lock = new Lock();
@@ -53,6 +64,41 @@ export function getConnectorName(connectorId: string): string {
         return 'Walletlink';
     }
     return 'Unknown';
+}
+
+export function getConnectorLogo(connectorId: string): string {
+    if (connectorId === 'injected') {
+        const provider = window.ethereum;
+        if (provider.isMetaMask) {
+            return metamaskLogo;
+        }
+        if (provider.isImToken) {
+            return imtokenLogo;
+        }
+        if (provider.isStatus) {
+            return statusLogo;
+        }
+        if (provider.isTrust) {
+            return trustwalletLogo;
+        }
+        if (provider.isFrame) {
+            return frameLogo;
+        }
+        return web3Logo;
+    }
+    if (connectorId === 'fortmatic') {
+        return fortmaticLogo;
+    }
+    if (connectorId === 'portis') {
+        return portisLogo;
+    }
+    if (connectorId === 'walletconnect') {
+        return walletconnectLogo;
+    }
+    if (connectorId === 'walletlink') {
+        return walletlinkLogo;
+    }
+    return web3Logo;
 }
 
 export default lock;

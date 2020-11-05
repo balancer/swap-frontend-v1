@@ -12,10 +12,10 @@
                             :size="40"
                         />
                         <div class="connector-icon-wrapper">
-                            <ConnectorIcon
-                                :connector="connector.id"
+                            <img
+                                :src="connector.logo"
                                 class="connector-icon"
-                            />
+                            >
                         </div>
                     </div>
                     <div class="account-wallet">
@@ -147,7 +147,6 @@ import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLi
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
-import ConnectorIcon from '@/components/ConnectorIcon.vue';
 import Icon from '@/components/Icon.vue';
 import Jazzicon from '@/components/Jazzicon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -158,7 +157,6 @@ export default defineComponent({
     components: {
         AssetIcon,
         ButtonText,
-        ConnectorIcon,
         Icon,
         Jazzicon,
         ModalBase,
@@ -169,6 +167,8 @@ export default defineComponent({
         const store = useStore<RootState>();
         const { metadata } = store.state.assets;
         const { connector, address, transactions, balances } = store.state.account;
+
+        console.log('modal acc', connector);
 
         const activeTab = ref('transactions');
 

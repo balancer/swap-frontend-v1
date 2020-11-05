@@ -10,10 +10,10 @@
                 class="connector"
                 @click="select(connector.id)"
             >
-                <ConnectorIcon
-                    :connector="connector.id"
+                <img
+                    :src="connector.logo"
                     class="connector-icon"
-                />
+                >
                 <div class="connector-title">
                     {{ connector.name }}
                 </div>
@@ -28,14 +28,12 @@ import { useStore } from 'vuex';
 
 import config from '@/config';
 import { RootState } from '@/store';
-import { getConnectorName } from '@/utils/connectors';
+import { getConnectorName, getConnectorLogo } from '@/utils/connectors';
 
-import ConnectorIcon from '@/components/ConnectorIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
 
 export default defineComponent({
     components: {
-        ConnectorIcon,
         ModalBase,
     },
     setup() {
@@ -46,9 +44,12 @@ export default defineComponent({
                 return {
                     id: connectorId,
                     name: getConnectorName(connectorId),
+                    logo: getConnectorLogo(connectorId),
                 };
             });
         });
+
+        console.log('modal conn', connectors);
 
         function select(connectorId: string): void {
             close();

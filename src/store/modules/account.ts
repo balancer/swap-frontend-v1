@@ -3,7 +3,7 @@ import { Web3Provider, Provider } from '@ethersproject/providers';
 
 import Ethereum, { Allowances, Balances } from '@/api/ethereum';
 import { RootState } from '@/store';
-import lock, { getConnectorName } from '@/utils/connectors';
+import lock, { getConnectorName, getConnectorLogo } from '@/utils/connectors';
 import wsProvider from '@/utils/provider';
 
 const LS_CONNECTOR_ID = 'connector';
@@ -122,6 +122,7 @@ const actions = {
         commit('setConnector', {
             id: connectorId,
             name: getConnectorName(connectorId),
+            logo: getConnectorLogo(connectorId),
         });
         const provider = await connector.connect();
         if (!provider) {
