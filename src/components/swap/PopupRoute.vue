@@ -8,15 +8,18 @@
         </div>
         <div class="popup">
             <div class="header">
-                Order has been split into {{ swaps.length }} routes:
+                Multihop swap ({{ routeCount }} routes, {{ hopCount }} hops)
             </div>
             <div
-                v-for="(hops, index) in swaps"
+                v-for="(route, index) in swaps"
                 :key="index"
-                class="swap"
+                class="route"
             >
+                <div class="route-share">
+                    {{ getShare(route) }}%
+                </div>
                 <div
-                    v-for="hop in hops"
+                    v-for="hop in route"
                     :key="hop"
                     class="hop"
                 >
@@ -34,11 +37,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { Swap } from '@balancer-labs/sor/dist/types';
 
 import { formatAddress, getPoolLink } from '@/utils/helpers';
 
 import Icon from '@/components/Icon.vue';
+import { BigNumber } from 'bignumber.js';
+
+interface Route {
+    distribution: number;
+    tokens: string[];
+}
 
 export default defineComponent({
     components: {
@@ -50,8 +60,32 @@ export default defineComponent({
             required: true,
         },
     },
-    setup() {
+    setup(props) {
+        const routeCount = computed(() => props.swaps.length);
+
+        const hopCount = computed(() => {
+            const swaps = props.swaps as Swap[][];
+            return swaps.reduce((hopCount, route) => {
+                return hopCount + route.length;
+            }, 0);
+        });
+
+        const totalSwapAmount = computed(() => {
+            const swaps = props.swaps as Swap[][];
+            return swaps.reduce((swapAmount, route) => {
+                return swapAmount.plus(route[0].swapAmount || '0');
+            }, new BigNumber(0));
+        });
+
+        function getShare(route: Swap[]): string {
+            const swapAmount = new BigNumber(route[0].swapAmount || '0');
+            return swapAmount.div(totalSwapAmount.value).times(100).toFixed(0, BigNumber.ROUND_HALF_UP);
+        }
+
         return {
+            routeCount,
+            hopCount,
+            getShare,
             formatAddress,
             getPoolLink,
         };
@@ -84,8 +118,8 @@ export default defineComponent({
     position: absolute;
     display: flex;
     flex-direction: column;
-    align-items: center;
     visibility: hidden;
+    color: var(--text-secondary);
     border: 1px solid var(--outline);
     background-color: var(--background-secondary);
     border-radius: var(--border-radius);
@@ -118,15 +152,25 @@ export default defineComponent({
 }
 
 .header {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    text-align: center;
 }
 
 .icon-wrapper:hover + .popup {
     visibility: visible;
 }
 
-.swap {
+.route {
     display: flex;
+}
+
+.route:not(:last-child) {
+    margin-bottom: 4px;
+}
+
+.route-share {
+    width: 40px;
 }
 
 .hop:not(:last-child)::after {
@@ -135,6 +179,6 @@ export default defineComponent({
 }
 
 .pool-link {
-    color: var(--info);
+    color: var(--text-primary);
 }
 </style>
