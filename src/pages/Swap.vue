@@ -487,6 +487,7 @@ export default defineComponent({
                 } else {
                     tokenInAmountInput.value = '';
                 }
+                slippage.value = 0;
                 return;
             }
 

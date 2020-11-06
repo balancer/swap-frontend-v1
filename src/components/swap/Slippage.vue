@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div
-            v-if="value"
+            v-if="value > 0"
             class="label"
         >
             Slippage: {{ (value * 100).toFixed(2) }}% (expected) +
