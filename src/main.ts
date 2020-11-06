@@ -1,12 +1,12 @@
 import { createApp } from 'vue';
-import { createWebHistory, createRouter } from 'vue-router';
+import { createWebHashHistory, createRouter } from 'vue-router';
 import store from './store';
 
 import App from './App.vue';
 
 import Swap from './pages/Swap.vue';
 
-const routerHistory = createWebHistory();
+const routerHistory = createWebHashHistory();
 const router = createRouter({
     history: routerHistory,
     routes: [
