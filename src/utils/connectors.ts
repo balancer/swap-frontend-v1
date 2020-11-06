@@ -65,7 +65,7 @@ export function getConnectorName(connectorId: string): string {
         return 'WalletConnect';
     }
     if (connectorId === 'walletlink') {
-        return 'WalletLink';
+        return 'Coinbase Wallet';
     }
     return 'Unknown';
 }
