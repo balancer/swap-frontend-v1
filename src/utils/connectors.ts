@@ -31,6 +31,10 @@ for (const connectorId in connectors) {
     lock.addConnector(connector);
 }
 
+export function hasInjectedProvider(): boolean {
+    return !!window.ethereum;
+}
+
 export function getConnectorName(connectorId: string): string {
     if (connectorId === 'injected') {
         const provider = window.ethereum;

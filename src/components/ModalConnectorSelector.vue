@@ -28,7 +28,7 @@ import { useStore } from 'vuex';
 
 import config from '@/config';
 import { RootState } from '@/store';
-import { getConnectorName, getConnectorLogo } from '@/utils/connectors';
+import { hasInjectedProvider, getConnectorName, getConnectorLogo } from '@/utils/connectors';
 
 import ModalBase from '@/components/ModalBase.vue';
 
@@ -40,13 +40,20 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const connectors = computed(() => {
-            return Object.keys(config.connectors).map(connectorId => {
-                return {
-                    id: connectorId,
-                    name: getConnectorName(connectorId),
-                    logo: getConnectorLogo(connectorId),
-                };
-            });
+            return Object.keys(config.connectors)
+                .filter(connectorId => {
+                    if (connectorId === 'injected') {
+                        return hasInjectedProvider();
+                    }
+                    return true;
+                })
+                .map(connectorId => {
+                    return {
+                        id: connectorId,
+                        name: getConnectorName(connectorId),
+                        logo: getConnectorLogo(connectorId),
+                    };
+                });
         });
 
         function select(connectorId: string): void {
