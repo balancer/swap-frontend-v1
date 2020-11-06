@@ -321,8 +321,8 @@ export default defineComponent({
                 ? assetOutAmount.div(assetInAmount)
                 : assetInAmount.div(assetOutAmount);
             const rateString = isInRate.value
-                ? `1 ${assetIn.symbol} = ${rate.toFixed(4)} ${assetOut.symbol}`
-                : `1 ${assetOut.symbol} = ${rate.toFixed(4)} ${assetIn.symbol}`;
+                ? `1 ${assetIn.symbol} = ${rate.toFixed(6)} ${assetOut.symbol}`
+                : `1 ${assetOut.symbol} = ${rate.toFixed(6)} ${assetIn.symbol}`;
             return rateString;
         });
 
