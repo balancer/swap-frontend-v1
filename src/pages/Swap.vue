@@ -474,7 +474,9 @@ export default defineComponent({
                 : tokenOutAddressInput.value;
             await sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
             await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
+            await onAmountChange(activeInput.value);
             await sor.fetchPools();
+            await onAmountChange(activeInput.value);
         }
 
         async function onAmountChange(amount: string): Promise<void> {
