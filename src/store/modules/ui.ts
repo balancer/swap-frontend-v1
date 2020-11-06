@@ -64,7 +64,7 @@ const actions = {
     },
     notify: async ({ commit }: ActionContext<UIState, RootState>, notification: Notification): Promise<void> => {
         commit('setNotification', notification);
-        await sleep(10 * 1000);
+        await sleep(30 * 1000);
         commit('setNotification', null);
     },
 };

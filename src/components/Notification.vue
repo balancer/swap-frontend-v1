@@ -96,7 +96,7 @@ export default defineComponent({
     border-radius: var(--border-radius);
     align-items: center;
     animation-name: slide;
-    animation-duration: 10000ms;
+    animation-duration: 30000ms;
 }
 
 .icon {
@@ -140,7 +140,7 @@ export default defineComponent({
     left: 0;
     background: white;
     animation-name: grow;
-    animation-duration: 10000ms;
+    animation-duration: 30000ms;
 }
 
 @keyframes slide {
@@ -149,12 +149,12 @@ export default defineComponent({
         transform: translateX(300px);
     }
 
-    10% {
+    5% {
         opacity: 1;
         transform: translateX(0);
     }
 
-    90% {
+    95% {
         opacity: 1;
         transform: translateX(0);
     }
