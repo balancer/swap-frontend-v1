@@ -78,7 +78,7 @@ export default defineComponent({
 
 <style scoped>
 .wrapper {
-    min-height: 21px;
+    height: 26.5px;
     margin-top: 16px;
     display: flex;
     align-items: center;

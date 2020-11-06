@@ -7,7 +7,7 @@
                         Send
                         <span v-if="!isExactIn">(approximate)</span>
                     </div>
-                    <div>
+                    <div class="balance-label">
                         {{ assetInBalanceLabel }}
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                         Receive
                         <span v-if="isExactIn">(approximate)</span>
                     </div>
-                    <div>
+                    <div class="balance-label">
                         {{ assetOutBalanceLabel }}
                     </div>
                 </div>
@@ -47,7 +47,10 @@
                 />
             </div>
             <div class="rate-message">
-                <span @click="toggleRate">
+                <span
+                    class="rate-label"
+                    @click="toggleRate"
+                >
                     {{ rateMessage }}
                 </span>
                 <PopupRoute
@@ -742,6 +745,13 @@ export default defineComponent({
     font-size: 14px;
 }
 
+.balance-label {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .chevron-icon {
     margin-top: 8px;
     width: 24px;
@@ -756,12 +766,19 @@ export default defineComponent({
 }
 
 .rate-message {
-    margin-top: 16px;
     min-height: 16.5px;
+    margin-top: 16px;
     display: flex;
     font-size: 14px;
     color: var(--text-secondary);
     cursor: pointer;
+}
+
+.rate-label {
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .route-popup {

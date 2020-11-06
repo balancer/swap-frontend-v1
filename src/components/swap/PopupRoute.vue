@@ -27,7 +27,11 @@
                         :address="asset.address"
                         class="asset-icon"
                     />
-                    {{ asset.symbol }}
+                    <div
+                        class="asset-symbol"
+                    >
+                        {{ asset.symbol }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -234,5 +238,12 @@ export default defineComponent({
     height: 16px;
     border-radius: 50%;
     margin-right: 4px;
+}
+
+.asset-symbol {
+    max-width: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

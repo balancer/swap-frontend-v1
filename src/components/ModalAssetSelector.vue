@@ -227,7 +227,11 @@ export default defineComponent({
 }
 
 .asset-symbol {
+    max-width: 140px;
     padding-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--text-secondary);
 }
 
