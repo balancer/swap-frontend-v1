@@ -50,7 +50,7 @@
 <script lang="ts">
 import { getAddress } from '@ethersproject/address';
 import BigNumber from 'bignumber.js';
-import { defineComponent, onMounted, watch, computed, ref } from 'vue';
+import { Ref, defineComponent, onMounted, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
@@ -78,10 +78,9 @@ export default defineComponent({
         const { balances } = store.state.account;
 
         const query = ref('');
-        const queryEl = ref(null);
+        const queryEl: Ref<any> = ref(null);
 
         onMounted(() => {
-            // @ts-ignore
             queryEl.value.focus();
         });
 
