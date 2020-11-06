@@ -80,16 +80,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.notification-wrapper {
-    position: fixed;
-    z-index: 1;
-}
-
 .notification {
-    position: fixed;
-    z-index: 2;
-    bottom: 16px;
-    right: 16px;
+    margin-top: 16px;
     padding: 16px;
     box-sizing: border-box;
     display: flex;

@@ -15,7 +15,7 @@ export interface UIState {
             isOpen: boolean;
         };
     };
-    notification: Notification | null;
+    notifications: Notification[];
 }
 
 interface Notification {
@@ -37,8 +37,11 @@ const mutations = {
     setConnectorModal: (_state: UIState, isOpen: boolean): void => {
         _state.modal.connector.isOpen = isOpen;
     },
-    setNotification: (_state: UIState, notification: Notification): void => {
-        _state.notification = notification;
+    addNotification: (_state: UIState, notification: Notification): void => {
+        _state.notifications.push(notification);
+    },
+    removeTopNotification: (_state: UIState): void => {
+        _state.notifications.splice(0, 1);
     },
 };
 
@@ -63,9 +66,9 @@ const actions = {
         commit('setConnectorModal', false);
     },
     notify: async ({ commit }: ActionContext<UIState, RootState>, notification: Notification): Promise<void> => {
-        commit('setNotification', notification);
+        commit('addNotification', notification);
         await sleep(30 * 1000);
-        commit('setNotification', null);
+        commit('removeTopNotification');
     },
 };
 
@@ -83,7 +86,7 @@ function state(): UIState {
                 isOpen: false,
             },
         },
-        notification: null,
+        notifications: [],
     };
 }
 

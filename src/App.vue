@@ -6,11 +6,8 @@
 
         <ModalAccount v-if="isAccountModalOpen" />
         <ModalConnectorSelector v-if="isConnectorModalOpen" />
-        <Notification
-            v-if="notification"
-            :type="notification.type"
-            :text="notification.text"
-            :link="notification.link"
+        <NotificationList
+            :items="notifications"
         />
     </div>
 </template>
@@ -25,7 +22,7 @@ import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
 import ModalConnectorSelector from '@/components/ModalConnectorSelector.vue';
-import Notification from '@/components/Notification.vue';
+import NotificationList from '@/components/NotificationList.vue';
 
 export default defineComponent({
     components: {
@@ -33,7 +30,7 @@ export default defineComponent({
         Footer,
         ModalAccount,
         ModalConnectorSelector,
-        Notification,
+        NotificationList,
     },
     setup() {
         const store = useStore<RootState>();
@@ -41,7 +38,7 @@ export default defineComponent({
         const isAccountModalOpen = computed(() => store.state.ui.modal.account.isOpen);
         const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);
 
-        const notification = computed(() => store.state.ui.notification);
+        const notifications = computed(() => store.state.ui.notifications);
 
         onMounted(() => {
             store.dispatch('assets/init');
@@ -51,7 +48,7 @@ export default defineComponent({
         return {
             isAccountModalOpen,
             isConnectorModalOpen,
-            notification,
+            notifications,
         };
     },
 });
