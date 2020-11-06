@@ -199,6 +199,21 @@ export default defineComponent({
                 filter(balance => balance.amount !== '');
         });
 
+        const accountTransactions = computed(() => {
+            return transactions.sort((a, b) => {
+                if (a.timestamp === 0 && b.timestamp === 0) {
+                    return a.hash < b.hash ? -1 : 1;
+                }
+                if (a.timestamp === 0) {
+                    return 1;
+                }
+                if (b.timestamp === 0) {
+                    return 1;
+                }
+                return b.timestamp - a.timestamp;
+            });
+        });
+
         function handleToggleSelect(optionId: string): void {
             activeTab.value = optionId;
         }
@@ -221,7 +236,7 @@ export default defineComponent({
             address,
             activeTab,
             tabs,
-            transactions,
+            transactions: accountTransactions,
             balances: accountBalances,
 
             formatAddress,
