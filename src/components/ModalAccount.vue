@@ -126,7 +126,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="asset-amount">
+                        <div>
                             {{ balance.amount }}
                         </div>
                     </div>
@@ -399,9 +399,5 @@ export default defineComponent({
 .asset-symbol {
     font-size: 14px;
     color: var(--text-secondary);
-}
-
-.asset-amount {
-    font-weight: bold;
 }
 </style>

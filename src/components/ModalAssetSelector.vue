@@ -39,7 +39,7 @@
                         Incompatible
                     </div>
                 </div>
-                <div class="asset-amount">
+                <div>
                     {{ asset.amount }}
                 </div>
             </div>
@@ -238,9 +238,5 @@ export default defineComponent({
 .asset-incompatible {
     padding-left: 8px;
     color: var(--error);
-}
-
-.asset-amount {
-    font-weight: bold;
 }
 </style>
