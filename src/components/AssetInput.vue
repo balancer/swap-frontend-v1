@@ -237,7 +237,7 @@ export default defineComponent({
     }
 
     .amount {
-        width: 120px;
+        min-width: 80px;
     }
 }
 </style>
