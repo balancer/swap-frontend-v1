@@ -183,11 +183,11 @@ export default defineComponent({
 }
 
 .amount {
+    min-width: 200px;
+    font-size: 24px;
+    color: var(--text-primary);
     border: none;
     background: transparent;
-    color: var(--text-primary);
-    font-size: 24px;
-    max-width: 200px;
     text-align: right;
     outline: none;
 }
