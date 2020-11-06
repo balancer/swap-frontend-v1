@@ -59,7 +59,7 @@
                         v-if="transactions.length === 0"
                         class="transactions-empty"
                     >
-                        No recent transactions
+                        Your transactions will appear here
                     </div>
                     <div
                         v-for="transaction in transactions"
@@ -103,7 +103,7 @@
                         v-if="balances.length === 0"
                         class="balances-empty"
                     >
-                        No assets found
+                        Wallet is empty
                     </div>
                     <div
                         v-for="balance in balances"
@@ -172,7 +172,7 @@ export default defineComponent({
 
         const tabs = [{
             id: 'transactions',
-            title: 'Recent Transactions',
+            title: 'Transactions',
         }, {
             id: 'wallet',
             title: 'Wallet',
