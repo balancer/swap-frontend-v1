@@ -244,7 +244,7 @@ export default defineComponent({
     margin: 16px;
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: center;
 }
 
 .account-info {
