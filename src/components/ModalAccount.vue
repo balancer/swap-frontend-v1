@@ -314,13 +314,15 @@ export default defineComponent({
 }
 
 .transaction {
+    padding: 8px 16px;
     display: flex;
     justify-content: space-between;
-    padding: 8px 16px;
+    align-items: center;
 }
 
 .transaction-meta {
     display: flex;
+    align-items: center;
 }
 
 .transaction-icon-wrapper {
