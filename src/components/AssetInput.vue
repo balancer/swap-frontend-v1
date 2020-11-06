@@ -142,14 +142,14 @@ export default defineComponent({
 <style scoped>
 .input {
     display: flex;
-    height: var(--block-height);
+    height: 48px;
     border: 1px solid var(--outline);
     border-radius: 4px;
     background: var(--background-secondary);
 }
 
 .amount-wrapper {
-    width: 240px;
+    width: 260px;
     padding: 8px;
     display: flex;
     align-items: center;
@@ -159,8 +159,8 @@ export default defineComponent({
 }
 
 .loading {
-    width: 80px;
-    height: 21px;
+    width: 100px;
+    height: 29px;
     background: var(--text-primary);
     animation-name: pulse;
     animation-duration: 2s;
@@ -186,14 +186,14 @@ export default defineComponent({
     border: none;
     background: transparent;
     color: var(--text-primary);
-    font-size: 16px;
-    font-weight: bold;
+    font-size: 24px;
+    max-width: 200px;
     text-align: right;
     outline: none;
 }
 
 .asset-wrapper {
-    width: 140px;
+    width: 120px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -218,11 +218,11 @@ export default defineComponent({
 }
 
 .asset-symbol {
+    max-width: 68px;
     margin-left: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 88px;
 }
 
 .chevron-icon {
