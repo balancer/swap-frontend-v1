@@ -15,6 +15,7 @@
                 v-else
                 :value="amount"
                 class="amount"
+                placeholder="0"
                 @input="handleInputChange($event.target.value)"
             >
         </div>

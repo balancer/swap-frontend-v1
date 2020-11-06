@@ -163,13 +163,13 @@ export default defineComponent({
         const isInRate = ref(true);
         const isExactIn = ref(true);
         const tokenInAddressInput = ref('');
-        const tokenInAmountInput = ref('10');
+        const tokenInAmountInput = ref('');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
         const slippage = ref(0);
         const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
-        const swapsLoading = ref(true);
+        const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
@@ -474,9 +474,7 @@ export default defineComponent({
                 : tokenOutAddressInput.value;
             await sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
             await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
-            await onAmountChange(activeInput.value);
             await sor.fetchPools();
-            await onAmountChange(activeInput.value);
         }
 
         async function onAmountChange(amount: string): Promise<void> {
