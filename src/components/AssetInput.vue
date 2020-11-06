@@ -4,6 +4,7 @@
             <ButtonText
                 v-if="isMaxLabelShown"
                 :text="'max'"
+                class="max-label"
                 @click="setMax"
             />
             <span v-else />
@@ -156,6 +157,10 @@ export default defineComponent({
     justify-content: space-between;
     border-right: 1px solid var(--outline);
     border-radius: 4px;
+}
+
+.max-label {
+    margin-right: 4px;
 }
 
 .loading {
