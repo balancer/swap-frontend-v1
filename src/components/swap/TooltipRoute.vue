@@ -169,14 +169,17 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     visibility: hidden;
+    opacity: 0;
     color: var(--text-primary);
     border: 1px solid var(--outline);
     background-color: var(--background-secondary);
     border-radius: var(--border-radius);
+    transition: opacity 0.125s ease-in, visibility 0.125s ease-in;
 }
 
 .popup:hover {
     visibility: visible;
+    opacity: 1;
 }
 
 .popup::before {
@@ -210,6 +213,8 @@ export default defineComponent({
 
 .icon-wrapper:hover + .popup {
     visibility: visible;
+    opacity: 1;
+    transition: opacity 0.125s ease-out, visibility 0.125s ease-out;
 }
 
 .route {
