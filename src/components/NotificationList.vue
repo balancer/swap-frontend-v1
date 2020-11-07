@@ -31,7 +31,6 @@ export default defineComponent({
 <style scoped>
 .list {
     position: fixed;
-    z-index: 2;
     bottom: 16px;
     right: 16px;
 }
