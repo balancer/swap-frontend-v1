@@ -53,7 +53,7 @@
                 >
                     {{ rateMessage }}
                 </span>
-                <PopupRoute
+                <TooltipRoute
                     v-if="rateMessage"
                     class="route-popup"
                     :swaps="swaps"
@@ -118,8 +118,8 @@ import AssetInput from '@/components/AssetInput.vue';
 import Button from '@/components/Button.vue';
 import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
-import PopupRoute from '@/components/swap/PopupRoute.vue';
 import Slippage from '@/components/swap/Slippage.vue';
+import TooltipRoute from '@/components/swap/TooltipRoute.vue';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -151,8 +151,8 @@ export default defineComponent({
         Button,
         Icon,
         ModalAssetSelector,
-        PopupRoute,
         Slippage,
+        TooltipRoute,
     },
     setup() {
         let sor: SOR | undefined = undefined;
