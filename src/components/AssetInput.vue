@@ -145,7 +145,7 @@ export default defineComponent({
     display: flex;
     height: 48px;
     border: 1px solid var(--outline);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: var(--background-secondary);
 }
 
@@ -156,7 +156,7 @@ export default defineComponent({
     align-items: center;
     justify-content: space-between;
     border-right: 1px solid var(--outline);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .max-label {
@@ -207,7 +207,9 @@ export default defineComponent({
 
 .asset-wrapper:hover {
     background: var(--background-primary);
-    border-radius: 0 4px 4px 0;
+    border-radius: var(--border-radius);
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
 }
 
 .asset-meta {

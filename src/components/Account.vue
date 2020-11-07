@@ -109,7 +109,7 @@ export default defineComponent({
     width: 16px;
     height: 16px;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 50%;
 }
 
 .account-address {

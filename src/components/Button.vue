@@ -44,7 +44,7 @@ button {
     background: var(--background-secondary);
     border: 1px solid var(--outline);
     color: var(--text-primary);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     transition: background 0.25s ease-in, border-color 0.25s ease-in;
 }
