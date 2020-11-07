@@ -7,16 +7,18 @@
             error: type === 'error',
         }"
     >
-        <Icon
-            :title="icon"
-            class="icon"
-        />
-        <div class="body">
-            <div class="body-title">
-                {{ title }}
-            </div>
-            <div class="body-text">
-                {{ text }}
+        <div class="meta">
+            <Icon
+                :title="icon"
+                class="icon"
+            />
+            <div class="body">
+                <div class="body-title">
+                    {{ title }}
+                </div>
+                <div class="body-text">
+                    {{ text }}
+                </div>
             </div>
         </div>
         <div class="button-wrapper">
@@ -81,14 +83,21 @@ export default defineComponent({
 
 <style scoped>
 .notification {
+    width: 280px;
     margin-top: 16px;
     padding: 16px;
     box-sizing: border-box;
     display: flex;
     border-radius: var(--border-radius);
+    justify-content: space-between;
     align-items: center;
     animation-name: slide;
     animation-duration: 30000ms;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
 }
 
 .icon {
@@ -118,7 +127,11 @@ export default defineComponent({
 }
 
 .body-text {
+    max-width: 140px;
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .button-wrapper {
