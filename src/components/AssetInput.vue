@@ -160,7 +160,7 @@ export default defineComponent({
 }
 
 .max-label {
-    margin-right: 4px;
+    margin-right: 8px;
 }
 
 .loading {
