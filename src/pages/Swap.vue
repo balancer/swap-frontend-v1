@@ -234,20 +234,26 @@ export default defineComponent({
         const isUnlocked = computed(() => {
             const { allowances } = store.state.account;
             const { metadata } = store.state.assets;
+            if (!tokenInAddressInput.value) {
+                return true;
+            }
             if (tokenInAddressInput.value === ETH_KEY) {
                 return true;
             }
-            const exchangeProxyAddress = config.addresses.exchangeProxy;
-            if (!tokenInAddressInput.value) {
-                return false;
+            if (!tokenInAmountInput.value) {
+                return true;
             }
-            const decimals = metadata[tokenInAddressInput.value].decimals;
+            const exchangeProxyAddress = config.addresses.exchangeProxy;
             if (!allowances[exchangeProxyAddress]) {
-                return false;
+                return true;
             }
             const allowance = allowances[exchangeProxyAddress][tokenInAddressInput.value];
             if (!allowance) {
-                return false;
+                return true;
+            }
+            const decimals = metadata[tokenInAddressInput.value].decimals;
+            if (!decimals) {
+                return true;
             }
             const allowanceNumber = new BigNumber(allowance);
             const allowanceRaw = scale(allowanceNumber, -decimals);
