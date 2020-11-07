@@ -56,7 +56,16 @@
                     class="transactions"
                 >
                     <div
-                        v-if="transactions.length === 0"
+                        v-if="transactions.length > 0"
+                        class="clear-button-wrapper"
+                    >
+                        <ButtonText
+                            :text="'clear'"
+                            @click="clearTransactions"
+                        />
+                    </div>
+                    <div
+                        v-else
                         class="transactions-empty"
                     >
                         Your transactions will appear here
@@ -99,6 +108,13 @@
                     v-if="activeTab === 'wallet'"
                     class="balances"
                 >
+                    <div class="refresh-button-wrapper">
+                        <ButtonText
+                            :text="'refresh'"
+                            class="refresh-button"
+                            @click="fetchAccountState"
+                        />
+                    </div>
                     <div
                         v-if="balances.length === 0"
                         class="balances-empty"
@@ -165,8 +181,6 @@ export default defineComponent({
     },
     setup() {
         const store = useStore<RootState>();
-        const { metadata } = store.state.assets;
-        const { connector, address, transactions, balances } = store.state.account;
 
         const activeTab = ref('transactions');
 
@@ -179,6 +193,8 @@ export default defineComponent({
         }];
 
         const accountBalances = computed(() => {
+            const { metadata } = store.state.assets;
+            const { balances } = store.state.account;
             return Object.keys(balances)
                 .map(assetAddress => {
                     const assetMetadata = metadata[assetAddress];
@@ -200,6 +216,7 @@ export default defineComponent({
         });
 
         const accountTransactions = computed(() => {
+            const { transactions } = store.state.account;
             return transactions.sort((a, b) => {
                 if (a.timestamp === 0 && b.timestamp === 0) {
                     return a.hash < b.hash ? -1 : 1;
@@ -218,7 +235,16 @@ export default defineComponent({
             activeTab.value = optionId;
         }
 
+        function clearTransactions(): void {
+            store.dispatch('account/clearTransactions');
+        }
+
+        function fetchAccountState(): void {
+            store.dispatch('account/fetchState');
+        }
+
         function copyAddress(): void {
+            const { address } = store.state.account;
             navigator.clipboard.writeText(address);
         }
 
@@ -232,8 +258,8 @@ export default defineComponent({
         }
 
         return {
-            connector,
-            address,
+            connector: computed(() => store.state.account.connector),
+            address: computed(() => store.state.account.address),
             activeTab,
             tabs,
             transactions: accountTransactions,
@@ -246,6 +272,8 @@ export default defineComponent({
             getAccountLink,
 
             handleToggleSelect,
+            clearTransactions,
+            fetchAccountState,
             copyAddress,
             disconnect,
             close,
@@ -323,6 +351,11 @@ export default defineComponent({
     margin: 16px 0;
 }
 
+.clear-button-wrapper {
+    display: flex;
+    margin: 16px;
+}
+
 .transactions-empty {
     text-align: center;
     color: var(--text-secondary);
@@ -373,6 +406,11 @@ export default defineComponent({
 
 .balances {
     margin: 16px 0;
+}
+
+.refresh-button-wrapper {
+    display: flex;
+    margin: 16px;
 }
 
 .balances-empty {

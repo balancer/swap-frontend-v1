@@ -97,7 +97,10 @@ const mutations = {
         _state.transactions[transactionIndex].status = status;
         _state.transactions[transactionIndex].timestamp = timestamp;
     },
-    clean: (_state: AccountState): void => {
+    clearTransactions: (_state: AccountState): void => {
+        _state.transactions = [];
+    },
+    clear: (_state: AccountState): void => {
         _state.proxy = '';
         _state.balances = {};
         _state.allowances = {};
@@ -144,7 +147,7 @@ const actions = {
         commit('setConnector', null);
         commit('setAddress', '');
         commit('setChainId', 0);
-        commit('clean');
+        commit('clear');
     },
     saveProvider: async({ commit, dispatch }: ActionContext<AccountState, RootState>, provider: any): Promise<void> => {
         if (provider.removeAllListeners) {
@@ -152,11 +155,11 @@ const actions = {
         }
         if (provider && provider.on) {
             provider.on('chainChanged', async () => {
-                commit('clean');
+                commit('clear');
                 dispatch('saveProvider', provider);
             });
             provider.on('accountsChanged', async () => {
-                commit('clean');
+                commit('clear');
                 dispatch('saveProvider', provider);
             });
             provider.on('disconnect', async () => {
@@ -184,6 +187,9 @@ const actions = {
         const { balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
+    },
+    clearTransactions: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
+        commit('clearTransactions');
     },
     saveTransaction: async({ commit }: ActionContext<AccountState, RootState>, transactionData: TransactionData): Promise<void> => {
         commit('addTransaction', transactionData);
