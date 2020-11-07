@@ -21,18 +21,20 @@
                     <div class="account-wallet">
                         <div class="account-address">
                             {{ formatAddress(address) }}
-                            <Icon
+                            <div
                                 class="account-wallet-icon"
-                                :title="'clipboard'"
-                                @click="copyAddress"
-                            />
+                            >
+                                <Icon
+                                    :title="'clipboard'"
+                                    @click="copyAddress"
+                                />
+                            </div>
                             <a
-                                class="transaction-link"
+                                class="account-link account-wallet-icon"
                                 :href="getAccountLink(address)"
                                 target="_blank"
                             >
                                 <Icon
-                                    class="account-wallet-icon"
                                     :title="'externalLink'"
                                 />
                             </a>
@@ -333,6 +335,7 @@ export default defineComponent({
     height: 18px;
     width: 18px;
     margin-left: 8px;
+    color: var(--text-primary);
     cursor: pointer;
 }
 
