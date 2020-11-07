@@ -1,6 +1,7 @@
 <template>
     <ModalBase
         :title="'Account'"
+        :open="open"
         @close="close"
     >
         <template #default>
@@ -180,6 +181,12 @@ export default defineComponent({
         ModalBase,
         Toggle,
         TransactionIcon,
+    },
+    props: {
+        open: {
+            type: Boolean,
+            required: true,
+        },
     },
     setup() {
         const store = useStore<RootState>();

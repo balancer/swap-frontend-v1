@@ -1,6 +1,7 @@
 <template>
     <ModalBase
         :title="'Select Wallet'"
+        :open="open"
         @close="close"
     >
         <template #default>
@@ -35,6 +36,12 @@ import ModalBase from '@/components/ModalBase.vue';
 export default defineComponent({
     components: {
         ModalBase,
+    },
+    props: {
+        open: {
+            type: Boolean,
+            required: true,
+        },
     },
     setup() {
         const store = useStore<RootState>();

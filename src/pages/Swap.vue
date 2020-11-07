@@ -86,7 +86,7 @@
             />
         </div>
         <ModalAssetSelector
-            v-if="isModalOpen"
+            :open="isModalOpen"
             :hidden="[tokenInAddressInput, tokenOutAddressInput]"
             @select="handleAssetSelect"
         />

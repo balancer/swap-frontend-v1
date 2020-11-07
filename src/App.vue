@@ -4,8 +4,8 @@
         <router-view class="view" />
         <Footer class="footer" />
 
-        <ModalAccount v-if="isAccountModalOpen" />
-        <ModalConnectorSelector v-if="isConnectorModalOpen" />
+        <ModalAccount :open="isAccountModalOpen" />
+        <ModalConnectorSelector :open="isConnectorModalOpen" />
         <NotificationList
             :items="notifications"
         />

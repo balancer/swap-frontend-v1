@@ -1,13 +1,14 @@
 <template>
     <ModalBase
         :title="'Select Asset'"
+        :open="open"
         @close="close"
     >
         <template #header>
             <div class="query-input-wrapper">
                 <input
-                    ref="queryEl"
                     v-model="query"
+                    v-autofocus
                     class="query-input"
                     placeholder="Search by symbol, name, or address"
                 >
@@ -50,7 +51,7 @@
 <script lang="ts">
 import { getAddress } from '@ethersproject/address';
 import BigNumber from 'bignumber.js';
-import { Ref, defineComponent, onMounted, watch, computed, ref } from 'vue';
+import { defineComponent, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
@@ -66,6 +67,10 @@ export default defineComponent({
         ModalBase,
     },
     props: {
+        open: {
+            type: Boolean,
+            required: true,
+        },
         hidden: {
             type: Array,
             default: (): any[] => [],
@@ -78,11 +83,6 @@ export default defineComponent({
         const { balances } = store.state.account;
 
         const query = ref('');
-        const queryEl: Ref<any> = ref(null);
-
-        onMounted(() => {
-            queryEl.value.focus();
-        });
 
         watch(query, () => {
             if (!isAddress(query.value)) {
@@ -154,6 +154,7 @@ export default defineComponent({
         }
 
         function close(): void {
+            query.value = '';
             store.dispatch('ui/closeAssetModal');
         }
 
@@ -163,7 +164,6 @@ export default defineComponent({
 
         return {
             query,
-            queryEl,
             visibleAssets,
             select,
             close,

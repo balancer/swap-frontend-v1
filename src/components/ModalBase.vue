@@ -1,31 +1,38 @@
 <template>
-    <div class="modal-wrapper">
+    <transition
+        name="appear"
+    >
         <div
-            class="backdrop"
-            @click="$emit('close')"
-        />
-        <div class="modal">
-            <div class="header">
-                <div class="header-top">
-                    <div>
-                        {{ title }}
+            v-if="open"
+            class="modal-wrapper"
+        >
+            <div
+                class="backdrop"
+                @click="$emit('close')"
+            />
+            <div class="modal">
+                <div class="header">
+                    <div class="header-top">
+                        <div>
+                            {{ title }}
+                        </div>
+                        <Icon
+                            class="close-icon"
+                            :title="'close'"
+                            @click="$emit('close')"
+                        />
                     </div>
-                    <Icon
-                        class="close-icon"
-                        :title="'close'"
-                        @click="$emit('close')"
+                    <slot
+                        class="header-bottom"
+                        name="header"
                     />
                 </div>
-                <slot
-                    class="header-bottom"
-                    name="header"
-                />
-            </div>
-            <div class="body">
-                <slot />
+                <div class="body">
+                    <slot />
+                </div>
             </div>
         </div>
-    </div>
+    </transition>
 </template>
 
 <script>
@@ -42,12 +49,28 @@ export default defineComponent({
             type: String,
             required: true,
         },
+        open: {
+            type: Boolean,
+            required: true,
+        },
     },
     emits: ['close'],
 });
 </script>
 
 <style scoped>
+.appear-enter {
+    opacity: 0;
+}
+
+.appear-enter-active {
+    animation: appear 0.2s ease-out;
+}
+
+.appear-leave-active {
+    animation: appear 0.2s ease-out reverse;
+}
+
 .modal-wrapper {
     position: fixed;
     display: flex;
@@ -82,6 +105,18 @@ export default defineComponent({
     border: 1px solid var(--outline);
 }
 
+.appear-enter > .modal {
+    transform: scale(0.9);
+}
+
+.appear-enter-active > .modal {
+    animation: grow 0.2s ease-out;
+}
+
+.appear-leave-active > .modal {
+    animation: grow 0.2s ease-out reverse;
+}
+
 .header {
     padding: 16px;
     border-bottom: 1px solid var(--outline);
@@ -100,5 +135,29 @@ export default defineComponent({
 
 .body {
     overflow-y: auto;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes grow {
+    0% {
+        transform: scale(0.9);
+    }
+
+    80% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 </style>
