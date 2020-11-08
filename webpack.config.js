@@ -21,7 +21,6 @@ module.exports =
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src'),
-            vue: '@vue/runtime-dom',
         },
         extensions: ['.ts', '.js', '.json'],
     },
@@ -71,17 +70,6 @@ module.exports =
         }),
         new VueLoaderPlugin(),
     ],
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    chunks: 'all',
-                },
-            },
-        },
-    },
     devServer: {
         hot: true,
     },
