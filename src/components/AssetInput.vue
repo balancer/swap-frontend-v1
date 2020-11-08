@@ -197,6 +197,10 @@ export default defineComponent({
     outline: none;
 }
 
+.amount::placeholder {
+    color: var(--text-secondary);
+}
+
 .asset-wrapper {
     width: 120px;
     display: flex;
