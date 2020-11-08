@@ -27,12 +27,18 @@
                 :link="link"
             />
         </div>
-        <div class="progress" />
+        <div
+            class="progress"
+            :style="{ width: `${(progress * 100).toFixed(0)}%` }"
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
+import { useIntervalFn } from '@vueuse/core';
+
+import { NOTIFICATION_DURATION } from '@/store/modules/ui';
 
 import Icon from '@/components/Icon.vue';
 import NotificationButton from '@/components/NotificationButton.vue';
@@ -57,6 +63,18 @@ export default defineComponent({
         },
     },
     setup(props) {
+        let timestamp = 0;
+        const progress = ref(0);
+
+        onMounted(() => {
+            timestamp = Date.now();
+        });
+
+        useIntervalFn(() => {
+            const elapsed = Date.now() - timestamp;
+            progress.value = elapsed / NOTIFICATION_DURATION;
+        }, 1000);
+
         const icon = computed(() => {
             if (props.type === 'success') {
                 return 'success';
@@ -76,6 +94,7 @@ export default defineComponent({
         return {
             icon,
             title,
+            progress,
         };
     },
 });
@@ -83,6 +102,7 @@ export default defineComponent({
 
 <style scoped>
 .notification {
+    position: relative;
     width: 280px;
     margin-top: 16px;
     padding: 16px;
@@ -91,8 +111,6 @@ export default defineComponent({
     border-radius: var(--border-radius);
     justify-content: space-between;
     align-items: center;
-    animation-name: slide;
-    animation-duration: 30000ms;
 }
 
 .meta {
@@ -139,44 +157,12 @@ export default defineComponent({
 }
 
 .progress {
-    position: fixed;
+    position: absolute;
     height: 2px;
     bottom: 0;
     left: 0;
     background: white;
-    animation-name: grow;
-    animation-duration: 30000ms;
-}
-
-@keyframes slide {
-    0% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-
-    5% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    95% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-}
-
-@keyframes grow {
-    0% {
-        width: 0;
-    }
-
-    100% {
-        width: 100%;
-    }
+    width: 0%;
+    transition: width 1s linear;
 }
 </style>

@@ -1,12 +1,14 @@
 <template>
     <div class="list">
-        <Notification
-            v-for="item in items"
-            :key="item.link"
-            :type="item.type"
-            :text="item.text"
-            :link="item.link"
-        />
+        <transition-group name="slide">
+            <Notification
+                v-for="item in items"
+                :key="item.link"
+                :type="item.type"
+                :text="item.text"
+                :link="item.link"
+            />
+        </transition-group>
     </div>
 </template>
 
@@ -33,5 +35,20 @@ export default defineComponent({
     position: fixed;
     bottom: 16px;
     right: 16px;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    opacity: 0;
+    transform: translateX(300px);
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: all 2s ease;
+}
+
+.slide-move {
+    transition: all 1s ease;
 }
 </style>

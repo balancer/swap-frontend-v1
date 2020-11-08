@@ -2,6 +2,8 @@ import { RootState } from '@/store';
 import { sleep } from '@/utils/helpers';
 import { ActionContext } from 'vuex';
 
+export const NOTIFICATION_DURATION = 30 * 1000;
+
 export interface UIState {
     modal: {
         asset: {
@@ -67,7 +69,7 @@ const actions = {
     },
     notify: async ({ commit }: ActionContext<UIState, RootState>, notification: Notification): Promise<void> => {
         commit('addNotification', notification);
-        await sleep(30 * 1000);
+        await sleep(NOTIFICATION_DURATION);
         commit('removeTopNotification');
     },
 };
