@@ -22,7 +22,7 @@
                 />
             </div>
             <Icon
-                class="chevron-icon"
+                class="toggle-icon"
                 :title="'chevron'"
                 @click="togglePair"
             />
@@ -762,10 +762,11 @@ export default defineComponent({
     text-overflow: ellipsis;
 }
 
-.chevron-icon {
-    margin-top: 8px;
+.toggle-icon {
     width: 24px;
     height: 24px;
+    margin-top: 8px;
+    cursor: pointer;
 }
 
 .validation-message {
