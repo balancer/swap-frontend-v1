@@ -586,9 +586,10 @@ export default defineComponent({
 
             const { metadata } = store.state.assets;
             const assetSymbol = metadata[asset].symbol;
+            const text = `Unlock ${assetSymbol}`;
             store.dispatch('account/saveTransaction', {
                 transaction,
-                text: `Unlock ${assetSymbol}`,
+                text,
             });
 
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
@@ -602,9 +603,6 @@ export default defineComponent({
             const type = transactionReceipt.status === 1
                 ? 'success'
                 : 'error';
-            const text = transactionReceipt.status === 1
-                ? `Unlocked ${assetSymbol}`
-                : 'Unlock failed';
             const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
                 text,
@@ -628,9 +626,10 @@ export default defineComponent({
             const { metadata } = store.state.assets;
             const assetInSymbol = metadata[assetIn].symbol;
             const assetOutSymbol = metadata[assetOut].symbol;
+            const text = `Swap ${assetInSymbol} for ${assetOutSymbol}`;
             store.dispatch('account/saveTransaction', {
                 transaction,
-                text: `Swap ${assetInSymbol} for ${assetOutSymbol}`,
+                text,
             });
 
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
@@ -652,9 +651,6 @@ export default defineComponent({
             const type = transactionReceipt.status === 1
                 ? 'success'
                 : 'error';
-            const text = transactionReceipt.status === 1
-                ? `Swapped ${assetInSymbol} for ${assetOutSymbol}`
-                : 'Swap failed';
             const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
                 text,
