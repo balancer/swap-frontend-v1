@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
-import { useIntervalFn } from '@vueuse/core';
+import { useTransition } from '@vueuse/core';
 
 import { NOTIFICATION_DURATION } from '@/store/modules/ui';
 
@@ -63,17 +63,16 @@ export default defineComponent({
         },
     },
     setup(props) {
-        let timestamp = 0;
-        const progress = ref(0);
+        const totalProgress = ref(0);
 
-        onMounted(() => {
-            timestamp = Date.now();
+        const progress = useTransition(totalProgress, {
+            duration: NOTIFICATION_DURATION,
+            transition: 'linear',
         });
 
-        useIntervalFn(() => {
-            const elapsed = Date.now() - timestamp;
-            progress.value = elapsed / NOTIFICATION_DURATION;
-        }, 1000);
+        onMounted(() => {
+            totalProgress.value = 1;
+        });
 
         const icon = computed(() => {
             if (props.type === 'success') {
