@@ -1,5 +1,4 @@
 import { Provider, Contract } from 'ethcall';
-import { JsonRpcProvider } from '@ethersproject/providers';
 
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
@@ -7,6 +6,7 @@ import erc20Abi from '../abi/ERC20.json';
 import config, { TokenMetadata } from '@/config';
 import { ETH_KEY } from '@/utils/assets';
 import { getTrustwalletLink } from '@/utils/helpers';
+import provider from '@/utils/provider';
 
 export type Allowances = Record<string, Record<string, string>>;
 
@@ -21,7 +21,6 @@ export interface AccountState {
 export default class Ethereum {
     static async fetchAccountState(address: string, assets: string[]): Promise<AccountState> {
         const ethcallProvider = new Provider();
-        const provider = new JsonRpcProvider(config.alchemyUrl, config.chainId);
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch balances and allowances
@@ -69,7 +68,6 @@ export default class Ethereum {
 
     static async fetchTokenMetadata(assets: string[]): Promise<Record<string, TokenMetadata>> {
         const ethcallProvider = new Provider();
-        const provider = new JsonRpcProvider(config.alchemyUrl, config.chainId);
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch token metadata

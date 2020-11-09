@@ -105,7 +105,7 @@ import { SOR } from '@balancer-labs/sor';
 import { Swap } from '@balancer-labs/sor/dist/types';
 
 import config from '@/config';
-import wsProvider from '@/utils/provider';
+import provider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { ETH_KEY, getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
@@ -464,7 +464,7 @@ export default defineComponent({
 
         async function initSor(): Promise<void> {
             sor = new SOR(
-                wsProvider,
+                provider,
                 new BigNumber(GAS_PRICE),
                 MAX_POOLS,
                 config.chainId,
@@ -591,7 +591,7 @@ export default defineComponent({
                 text: `Unlock ${assetSymbol}`,
             });
 
-            const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             store.dispatch('account/fetchAssets', [ asset ]);
             store.dispatch('account/saveMinedTransaction', {
@@ -633,7 +633,7 @@ export default defineComponent({
                 text: `Swap ${assetInSymbol} for ${assetOutSymbol}`,
             });
 
-            const transactionReceipt = await wsProvider.waitForTransaction(transaction.hash, 1);
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
             if (transactionReceipt.status === 1) {
                 tokenInAmountInput.value = '';

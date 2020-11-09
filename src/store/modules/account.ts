@@ -4,7 +4,7 @@ import { Web3Provider, Provider } from '@ethersproject/providers';
 import Ethereum, { Allowances, Balances } from '@/api/ethereum';
 import { RootState } from '@/store';
 import lock, { getConnectorName, getConnectorLogo } from '@/utils/connectors';
-import wsProvider from '@/utils/provider';
+import provider from '@/utils/provider';
 
 const LS_CONNECTOR_ID = 'connector';
 
@@ -206,7 +206,7 @@ const getters = {
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
-        return wsProvider;
+        return provider;
     },
 };
 
