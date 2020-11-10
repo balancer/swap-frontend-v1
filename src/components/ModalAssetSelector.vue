@@ -79,12 +79,11 @@ export default defineComponent({
     emits: ['select'],
     setup(props, { emit }) {
         const store = useStore<RootState>();
-        const { metadata } = store.state.assets;
-        const { balances } = store.state.account;
 
         const query = ref('');
 
         watch(query, () => {
+            const { metadata } = store.state.assets;
             if (!isAddress(query.value)) {
                 return;
             }
@@ -97,6 +96,8 @@ export default defineComponent({
         });
 
         const assets = computed(() => {
+            const { balances } = store.state.account;
+            const { metadata } = store.state.assets;
             const assets = Object.keys(metadata)
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];
