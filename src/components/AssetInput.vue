@@ -244,11 +244,19 @@ export default defineComponent({
 
 @media only screen and (max-width: 768px) {
     .amount-wrapper {
-        width: 160px;
+        width: 220px;
     }
 
     .amount {
-        min-width: 80px;
+        min-width: 100px;
+    }
+
+    .asset-wrapper {
+        width: 100px;
+    }
+
+    .asset-symbol {
+        max-width: 48px;
     }
 }
 </style>

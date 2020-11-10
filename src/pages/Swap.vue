@@ -804,4 +804,10 @@ export default defineComponent({
 .swap-button {
     margin-top: 16px;
 }
+
+@media only screen and (max-width: 768px) {
+    .pair {
+        padding: 16px 8px;
+    }
+}
 </style>
