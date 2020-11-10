@@ -129,6 +129,13 @@ const actions = {
         });
         const provider = await connector.connect();
         if (!provider) {
+            dispatch('disconnect');
+            return;
+        }
+        const web3Provider = new Web3Provider(provider);
+        const accounts = await web3Provider.listAccounts();
+        if (accounts.length === 0) {
+            dispatch('disconnect');
             return;
         }
         dispatch('saveProvider', provider);
