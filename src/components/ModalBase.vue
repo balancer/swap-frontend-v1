@@ -110,11 +110,11 @@ export default defineComponent({
 }
 
 .appear-enter-active > .modal {
-    animation: grow 0.2s ease-out;
+    animation: grow 0.2s cubic-bezier(0.38, 0, 0.6, 1.48);
 }
 
 .appear-leave-active > .modal {
-    animation: grow 0.2s ease-out reverse;
+    animation: grow 0.2s cubic-bezier(0.38, 0, 0.6, 1.48) reverse;
 }
 
 .header {
@@ -150,10 +150,6 @@ export default defineComponent({
 @keyframes grow {
     0% {
         transform: scale(0.9);
-    }
-
-    80% {
-        transform: scale(1.02);
     }
 
     100% {
