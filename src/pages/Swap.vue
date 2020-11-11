@@ -109,7 +109,6 @@ import provider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { ETH_KEY, getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
-import { getSlippage } from '@/utils/slippage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 import { RootState } from '@/store';
@@ -166,7 +165,6 @@ export default defineComponent({
         const tokenInAmountInput = ref('');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
-        const slippage = ref(0);
         const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
         const swapsLoading = ref(false);
@@ -314,7 +312,32 @@ export default defineComponent({
             return validation.value !== Validation.NONE;
         });
 
+        const slippage = computed(() => {
+            if (validation.value === Validation.EMPTY_INPUT ||
+                validation.value === Validation.INVALID_INPUT ||
+                validation.value === Validation.NO_SWAPS) {
+                return 0;
+            }
+            const { price } = store.state.assets;
+            const amountIn = parseFloat(tokenInAmountInput.value);
+            const amountOut = parseFloat(tokenOutAmountInput.value);
+            const priceIn = price[tokenInAddressInput.value];
+            const priceOut = price[tokenOutAddressInput.value];
+            if (!priceIn || !priceOut) {
+                return 0;
+            }
+            const spotPrice = priceIn / priceOut;
+            const marketPrice = amountOut / amountIn;
+            const slippage = (spotPrice - marketPrice) / spotPrice;
+            return slippage < 0 ? 0.00001 : slippage;
+        });
+
         const rateMessage = computed(() => {
+            if (validation.value === Validation.EMPTY_INPUT ||
+                validation.value === Validation.INVALID_INPUT ||
+                validation.value === Validation.NO_SWAPS) {
+                return '';
+            }
             const { metadata } = store.state.assets;
             const assetIn = metadata[tokenInAddressInput.value];
             const assetOut = metadata[tokenOutAddressInput.value];
@@ -323,9 +346,6 @@ export default defineComponent({
             }
             const assetInAmount = new BigNumber(tokenInAmountInput.value);
             const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
-            if (assetInAmount.isNaN() || assetOutAmount.isNaN() || assetInAmount.isZero()) {
-                return '';
-            }
             const rate = isInRate.value
                 ? assetOutAmount.div(assetInAmount)
                 : assetInAmount.div(assetOutAmount);
@@ -500,7 +520,6 @@ export default defineComponent({
                 } else {
                     tokenInAmountInput.value = '';
                 }
-                slippage.value = 0;
                 return;
             }
 
@@ -554,21 +573,6 @@ export default defineComponent({
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
             swapsLoading.value = false;
-
-            const tokenInAmountRaw = new BigNumber(tokenInAmountInput.value);
-            const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
-            const tokenOutAmountRaw = new BigNumber(tokenOutAmountInput.value);
-            const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
-            if (sor.onChainCache.pools.length > 0) {
-                const slippageNumber = getSlippage(
-                    sor.onChainCache.pools,
-                    swaps.value,
-                    isExactIn.value,
-                    tokenInAmount,
-                    tokenOutAmount,
-                );
-                slippage.value = slippageNumber.toNumber();
-            }
         }
 
         async function handleUnlockTransaction(transaction: any, asset: string): Promise<void> {
