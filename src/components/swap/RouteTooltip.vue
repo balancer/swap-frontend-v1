@@ -8,7 +8,7 @@
         </div>
         <div class="tooltip">
             <div class="header">
-                Multihop swap ({{ routeCount }} routes, {{ hopCount }} hops)
+                Multihop swap
             </div>
             <div
                 v-for="(route, index) in routes"
@@ -75,15 +75,6 @@ export default defineComponent({
     setup(props) {
         const store = useStore<RootState>();
 
-        const routeCount = computed(() => props.swaps.length);
-
-        const hopCount = computed(() => {
-            const swaps = props.swaps as Swap[][];
-            return swaps.reduce((hopCount, route) => {
-                return hopCount + route.length;
-            }, 0);
-        });
-
         const routes = computed(() => {
             const swaps = props.swaps as Swap[][];
             const { metadata } = store.state.assets;
@@ -133,8 +124,6 @@ export default defineComponent({
         }
 
         return {
-            routeCount,
-            hopCount,
             routes,
             formatShare,
             formatAddress,
