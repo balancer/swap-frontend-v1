@@ -23,16 +23,21 @@ const mutations = {
 };
 
 const actions = {
-    init: async({ commit }: ActionContext<AssetState, RootState>): Promise<void> => {
+    init: async({ commit, dispatch }: ActionContext<AssetState, RootState>): Promise<void> => {
         const metadata = config.tokens;
         commit('addMetadata', metadata);
         const assets = Object.keys(config.tokens);
-        const price = await Coingecko.fetchPrice(assets);
-        commit('addPrice', price);
+        dispatch('fetchPrices', assets);
     },
-    fetch: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
+    fetch: async({ dispatch }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
+        dispatch('fetchMetadata', assets);
+        dispatch('fetchPrices', assets);        
+    },
+    fetchMetadata: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
         const metadata = await Ethereum.fetchTokenMetadata(assets);
         commit('addMetadata', metadata);
+    },
+    fetchPrices: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
         const price = await Coingecko.fetchPrice(assets);
         commit('addPrice', price);
     },

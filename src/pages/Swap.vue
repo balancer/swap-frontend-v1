@@ -401,7 +401,12 @@ export default defineComponent({
                 await sor.fetchPools();
                 await onAmountChange(activeInput.value);
             }
-        }, 60000);
+        }, 60 * 1000);
+
+        useIntervalFn(async () => {
+            const assets = Object.keys(store.state.assets.metadata);
+            store.dispatch('assets/fetchPrices', assets);
+        }, 5 * 60 * 1000);
 
         watch(tokenInAddressInput, () => {
             localStorage.setItem(ASSET_INPUT_KEY, tokenInAddressInput.value);
