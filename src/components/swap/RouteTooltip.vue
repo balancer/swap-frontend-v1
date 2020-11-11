@@ -1,12 +1,12 @@
 <template>
-    <div class="popup-wrapper">
+    <div class="tooltip-wrapper">
         <div class="icon-wrapper">
             <Icon
                 class="icon"
                 :title="'info'"
             />
         </div>
-        <div class="popup">
+        <div class="tooltip">
             <div class="header">
                 Multihop swap ({{ routeCount }} routes, {{ hopCount }} hops)
             </div>
@@ -144,7 +144,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.popup-wrapper {
+.tooltip-wrapper {
     position: relative;
 }
 
@@ -157,7 +157,7 @@ export default defineComponent({
     height: 16px;
 }
 
-.popup {
+.tooltip {
     width: 280px;
     z-index: 1;
     bottom: 100%;
@@ -177,12 +177,12 @@ export default defineComponent({
     transition: opacity 0.125s ease-in, visibility 0.125s ease-in;
 }
 
-.popup:hover {
+.tooltip:hover {
     visibility: visible;
     opacity: 1;
 }
 
-.popup::before {
+.tooltip::before {
     position: absolute;
     top: 100%;
     left: 50%;
@@ -193,7 +193,7 @@ export default defineComponent({
     border-width: 8px;
 }
 
-.popup::after {
+.tooltip::after {
     position: absolute;
     top: 100%;
     left: 50%;
@@ -211,7 +211,7 @@ export default defineComponent({
     text-align: center;
 }
 
-.icon-wrapper:hover + .popup {
+.icon-wrapper:hover + .tooltip {
     visibility: visible;
     opacity: 1;
     transition: opacity 0.125s ease-out, visibility 0.125s ease-out;
