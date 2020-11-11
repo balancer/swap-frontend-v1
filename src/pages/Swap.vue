@@ -413,10 +413,13 @@ export default defineComponent({
             onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, () => {
+        watch(tokenOutAddressInput, async () => {
             localStorage.setItem(ASSET_OUTPUT_KEY, tokenOutAddressInput.value);
             if (sor) {
-                sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
+                const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
+                    ? config.addresses.weth
+                    : tokenOutAddressInput.value;
+                await sor.setCostOutputToken(tokenOutAddress);
             }
             onAmountChange(activeInput.value);
         });
@@ -502,7 +505,7 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
                 : tokenOutAddressInput.value;
-            await sor.setCostOutputToken(tokenOutAddressInput.value, SWAP_COST);
+            await sor.setCostOutputToken(tokenOutAddress);
             await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
