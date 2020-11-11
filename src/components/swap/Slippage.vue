@@ -21,6 +21,7 @@
                 @click="show"
             />
             (buffer)
+            <SlippageTooltip class="tip" />
         </div>
     </div>
 </template>
@@ -31,10 +32,12 @@ import { defineComponent, ref, computed } from 'vue';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 
 import ButtonText from '@/components/ButtonText.vue';
+import SlippageTooltip from '@/components/swap/SlippageTooltip.vue';
 
 export default defineComponent({
     components: {
         ButtonText,
+        SlippageTooltip,
     },
     props: {
         value: {
@@ -99,10 +102,6 @@ export default defineComponent({
     align-items: center;
 }
 
-.control {
-    margin: 0 4px;
-}
-
 .input {
     width: 24px;
     text-align: right;
@@ -112,5 +111,13 @@ export default defineComponent({
     border-radius: var(--border-radius);
     color: var(--text-primary);
     outline: none;
+}
+
+.control {
+    margin: 0 4px;
+}
+
+.tip {
+    margin-left: 4px;
 }
 </style>
