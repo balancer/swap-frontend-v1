@@ -4,7 +4,7 @@
             v-if="value > 0"
             class="label"
         >
-            Slippage: {{ (value * 100).toFixed(2) }}% (expected) +
+            Price impact: {{ label }} +
             <input
                 v-if="shown"
                 v-autofocus
@@ -20,13 +20,13 @@
                 :text="`${buffer}%`"
                 @click="show"
             />
-            (additional buffer)
+            (buffer)
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 
@@ -50,6 +50,13 @@ export default defineComponent({
     setup(props, { emit }) {
         const shown = ref(false);
 
+        const label = computed(() => {
+            if (props.value < 0.0001) {
+                return '<0.01%';
+            }
+            return `${(props.value * 100).toFixed(2)}%`;
+        });
+
         function show(): void {
             shown.value = true;
         }
@@ -68,6 +75,7 @@ export default defineComponent({
 
         return {
             shown,
+            label,
             show,
             hide,
             handleInputChange,
