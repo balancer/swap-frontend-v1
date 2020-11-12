@@ -109,6 +109,7 @@ import provider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { ETH_KEY, getAssetAddressBySymbol } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
+import Storage from '@/utils/storage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 import { RootState } from '@/store';
@@ -124,9 +125,6 @@ import RouteTooltip from '@/components/swap/RouteTooltip.vue';
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 const SWAP_COST = new BigNumber('100000');
 const MAX_POOLS = 4;
-
-const ASSET_INPUT_KEY = 'input_asset';
-const ASSET_OUTPUT_KEY = 'output_asset';
 
 enum Validation {
     NONE,
@@ -409,12 +407,12 @@ export default defineComponent({
         }, 5 * 60 * 1000);
 
         watch(tokenInAddressInput, () => {
-            localStorage.setItem(ASSET_INPUT_KEY, tokenInAddressInput.value);
+            Storage.saveInputAsset(tokenInAddressInput.value);
             onAmountChange(activeInput.value);
         });
 
         watch(tokenOutAddressInput, async () => {
-            localStorage.setItem(ASSET_OUTPUT_KEY, tokenOutAddressInput.value);
+            Storage.saveOutputAsset(tokenOutAddressInput.value);
             if (sor) {
                 const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                     ? config.addresses.weth
@@ -691,12 +689,12 @@ export default defineComponent({
             const { metadata } = store.state.assets;
             let assetIn = 
                 router.currentRoute.value.params.assetIn as string ||
-                localStorage.getItem(ASSET_INPUT_KEY) ||
+                Storage.getInputAsset() ||
                 getAssetAddressBySymbol(metadata, 'DAI') ||
                 config.addresses.weth;
             let assetOut = 
                 router.currentRoute.value.params.assetOut as string ||
-                localStorage.getItem(ASSET_OUTPUT_KEY) ||
+                Storage.getOutputAsset() ||
                 getAssetAddressBySymbol(metadata, 'BAL') ||
                 config.addresses.weth;
             if (isAddress(assetIn)) {

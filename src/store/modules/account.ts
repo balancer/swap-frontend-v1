@@ -5,8 +5,7 @@ import Ethereum, { Allowances, Balances } from '@/api/ethereum';
 import { RootState } from '@/store';
 import lock, { getConnectorName, getConnectorLogo } from '@/utils/connectors';
 import provider from '@/utils/provider';
-
-const LS_CONNECTOR_ID = 'connector';
+import Storage from '@/utils/storage';
 
 enum TransactionStatus {
     PENDING,
@@ -24,16 +23,16 @@ export interface AccountState {
     transactions: Transaction[];
 }
 
-interface Connector {
-    id: string;
-    name: string;
-}
-
-interface Transaction {
+export interface Transaction {
     text: string;
     hash: string;
     status: TransactionStatus;
     timestamp: number;
+}
+
+interface Connector {
+    id: string;
+    name: string;
 }
 
 interface TransactionData {
@@ -111,7 +110,7 @@ const mutations = {
 const actions = {
     init: async({ dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
         // Save Web3 provider if available
-        const connectorId = localStorage.getItem(LS_CONNECTOR_ID);
+        const connectorId = Storage.getConnector();
         dispatch('connect', connectorId);
     },
     connect: async({ commit, dispatch }: ActionContext<AccountState, RootState>, connectorId: string): Promise<void> => {
@@ -139,17 +138,17 @@ const actions = {
             return;
         }
         dispatch('saveProvider', provider);
-        localStorage.setItem(LS_CONNECTOR_ID, connectorId);
+        Storage.saveConnector(connectorId);
     },
     disconnect: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
-        const connectorId = localStorage.getItem(LS_CONNECTOR_ID);
+        const connectorId = Storage.getConnector();
         if (connectorId) {
             const connector = lock.getConnector(connectorId);
             const isLoggedIn = connector.isLoggedIn();
             if (isLoggedIn) {
                 await connector.logout();
             }
-            localStorage.removeItem(LS_CONNECTOR_ID);
+            Storage.clearConnector();
         }
         commit('setConnector', null);
         commit('setAddress', '');
