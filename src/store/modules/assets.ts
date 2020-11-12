@@ -31,7 +31,7 @@ const actions = {
             ...Storage.getAssets(config.chainId),
         };
         commit('addMetadata', metadata);
-        const assets = Object.keys(config.tokens);
+        const assets = Object.keys(metadata);
         dispatch('fetchPrices', assets);
     },
     fetch: async({ dispatch }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
