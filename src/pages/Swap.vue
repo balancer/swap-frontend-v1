@@ -123,7 +123,6 @@ import RouteTooltip from '@/components/swap/RouteTooltip.vue';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
-const SWAP_COST = new BigNumber('100000');
 const MAX_POOLS = 4;
 
 enum Validation {
