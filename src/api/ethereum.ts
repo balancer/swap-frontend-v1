@@ -20,15 +20,13 @@ export interface AccountState {
 
 export default class Ethereum {
     static async fetchAccountState(address: string, assets: string[]): Promise<AccountState> {
+        assets = assets.filter(asset => asset !== ETH_KEY);
         const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];
         // Fetch balances and allowances
         const exchangeProxyAddress = config.addresses.exchangeProxy;
         for (const tokenAddress of assets) {
-            if (tokenAddress === ETH_KEY) {
-                continue;
-            }
             const tokenContract = new Contract(tokenAddress, erc20Abi);
             const balanceCall = tokenContract.balanceOf(address);
             const allowanceCall = tokenContract.allowance(address, exchangeProxyAddress);
@@ -48,15 +46,12 @@ export default class Ethereum {
         calls.push(proxyCall);
         // Fetch data
         const data = await ethcallProvider.all(calls);
-        const tokenCount = assets.length - 1; // skip ether
+        const tokenCount = assets.length;
         const allowances = {};
         allowances[exchangeProxyAddress] = {};
         const balances: Record<string, string> = {};
         let i = 0;
         for (const tokenAddress of assets) {
-            if (tokenAddress === ETH_KEY) {
-                continue;
-            }
             balances[tokenAddress] = data[2 * i].toString();
             allowances[exchangeProxyAddress][tokenAddress] = data[2 * i + 1].toString();
             i++;
