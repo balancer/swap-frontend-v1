@@ -1,8 +1,10 @@
+import { ActionContext } from 'vuex';
+
 import Coingecko from '@/api/coingecko';
 import Ethereum from '@/api/ethereum';
 import { RootState } from '@/store';
 import config, { TokenMetadata } from '@/config';
-import { ActionContext } from 'vuex';
+import Storage from '@/utils/storage';
 
 export interface AssetState {
     metadata: Record<string, TokenMetadata>;
@@ -24,7 +26,10 @@ const mutations = {
 
 const actions = {
     init: async({ commit, dispatch }: ActionContext<AssetState, RootState>): Promise<void> => {
-        const metadata = config.tokens;
+        const metadata = {
+            ...config.tokens,
+            ...Storage.getAssets(config.chainId),
+        };
         commit('addMetadata', metadata);
         const assets = Object.keys(config.tokens);
         dispatch('fetchPrices', assets);
@@ -35,6 +40,7 @@ const actions = {
     },
     fetchMetadata: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
         const metadata = await Ethereum.fetchTokenMetadata(assets);
+        Storage.saveAssets(config.chainId, metadata);
         commit('addMetadata', metadata);
     },
     fetchPrices: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
