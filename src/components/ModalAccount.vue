@@ -163,6 +163,7 @@ import { useStore } from 'vuex';
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
+import Storage from '@/utils/storage';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
@@ -225,7 +226,7 @@ export default defineComponent({
         });
 
         const accountTransactions = computed(() => {
-            const { transactions } = store.state.account;
+            const transactions = Object.values(store.state.account.transactions);
             return transactions.sort((a, b) => {
                 if (a.timestamp === 0 && b.timestamp === 0) {
                     return a.hash < b.hash ? -1 : 1;
@@ -246,6 +247,7 @@ export default defineComponent({
 
         function clearTransactions(): void {
             store.dispatch('account/clearTransactions');
+            Storage.clearTransactions();
         }
 
         function fetchAccountState(): void {

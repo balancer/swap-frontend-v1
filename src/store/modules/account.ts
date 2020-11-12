@@ -20,7 +20,7 @@ export interface AccountState {
     proxy: string;
     balances: Balances;
     allowances: Allowances;
-    transactions: Transaction[];
+    transactions: Record<string, Transaction>;
 }
 
 export interface Transaction {
@@ -76,34 +76,20 @@ const mutations = {
             }
         }
     },
-    addTransaction: (_state: AccountState, transactionData: TransactionData): void => {
-        const { transaction, text } = transactionData;
-        _state.transactions.push({
-            text,
-            hash: transaction.hash,
-            status: TransactionStatus.PENDING,
-            timestamp: 0,
-        });
+    setTransactions: (_state: AccountState, transactions: Record<string, Transaction>): void => {
+        _state.transactions = transactions;
     },
-    addMinedTransaction: (_state: AccountState, transaction: MinedTransaction): void => {
-        const { receipt, timestamp } = transaction;
-        const hash = receipt.transactionHash;
-        const status = receipt.status === 1
-            ? TransactionStatus.OK
-            : TransactionStatus.FAILED;
-        const transactionIndex = _state.transactions
-            .findIndex(transaction => transaction.hash === hash);
-        _state.transactions[transactionIndex].status = status;
-        _state.transactions[transactionIndex].timestamp = timestamp;
+    setTransaction: (_state: AccountState, transaction: Transaction): void => {
+        _state.transactions[transaction.hash] = transaction;
     },
     clearTransactions: (_state: AccountState): void => {
-        _state.transactions = [];
+        _state.transactions = {};
     },
     clear: (_state: AccountState): void => {
         _state.proxy = '';
         _state.balances = {};
         _state.allowances = {};
-        _state.transactions = [];
+        _state.transactions = {};
     },
 };
 
@@ -175,8 +161,11 @@ const actions = {
         const web3Provider = new Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
-        commit('setAddress', accounts[0]);
+        const account = accounts[0];
+        const transactions = Storage.getTransactions(account, network.chainId);
+        commit('setAddress', account);
         commit('setChainId', network.chainId);
+        commit('setTransactions', transactions);
         dispatch('fetchState');
     },
     fetchState: async({ commit, state, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
@@ -198,10 +187,31 @@ const actions = {
         commit('clearTransactions');
     },
     saveTransaction: async({ commit }: ActionContext<AccountState, RootState>, transactionData: TransactionData): Promise<void> => {
-        commit('addTransaction', transactionData);
+        const { text } = transactionData;
+        const { hash } = transactionData.transaction;
+        const transaction = {
+            text,
+            hash,
+            status: TransactionStatus.PENDING,
+            timestamp: 0,
+        };
+        commit('setTransaction', transaction);
     },
-    saveMinedTransaction: async({ commit }: ActionContext<AccountState, RootState>, transaction: MinedTransaction): Promise<void> => {
-        commit('addMinedTransaction', transaction);
+    saveMinedTransaction: async({ state, commit }: ActionContext<AccountState, RootState>, transaction: MinedTransaction): Promise<void> => {
+        const { receipt, timestamp } = transaction;
+        const hash = receipt.transactionHash;
+        const status = receipt.status === 1
+            ? TransactionStatus.OK
+            : TransactionStatus.FAILED;
+        const oldTransaction = state.transactions[hash];
+        const updatedTransaction = {
+            text: oldTransaction.text,
+            hash,
+            status,
+            timestamp,
+        };
+        commit('setTransaction', updatedTransaction);
+        Storage.saveTransaction(state.address, state.chainId, updatedTransaction);
     },
 };
 
@@ -224,7 +234,7 @@ function state(): AccountState {
         proxy: '',
         balances: {},
         allowances: {},
-        transactions: [],
+        transactions: {},
     };
 }
 
