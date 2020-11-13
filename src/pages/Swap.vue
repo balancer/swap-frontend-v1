@@ -390,6 +390,7 @@ export default defineComponent({
             await fetchTokenMetadata(assetIn, assetOut);
             tokenInAddressInput.value = assetIn;
             tokenOutAddressInput.value = assetOut;
+            slippageBuffer.value = (Storage.getSlippage() * 100).toString();
             initSor();
         });
 
@@ -419,6 +420,11 @@ export default defineComponent({
                 await sor.setCostOutputToken(tokenOutAddress);
             }
             onAmountChange(activeInput.value);
+        });
+
+        watch(slippageBuffer, async () => {
+            const slippage = parseFloat(slippageBuffer.value) / 100;
+            Storage.saveSlippage(slippage);
         });
 
         function toggleRate(): void {
