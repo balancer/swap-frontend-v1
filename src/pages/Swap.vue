@@ -379,11 +379,6 @@ export default defineComponent({
             }
         }, 60 * 1000);
 
-        useIntervalFn(async () => {
-            const assets = Object.keys(store.state.assets.metadata);
-            store.dispatch('assets/fetchPrices', assets);
-        }, 5 * 60 * 1000);
-
         watch(tokenInAddressInput, () => {
             Storage.saveInputAsset(config.chainId, tokenInAddressInput.value);
             onAmountChange(activeInput.value);

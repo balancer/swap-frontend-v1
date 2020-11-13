@@ -1,6 +1,5 @@
 import { ActionContext } from 'vuex';
 
-import Coingecko from '@/api/coingecko';
 import Ethereum from '@/api/ethereum';
 import { RootState } from '@/store';
 import config, { TokenMetadata } from '@/config';
@@ -8,7 +7,6 @@ import Storage from '@/utils/storage';
 
 export interface AssetState {
     metadata: Record<string, TokenMetadata>;
-    price: Record<string, number>;
 }
 
 const mutations = {
@@ -17,42 +15,23 @@ const mutations = {
             _state.metadata[address] = metadata[address];
         }
     },
-    addPrice: (_state: AssetState, price: Record<string, number>): void => {
-        for (const address in price) {
-            _state.price[address] = price[address];
-        }
-    },
 };
 
 const actions = {
-    init: async({ commit, dispatch }: ActionContext<AssetState, RootState>): Promise<void> => {
-        const metadata = {
-            ...config.tokens,
-            ...Storage.getAssets(config.chainId),
-        };
-        commit('addMetadata', metadata);
-        const assets = Object.keys(metadata);
-        dispatch('fetchPrices', assets);
+    init: async({ commit }: ActionContext<AssetState, RootState>): Promise<void> => {
+        commit('addMetadata', config.tokens);
+        commit('addMetadata', Storage.getAssets(config.chainId));
     },
-    fetch: async({ dispatch }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
-        dispatch('fetchMetadata', assets);
-        dispatch('fetchPrices', assets);        
-    },
-    fetchMetadata: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
+    fetch: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
         const metadata = await Ethereum.fetchTokenMetadata(assets);
         Storage.saveAssets(config.chainId, metadata);
         commit('addMetadata', metadata);
-    },
-    fetchPrices: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
-        const price = await Coingecko.fetchPrice(assets);
-        commit('addPrice', price);
     },
 };
 
 function state(): AssetState {
     return {
         metadata: {},
-        price: {},
     };
 }
 
