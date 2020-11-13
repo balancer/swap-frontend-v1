@@ -4,8 +4,7 @@ import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
 import config, { TokenMetadata } from '@/config';
-import { ETH_KEY } from '@/utils/assets';
-import { getTrustwalletLink } from '@/utils/helpers';
+import { ETH_KEY, getTrustwalletLink } from '@/utils/helpers';
 import provider from '@/utils/provider';
 
 export type Allowances = Record<string, Record<string, string>>;

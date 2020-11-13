@@ -106,8 +106,7 @@ import { Swap } from '@balancer-labs/sor/dist/types';
 
 import config from '@/config';
 import provider from '@/utils/provider';
-import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
-import { ETH_KEY } from '@/utils/assets';
+import { ETH_KEY, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Storage from '@/utils/storage';
 import Swapper from '@/web3/swapper';

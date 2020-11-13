@@ -7,8 +7,7 @@ import { Swap } from '@balancer-labs/sor/dist/types';
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
-import { logRevertedTx } from '@/utils/helpers';
-import { ETH_KEY } from '@/utils/assets';
+import { ETH_KEY, logRevertedTx } from '@/utils/helpers';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 const exchangeProxyAddress = config.addresses.exchangeProxy;

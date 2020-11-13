@@ -6,6 +6,8 @@ import { Wallet } from '@ethersproject/wallet';
 import config from '@/config';
 import provider from '@/utils/provider';
 
+export const ETH_KEY = 'ether';
+
 export function formatAddress(address: string, length = 8): string {
     const ellipsizedAddress = `${address.substr(0, 2 + length / 2)}…${address.substr(42 - length / 2)}`;
     return ellipsizedAddress;

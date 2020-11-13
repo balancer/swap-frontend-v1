@@ -45,8 +45,7 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
-import { ETH_KEY } from '@/utils/assets';
-import { scale } from '@/utils/helpers';
+import { ETH_KEY, scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
