@@ -476,7 +476,7 @@ export default defineComponent({
                 new BigNumber(GAS_PRICE),
                 MAX_POOLS,
                 config.chainId,
-                getPoolsUrl(),
+                config.subgraphBackupUrl,
             );
 
             const tokenInAddress = tokenInAddressInput.value === ETH_KEY
@@ -490,14 +490,6 @@ export default defineComponent({
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
             await onAmountChange(activeInput.value);
-        }
-
-        function getPoolsUrl(): string {
-            const url = {
-                1: 'https://cloudflare-ipfs.com/ipns/balancer-team-bucket.storage.fleek.co/balancer-exchange/pools',
-                42: 'https://cloudflare-ipfs.com/ipns/balancer-team-bucket.storage.fleek.co/balancer-exchange-kovan/pools',
-            };
-            return url[config.chainId];
         }
 
         async function onAmountChange(amount: string): Promise<void> {

@@ -22,8 +22,9 @@ interface Config {
     network: string;
     chainId: number;
     precision: number;
-    subgraphUrl: string;
     alchemyKey: string;
+    subgraphUrl: string;
+    subgraphBackupUrl: string;
     addresses: {
         bFactory: string;
         bActions: string;
