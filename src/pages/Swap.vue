@@ -161,6 +161,7 @@ export default defineComponent({
         const tokenInAmountInput = ref('');
         const tokenOutAddressInput = ref('');
         const tokenOutAmountInput = ref('');
+        const slippage = ref(0);
         const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
         const swapsLoading = ref(false);
@@ -304,26 +305,6 @@ export default defineComponent({
 
         const isDisabled = computed(() => {
             return validation.value !== Validation.NONE;
-        });
-
-        const slippage = computed(() => {
-            if (validation.value === Validation.EMPTY_INPUT ||
-                validation.value === Validation.INVALID_INPUT ||
-                validation.value === Validation.NO_SWAPS) {
-                return 0;
-            }
-            const { price } = store.state.assets;
-            const amountIn = parseFloat(tokenInAmountInput.value);
-            const amountOut = parseFloat(tokenOutAmountInput.value);
-            const priceIn = price[tokenInAddressInput.value];
-            const priceOut = price[tokenOutAddressInput.value];
-            if (!priceIn || !priceOut) {
-                return 0;
-            }
-            const spotPrice = priceIn / priceOut;
-            const marketPrice = amountOut / amountIn;
-            const slippage = (spotPrice - marketPrice) / spotPrice;
-            return slippage < 0 ? 0.00001 : slippage;
         });
 
         const rateMessage = computed(() => {
@@ -528,6 +509,7 @@ export default defineComponent({
                 } else {
                     tokenInAmountInput.value = '';
                 }
+                slippage.value = 0;
                 return;
             }
 
@@ -555,7 +537,7 @@ export default defineComponent({
                 const tokenInAmountRaw = new BigNumber(amount);
                 const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
 
-                const [tradeSwaps, tradeAmount] = await sor.getSwaps(
+                const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
                     tokenInAddress,
                     tokenOutAddress,
                     'swapExactIn',
@@ -565,11 +547,20 @@ export default defineComponent({
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
                 const tokenOutPrecision = config.precision;
                 tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
+                if (tradeSwaps.length === 0) {
+                    slippage.value = 0;
+                } else {
+                    const price = tokenInAmount.div(tradeAmount).times('1e18');
+                    const slippageNumber = price.div(spotPrice).minus(1);
+                    slippage.value = slippageNumber.isNegative()
+                        ? 0.00001
+                        : slippageNumber.toNumber();
+                }
             } else {
                 const tokenOutAmountRaw = new BigNumber(amount);
                 const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
 
-                const [tradeSwaps, tradeAmount] = await sor.getSwaps(
+                const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
                     tokenInAddress,
                     tokenOutAddress,
                     'swapExactOut',
@@ -579,6 +570,16 @@ export default defineComponent({
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
                 const tokenInPrecision = config.precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
+
+                if (tradeSwaps.length === 0) {
+                    slippage.value = 0;
+                } else {
+                    const price = tradeAmount.div(tokenOutAmount).times('1e18');
+                    const slippageNumber = price.div(spotPrice).minus(1);
+                    slippage.value = slippageNumber.isNegative()
+                        ? 0.00001
+                        : slippageNumber.toNumber();
+                }
             }
             swapsLoading.value = false;
         }
