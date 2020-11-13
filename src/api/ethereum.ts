@@ -89,7 +89,6 @@ export default class Ethereum {
                 symbol,
                 decimals,
                 precision: config.defaultPrecision,
-                hasIcon: true,
                 logoUrl: getTrustwalletLink(tokenAddress),
             };
         }

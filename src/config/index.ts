@@ -16,7 +16,6 @@ export interface TokenMetadata {
     symbol: string;
     decimals: number;
     precision: number;
-    hasIcon: boolean;
     logoUrl: string;
 }
 
