@@ -111,13 +111,6 @@
                     v-if="activeTab === 'wallet'"
                     class="balances"
                 >
-                    <div class="refresh-button-wrapper">
-                        <ButtonText
-                            :text="'refresh'"
-                            class="refresh-button"
-                            @click="fetchAccountState"
-                        />
-                    </div>
                     <div
                         v-if="balances.length === 0"
                         class="balances-empty"
@@ -251,10 +244,6 @@ export default defineComponent({
             Storage.clearTransactions();
         }
 
-        function fetchAccountState(): void {
-            store.dispatch('account/fetchState');
-        }
-
         function copyAddress(): void {
             const { address } = store.state.account;
             navigator.clipboard.writeText(address);
@@ -285,7 +274,6 @@ export default defineComponent({
 
             handleToggleSelect,
             clearTransactions,
-            fetchAccountState,
             copyAddress,
             disconnect,
             close,
@@ -419,11 +407,6 @@ export default defineComponent({
 
 .balances {
     margin: 16px 0;
-}
-
-.refresh-button-wrapper {
-    display: flex;
-    margin: 16px;
 }
 
 .balances-empty {

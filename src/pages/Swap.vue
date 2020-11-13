@@ -379,6 +379,10 @@ export default defineComponent({
             }
         }, 60 * 1000);
 
+        useIntervalFn(async () => {
+            store.dispatch('account/fetchState');
+        }, 5 * 60 * 1000);
+
         watch(tokenInAddressInput, () => {
             Storage.saveInputAsset(config.chainId, tokenInAddressInput.value);
             onAmountChange(activeInput.value);
