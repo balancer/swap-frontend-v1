@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@balancer-labs/assets": "github:balancer-labs/assets#master",
-    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/bal-331-make-new-tests-from-timur-pass",
+    "@balancer-labs/sor": "github:balancer-labs/balancer-sor#john/bal-334-calculate-and-return-spot-price",
     "@ethersproject/address": "^5.0.5",
     "@ethersproject/constants": "^5.0.5",
     "@ethersproject/contracts": "^5.0.5",
