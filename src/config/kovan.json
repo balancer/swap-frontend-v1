@@ -1,7 +1,7 @@
 {
     "network": "kovan",
     "chainId": 42,
-    "defaultPrecision": 2,
+    "precision": 6,
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
     "alchemyUrl": "https://eth-kovan.alchemyapi.io/v2/Fa315qKOTy_ksUH1VS1zXAxuKo83s_Ko",
     "alchemyWsUrl": "wss://eth-kovan.ws.alchemyapi.io/v2/Fa315qKOTy_ksUH1VS1zXAxuKo83s_Ko",

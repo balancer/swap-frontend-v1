@@ -15,14 +15,13 @@ export interface TokenMetadata {
     name: string;
     symbol: string;
     decimals: number;
-    precision: number;
     logoUrl: string;
 }
 
 interface Config {
     network: string;
     chainId: number;
-    defaultPrecision: number;
+    precision: number;
     subgraphUrl: string;
     alchemyUrl: string;
     alchemyWsUrl: string;

@@ -164,6 +164,7 @@ import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
 import Storage from '@/utils/storage';
+import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
@@ -208,13 +209,13 @@ export default defineComponent({
             return Object.keys(balances)
                 .map(assetAddress => {
                     const assetMetadata = metadata[assetAddress];
-                    const { address, name, symbol, decimals, precision } = assetMetadata;
+                    const { address, name, symbol, decimals } = assetMetadata;
                     const balance = balances[address] || '0';
                     const balanceNumber = new BigNumber(balance);
                     const amountNumber = scale(balanceNumber, -decimals);
                     const amount = amountNumber.isZero()
                         ? ''
-                        : amountNumber.toFixed(precision);
+                        : amountNumber.toFixed(config.precision);
                     return {
                         address,
                         name,

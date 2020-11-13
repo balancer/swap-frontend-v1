@@ -101,13 +101,13 @@ export default defineComponent({
             const assets = Object.keys(metadata)
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];
-                    const { address, name, symbol, decimals, precision } = asset;
+                    const { address, name, symbol, decimals } = asset;
                     const balance = balances[address] || '0';
                     const balanceNumber = new BigNumber(balance);
                     const amountNumber = scale(balanceNumber, -decimals);
                     const amount = amountNumber.isZero()
                         ? ''
-                        : amountNumber.toFixed(precision);
+                        : amountNumber.toFixed(config.precision);
                     return {
                         address,
                         name,

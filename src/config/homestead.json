@@ -1,7 +1,7 @@
 {
     "network": "homestead",
     "chainId": 1,
-    "defaultPrecision": 2,
+    "precision": 6,
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
     "alchemyUrl": "https://eth-mainnet.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
     "alchemyWsUrl": "wss://eth-mainnet.ws.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",

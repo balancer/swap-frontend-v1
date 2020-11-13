@@ -193,11 +193,10 @@ export default defineComponent({
 
             const assetSymbol = assetMetadata.symbol;
             const assetDecimals = assetMetadata.decimals;
-            const assetPrecision = assetMetadata.precision;
             const balanceShortNumber = scale(balanceNumber, -assetDecimals);
             const balanceShort = balanceShortNumber.isInteger()
                 ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(assetPrecision);
+                : balanceShortNumber.toFixed(config.precision);
             return `Balance: ${balanceShort} ${assetSymbol}`;
         });
 
@@ -218,11 +217,10 @@ export default defineComponent({
 
             const assetSymbol = assetMetadata.symbol;
             const assetDecimals = assetMetadata.decimals;
-            const assetPrecision = assetMetadata.precision;
             const balanceShortNumber = scale(balanceNumber, -assetDecimals);
             const balanceShort = balanceShortNumber.isInteger()
                 ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(assetPrecision);
+                : balanceShortNumber.toFixed(config.precision);
             return `Balance: ${balanceShort} ${assetSymbol}`;
         });
 
@@ -346,10 +344,10 @@ export default defineComponent({
             const rate = isInRate.value
                 ? assetOutAmount.div(assetInAmount)
                 : assetInAmount.div(assetOutAmount);
-            const rateString = isInRate.value
-                ? `1 ${assetIn.symbol} = ${rate.toFixed(6)} ${assetOut.symbol}`
-                : `1 ${assetOut.symbol} = ${rate.toFixed(6)} ${assetIn.symbol}`;
-            return rateString;
+            const rateString = rate.toFixed(config.precision);
+            return isInRate.value
+                ? `1 ${assetIn.symbol} = ${rateString} ${assetOut.symbol}`
+                : `1 ${assetOut.symbol} = ${rateString} ${assetIn.symbol}`;
         });
 
         const validationMessage = computed(() => {
@@ -566,7 +564,7 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
-                const tokenOutPrecision = metadata[tokenOutAddress].precision;
+                const tokenOutPrecision = config.precision;
                 tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
             } else {
                 const tokenOutAmountRaw = new BigNumber(amount);
@@ -580,7 +578,7 @@ export default defineComponent({
                 );
                 swaps.value = tradeSwaps;
                 const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
-                const tokenInPrecision = metadata[tokenInAddress].precision;
+                const tokenInPrecision = config.precision;
                 tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
             }
             swapsLoading.value = false;
