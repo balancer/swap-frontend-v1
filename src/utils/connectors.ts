@@ -5,16 +5,16 @@ import portis from '@snapshot-labs/lock/connectors/portis';
 import walletconnect from '@snapshot-labs/lock/connectors/walletconnect';
 import walletlink from '@snapshot-labs/lock/connectors/walletlink';
 
-import fortmaticLogo from '@/assets/connector/fortmatic.png';
-import frameLogo from '@/assets/connector/frame.png';
-import imtokenLogo from '@/assets/connector/imtoken.png';
-import metamaskLogo from '@/assets/connector/metamask.png';
-import portisLogo from '@/assets/connector/portis.png';
-import statusLogo from '@/assets/connector/status.png';
-import trustwalletLogo from '@/assets/connector/trustwallet.png';
-import walletconnectLogo from '@/assets/connector/walletconnect.png';
-import walletlinkLogo from '@/assets/connector/walletlink.png';
-import web3Logo from '@/assets/connector/web3.png';
+import defaultLogo from '@/assets/connector/default.svg';
+import fortmaticLogo from '@/assets/connector/fortmatic.svg';
+import frameLogo from '@/assets/connector/frame.svg';
+import imtokenLogo from '@/assets/connector/imtoken.svg';
+import metamaskLogo from '@/assets/connector/metamask.svg';
+import portisLogo from '@/assets/connector/portis.svg';
+import statusLogo from '@/assets/connector/status.svg';
+import trustwalletLogo from '@/assets/connector/trustwallet.svg';
+import walletconnectLogo from '@/assets/connector/walletconnect.svg';
+import walletlinkLogo from '@/assets/connector/walletlink.svg';
 
 import config from '@/config';
 
@@ -88,7 +88,7 @@ export function getConnectorLogo(connectorId: string): string {
         if (provider.isFrame) {
             return frameLogo;
         }
-        return web3Logo;
+        return defaultLogo;
     }
     if (connectorId === 'fortmatic') {
         return fortmaticLogo;
@@ -102,7 +102,7 @@ export function getConnectorLogo(connectorId: string): string {
     if (connectorId === 'walletlink') {
         return walletlinkLogo;
     }
-    return web3Logo;
+    return defaultLogo;
 }
 
 export default lock;
