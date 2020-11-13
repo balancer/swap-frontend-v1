@@ -23,7 +23,7 @@ interface Config {
     chainId: number;
     precision: number;
     subgraphUrl: string;
-    alchemyUrl: string;
+    alchemyKey: string;
     addresses: {
         bFactory: string;
         bActions: string;
