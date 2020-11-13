@@ -24,7 +24,6 @@ interface Config {
     precision: number;
     subgraphUrl: string;
     alchemyUrl: string;
-    alchemyWsUrl: string;
     addresses: {
         bFactory: string;
         bActions: string;
