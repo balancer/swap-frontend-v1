@@ -1,7 +1,6 @@
 import { TokenMetadata } from '@/config';
 import { Transaction } from '@/store/modules/account';
 
-const CONNECTOR = 'connector';
 const PREFERENCES = 'preferences';
 const INPUT_ASSET = 'input_asset';
 const OUTPUT_ASSET = 'output_asset';
@@ -12,13 +11,14 @@ type Transactions = Record<string, Record<number, Record<string, Transaction>>>;
 type Assets = Record<number, Record<string, TokenMetadata>>;
 
 interface Preferences {
+    connector: string | null;
     slippage: number;
 }
 
 export default class Storage {
     static getConnector(): string | null {
-        const connector = localStorage.getItem(CONNECTOR);
-        return connector;
+        const preferences = getPreferences();
+        return preferences.connector;
     }
 
     static getSlippage(): number {
@@ -62,7 +62,9 @@ export default class Storage {
     }
 
     static saveConnector(connector: string): void {
-        localStorage.setItem(CONNECTOR, connector);
+        const preferences = getPreferences();
+        preferences.connector = connector;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
     static saveSlippage(slippage: number): void {
@@ -109,7 +111,9 @@ export default class Storage {
     }
 
     static clearConnector(): void {
-        localStorage.removeItem(CONNECTOR);
+        const preferences = getPreferences();
+        preferences.connector = null;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
     static clearTransactions(): void {
@@ -119,6 +123,7 @@ export default class Storage {
 
 function getPreferences(): Preferences {
     const defaultPreferences: Preferences = {
+        connector: null,
         slippage: 0.005,
     };
     const preferenceString = localStorage.getItem(PREFERENCES);
