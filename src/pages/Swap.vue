@@ -107,7 +107,7 @@ import { Swap } from '@balancer-labs/sor/dist/types';
 import config from '@/config';
 import provider from '@/utils/provider';
 import { scale, isAddress, getEtherscanLink } from '@/utils/helpers';
-import { ETH_KEY, getAssetAddressBySymbol } from '@/utils/assets';
+import { ETH_KEY } from '@/utils/assets';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Storage from '@/utils/storage';
 import Swapper from '@/web3/swapper';
@@ -407,12 +407,12 @@ export default defineComponent({
         }, 5 * 60 * 1000);
 
         watch(tokenInAddressInput, () => {
-            Storage.saveInputAsset(tokenInAddressInput.value);
+            Storage.saveInputAsset(config.chainId, tokenInAddressInput.value);
             onAmountChange(activeInput.value);
         });
 
         watch(tokenOutAddressInput, async () => {
-            Storage.saveOutputAsset(tokenOutAddressInput.value);
+            Storage.saveOutputAsset(config.chainId, tokenOutAddressInput.value);
             if (sor) {
                 const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
                     ? config.addresses.weth
@@ -691,17 +691,13 @@ export default defineComponent({
         }
 
         function getInitialPair(): Pair {
-            const { metadata } = store.state.assets;
+            const pair = Storage.getPair(config.chainId);
             let assetIn = 
                 router.currentRoute.value.params.assetIn as string ||
-                Storage.getInputAsset() ||
-                getAssetAddressBySymbol(metadata, 'DAI') ||
-                config.addresses.weth;
+                pair.inputAsset;
             let assetOut = 
                 router.currentRoute.value.params.assetOut as string ||
-                Storage.getOutputAsset() ||
-                getAssetAddressBySymbol(metadata, 'BAL') ||
-                config.addresses.weth;
+                pair.outputAsset;
             if (isAddress(assetIn)) {
                 assetIn = getAddress(assetIn);
             }

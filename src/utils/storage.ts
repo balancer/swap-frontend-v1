@@ -2,18 +2,22 @@ import { TokenMetadata } from '@/config';
 import { Transaction } from '@/store/modules/account';
 
 const PREFERENCES = 'preferences';
-const INPUT_ASSET = 'input_asset';
-const OUTPUT_ASSET = 'output_asset';
 const TRANSACTIONS = 'transactions';
 const ASSETS = 'assets';
-
-type Transactions = Record<string, Record<number, Record<string, Transaction>>>;
-type Assets = Record<number, Record<string, TokenMetadata>>;
 
 interface Preferences {
     connector: string | null;
     slippage: number;
+    pairs: Record<number, Pair>;
 }
+
+interface Pair {
+    inputAsset: string;
+    outputAsset: string;
+}
+
+type Transactions = Record<string, Record<number, Record<string, Transaction>>>;
+type Assets = Record<number, Record<string, TokenMetadata>>;
 
 export default class Storage {
     static getConnector(): string | null {
@@ -26,14 +30,9 @@ export default class Storage {
         return preferences.slippage;
     }
 
-    static getInputAsset(): string | null {
-        const asset = localStorage.getItem(INPUT_ASSET);
-        return asset;
-    }
-
-    static getOutputAsset(): string | null {
-        const asset = localStorage.getItem(OUTPUT_ASSET);
-        return asset;
+    static getPair(chainId: number): Pair {
+        const preferences = getPreferences();
+        return preferences.pairs[chainId];
     }
 
     static getTransactions(account: string, chainId: number): Record<string, Transaction> {
@@ -73,12 +72,16 @@ export default class Storage {
         localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
-    static saveInputAsset(asset: string): void {
-        localStorage.setItem(INPUT_ASSET, asset);
+    static saveInputAsset(chainId: number, asset: string): void {
+        const preferences = getPreferences();
+        preferences.pairs[chainId].inputAsset = asset;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
-    static saveOutputAsset(asset: string): void {
-        localStorage.setItem(OUTPUT_ASSET, asset);
+    static saveOutputAsset(chainId: number, asset: string): void {
+        const preferences = getPreferences();
+        preferences.pairs[chainId].outputAsset = asset;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
     static saveTransaction(account: string, chainId: number, transaction: Transaction): void {
@@ -125,11 +128,21 @@ function getPreferences(): Preferences {
     const defaultPreferences: Preferences = {
         connector: null,
         slippage: 0.005,
+        pairs: {
+            1: {
+                inputAsset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+                outputAsset: '0xba100000625a3754423978a60c9317c58a424e3D',
+            },
+            42: {
+                inputAsset: '0x1528F3FCc26d13F7079325Fb78D9442607781c8C',
+                outputAsset: '0xef13C0c8abcaf5767160018d268f9697aE4f5375',
+            },
+        },
     };
     const preferenceString = localStorage.getItem(PREFERENCES);
-    if (!preferenceString) {
-        return defaultPreferences;
-    }
-    const preferences = JSON.parse(preferenceString);
-    return preferences;
+    const preferences = JSON.parse(preferenceString || '{}');
+    return {
+        ...defaultPreferences,
+        ...preferences,
+    };
 }
