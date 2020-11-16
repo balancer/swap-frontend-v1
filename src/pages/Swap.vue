@@ -380,7 +380,8 @@ export default defineComponent({
         }, 60 * 1000);
 
         useIntervalFn(async () => {
-            store.dispatch('account/fetchState');
+            const assets = Object.keys(store.state.assets.metadata);
+            store.dispatch('account/fetchAssets', assets);
         }, 5 * 60 * 1000);
 
         watch(tokenInAddressInput, () => {

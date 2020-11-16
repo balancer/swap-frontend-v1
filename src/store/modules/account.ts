@@ -179,6 +179,9 @@ const actions = {
     },
     fetchAssets: async({ commit, state }: ActionContext<AccountState, RootState>, assets: string[]): Promise<void> => {
         const { address } = state;
+        if (!address) {
+            return;
+        }
         const { balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
