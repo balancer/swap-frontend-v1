@@ -47,7 +47,7 @@ export default defineComponent({
             if (loadingFailed.value) {
                 return defaultIcon;
             }
-            return assetMetadata.logoUrl;
+            return assetMetadata.logoURI;
         });
 
         function handleError(): void {

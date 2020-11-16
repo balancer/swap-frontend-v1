@@ -1,6 +1,4 @@
-import homesteadAssets from '@balancer-labs/assets/generated/dex/registry.homestead.json';
-import kovanAssets from '@balancer-labs/assets/generated/dex/registry.kovan.json';
-
+import tokenlist from './listed.tokenlist.json';
 import homestead from './homestead.json';
 import kovan from './kovan.json';
 
@@ -15,7 +13,7 @@ export interface TokenMetadata {
     name: string;
     symbol: string;
     decimals: number;
-    logoUrl: string;
+    logoURI: string | undefined;
 }
 
 interface Config {
@@ -39,12 +37,45 @@ interface Config {
 }
 
 const configs = {
-    1: {...homesteadAssets, ...homestead},
-    42:{...kovanAssets, ...kovan},
+    1: {
+        tokens: getTokensFromTokenlist(1),
+        untrusted: [],
+        ...homestead,
+    },
+    42:{
+        tokens: getTokensFromTokenlist(42),
+        untrusted: [],
+        ...kovan,
+    },
 };
 // eslint-disable-next-line no-undef
 const network = process.env.APP_CHAIN_ID || 1;
 
 const config: Config = configs[network];
+
+function getTokensFromTokenlist(chainId: number): Record<string, TokenMetadata> {
+    const tokens = {
+        ether: {
+            address: 'ether',
+            name: 'Ether',
+            symbol: 'ETH',
+            decimals: 18,
+            logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
+        },
+    };
+    for (const token of tokenlist.tokens) {
+        if (token.chainId !== chainId) {
+            continue;
+        }
+        tokens[token.address] = {
+            address: token.address,
+            name: token.name,
+            symbol: token.symbol,
+            decimals: token.decimals,
+            logoURI: token.logoURI,
+        };
+    }
+    return tokens;
+}
 
 export default config;

@@ -87,7 +87,7 @@ export default class Ethereum {
                 name,
                 symbol,
                 decimals,
-                logoUrl: getTrustwalletLink(tokenAddress),
+                logoURI: getTrustwalletLink(tokenAddress),
             };
         }
         return metadata;
