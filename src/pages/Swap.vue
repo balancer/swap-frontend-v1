@@ -67,7 +67,16 @@
                 {{ validationMessage }}
             </div>
             <Button
-                v-if="isUnlocked"
+                v-if="!account"
+                class="swap-button"
+                :disabled="connectButtonLoading"
+                :text="'Connect'"
+                :primary="true"
+                :loading="connectButtonLoading"
+                @click="openConnectorModal"
+            />
+            <Button
+                v-else-if="isUnlocked"
                 class="swap-button"
                 :disabled="isDisabled || buttonLoading"
                 :text="'Swap'"
@@ -175,6 +184,11 @@ export default defineComponent({
                 return '';
             }
             return address;
+        });
+
+        const connectButtonLoading = computed(() => {
+            const { connector, address } = store.state.account;
+            return !!connector && !!connector.id && !address;
         });
 
         const assetInBalanceLabel = computed(() => {
@@ -434,6 +448,10 @@ export default defineComponent({
             tokenInAmountInput.value = tokenInAmount;
             tokenOutAddressInput.value = tokenOutAddress;
             tokenOutAmountInput.value = tokenOutAmount;
+        }
+
+        function openConnectorModal(): void {
+            store.dispatch('ui/openConnectorModal');
         }
 
         async function unlock(): Promise<void> {
@@ -715,6 +733,8 @@ export default defineComponent({
             slippageBuffer,
             validationMessage,
 
+            account,
+            connectButtonLoading,
             buttonLoading,
             swapsLoading,
             isModalOpen,
@@ -725,6 +745,7 @@ export default defineComponent({
             handleAmountChange,
             handleAssetSelect,
             togglePair,
+            openConnectorModal,
             unlock,
             swap,
         };
