@@ -54,7 +54,7 @@
                     {{ rateMessage }}
                 </span>
                 <RouteTooltip
-                    v-if="rateMessage"
+                    v-if="swaps.length > 0"
                     class="route-tooltip"
                     :swaps="swaps"
                 />
@@ -139,7 +139,6 @@ enum Validation {
     INVALID_INPUT,
     NO_ACCOUNT,
     WRONG_NETWORK,
-    ETH_WETH_PAIR,
     INSUFFICIENT_BALANCE,
     NO_SWAPS,
 }
@@ -247,6 +246,9 @@ export default defineComponent({
             if (tokenInAddressInput.value === ETH_KEY) {
                 return true;
             }
+            if (isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)) {
+                return true;
+            }
             if (!tokenInAmountInput.value) {
                 return true;
             }
@@ -277,19 +279,10 @@ export default defineComponent({
                 return Validation.INVALID_INPUT;
             }
             // No swaps
-            if (swapsLoading.value || swaps.value.length === 0) {
+            if ((swapsLoading.value || swaps.value.length === 0) &&
+                !isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)
+            ) {
                 return Validation.NO_SWAPS;
-            }
-            // Invalid pair (WETH/ETH)
-            if (tokenInAddressInput.value === ETH_KEY &&
-                tokenOutAddressInput.value === config.addresses.weth
-            ) {
-                return Validation.ETH_WETH_PAIR;
-            }
-            if (tokenOutAddressInput.value === ETH_KEY &&
-                tokenInAddressInput.value === config.addresses.weth
-            ) {
-                return Validation.ETH_WETH_PAIR;
             }
             // No account
             if (!account.value) {
@@ -317,9 +310,7 @@ export default defineComponent({
             return Validation.NONE;
         });
 
-        const isDisabled = computed(() => {
-            return validation.value !== Validation.NONE;
-        });
+        const isDisabled = computed(() => validation.value !== Validation.NONE);
 
         const rateMessage = computed(() => {
             if (validation.value === Validation.EMPTY_INPUT ||
@@ -356,9 +347,6 @@ export default defineComponent({
             }
             if (validation.value === Validation.WRONG_NETWORK) {
                 return 'Change network to continue';
-            }
-            if (validation.value === Validation.ETH_WETH_PAIR) {
-                return 'Please wrap ether manually';
             }
             if (validation.value === Validation.INSUFFICIENT_BALANCE) {
                 return 'Not enough funds';
@@ -470,19 +458,27 @@ export default defineComponent({
             const tokenOutAddress = tokenOutAddressInput.value;
             const tokenInDecimals = metadata[tokenInAddress].decimals;
             const tokenOutDecimals = metadata[tokenOutAddress].decimals;
+            const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
+            const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
             const slippageBufferRate = parseFloat(slippageBuffer.value) / 100;
             const provider = await store.getters['account/provider'];
+            if (isWrapPair(tokenInAddress, tokenOutAddress)) {
+                if (tokenInAddress === ETH_KEY) {
+                    const tx = await Helper.wrap(provider, tokenInAmount);
+                    handleWrapTransaction(tx);
+                } else {
+                    const tx = await Helper.unwrap(provider, tokenInAmount);
+                    handleUnwrapTransaction(tx);
+                }
+                return;
+            }
             if (isExactIn.value) {
-                const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
                 const minAmount = tokenOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
             } else {
-                const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-                const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
                 const tokenInAmountMax = tokenInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
                 handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
@@ -520,6 +516,16 @@ export default defineComponent({
                     tokenInAmountInput.value = '';
                 }
                 slippage.value = 0;
+                return;
+            }
+
+            if (isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)) {
+                if (isExactIn.value) {
+                    tokenOutAmountInput.value = amount;
+                } else {
+                    tokenInAmountInput.value = amount;
+                }
+                swaps.value = [];
                 return;
             }
 
@@ -634,6 +640,82 @@ export default defineComponent({
             });
         }
 
+        async function handleWrapTransaction(transaction: any): Promise<void> {
+            if (transaction.code) {
+                buttonLoading.value = false;
+                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
+                    store.dispatch('ui/notify', {
+                        text: 'Couldn\'t wrap ether',
+                        type: 'warning',
+                        link: 'https://help.balancer.finance',
+                    });
+                }
+                return;
+            }
+
+            const text = 'Wrap ether';
+            store.dispatch('account/saveTransaction', {
+                transaction,
+                text,
+            });
+
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            buttonLoading.value = false;
+            store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
+            store.dispatch('account/saveMinedTransaction', {
+                receipt: transactionReceipt,
+                timestamp: Date.now(),
+            });
+
+            const type = transactionReceipt.status === 1
+                ? 'success'
+                : 'error';
+            const link = getEtherscanLink(transactionReceipt.transactionHash);
+            store.dispatch('ui/notify', {
+                text,
+                type,
+                link,
+            });
+        }
+
+        async function handleUnwrapTransaction(transaction: any): Promise<void> {
+            if (transaction.code) {
+                buttonLoading.value = false;
+                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
+                    store.dispatch('ui/notify', {
+                        text: 'Couldn\'t unwrap ether',
+                        type: 'warning',
+                        link: 'https://help.balancer.finance',
+                    });
+                }
+                return;
+            }
+
+            const text = 'Unwrap ether';
+            store.dispatch('account/saveTransaction', {
+                transaction,
+                text,
+            });
+
+            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            buttonLoading.value = false;
+            store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
+            store.dispatch('account/saveMinedTransaction', {
+                receipt: transactionReceipt,
+                timestamp: Date.now(),
+            });
+
+            const type = transactionReceipt.status === 1
+                ? 'success'
+                : 'error';
+            const link = getEtherscanLink(transactionReceipt.transactionHash);
+            store.dispatch('ui/notify', {
+                text,
+                type,
+                link,
+            });
+        }
+
         async function handleSwapTransaction(transaction: any, assetIn: string, assetOut: string): Promise<void> {
             if (transaction.code) {
                 buttonLoading.value = false;
@@ -716,6 +798,16 @@ export default defineComponent({
                 assetIn,
                 assetOut,
             };
+        }
+
+        function isWrapPair(assetIn: string, assetOut: string): boolean {
+            if (assetIn === ETH_KEY && assetOut === config.addresses.weth) {
+                return true;
+            }
+            if (assetOut === ETH_KEY && assetIn === config.addresses.weth) {
+                return true;
+            }
+            return false;
         }
 
         return {
