@@ -448,7 +448,11 @@ export default defineComponent({
             const tokenInAddress = tokenInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
             const tx = await Helper.unlock(provider, tokenInAddress, spender);
-            handleUnlockTransaction(tx, tokenInAddress);
+            const { metadata } = store.state.assets;
+            const assetSymbol = metadata[tokenInAddress].symbol;
+            const text = `unlock ${assetSymbol}`;
+            handleTransaction(tx, text);
+            store.dispatch('account/fetchAssets', [ tokenInAddress ]);
         }
 
         async function swap(): Promise<void> {
@@ -465,23 +469,34 @@ export default defineComponent({
             if (isWrapPair(tokenInAddress, tokenOutAddress)) {
                 if (tokenInAddress === ETH_KEY) {
                     const tx = await Helper.wrap(provider, tokenInAmount);
-                    handleWrapTransaction(tx);
+                    const text = 'wrap ether';
+                    handleTransaction(tx, text);
                 } else {
                     const tx = await Helper.unwrap(provider, tokenInAmount);
-                    handleUnwrapTransaction(tx);
+                    const text = 'unwrap ether';
+                    handleTransaction(tx, text);
                 }
+                store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
                 return;
             }
+            const assetInSymbol = metadata[tokenInAddress].symbol;
+            const assetOutSymbol = metadata[tokenOutAddress].symbol;
+            const text = `swap ${assetInSymbol} for ${assetOutSymbol}`;
             if (isExactIn.value) {
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
                 const minAmount = tokenOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
-                handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
+                handleTransaction(tx, text);
             } else {
                 const tokenInAmountMax = tokenInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
-                handleSwapTransaction(tx, tokenInAddress, tokenOutAddress);
+                handleTransaction(tx, text);
+            }
+            store.dispatch('account/fetchAssets', [ tokenInAddress, tokenOutAddress ]);
+            if (sor) {
+                sor.fetchPools();
+                onAmountChange(activeInput.value);
             }
         }
 
@@ -600,12 +615,12 @@ export default defineComponent({
             swapsLoading.value = false;
         }
 
-        async function handleUnlockTransaction(transaction: any, asset: string): Promise<void> {
+        async function handleTransaction(transaction: any, text: string): Promise<void> {
             if (transaction.code) {
                 buttonLoading.value = false;
                 if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
                     store.dispatch('ui/notify', {
-                        text: 'Couldn\'t unlock token',
+                        text: `Couldn't ${text}`,
                         type: 'warning',
                         link: 'https://help.balancer.finance',
                     });
@@ -613,9 +628,6 @@ export default defineComponent({
                 return;
             }
 
-            const { metadata } = store.state.assets;
-            const assetSymbol = metadata[asset].symbol;
-            const text = `Unlock ${assetSymbol}`;
             store.dispatch('account/saveTransaction', {
                 transaction,
                 text,
@@ -623,135 +635,10 @@ export default defineComponent({
 
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
             buttonLoading.value = false;
-            store.dispatch('account/fetchAssets', [ asset ]);
             store.dispatch('account/saveMinedTransaction', {
                 receipt: transactionReceipt,
                 timestamp: Date.now(),
             });
-
-            const type = transactionReceipt.status === 1
-                ? 'success'
-                : 'error';
-            const link = getEtherscanLink(transactionReceipt.transactionHash);
-            store.dispatch('ui/notify', {
-                text,
-                type,
-                link,
-            });
-        }
-
-        async function handleWrapTransaction(transaction: any): Promise<void> {
-            if (transaction.code) {
-                buttonLoading.value = false;
-                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                    store.dispatch('ui/notify', {
-                        text: 'Couldn\'t wrap ether',
-                        type: 'warning',
-                        link: 'https://help.balancer.finance',
-                    });
-                }
-                return;
-            }
-
-            const text = 'Wrap ether';
-            store.dispatch('account/saveTransaction', {
-                transaction,
-                text,
-            });
-
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
-            buttonLoading.value = false;
-            store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
-            store.dispatch('account/saveMinedTransaction', {
-                receipt: transactionReceipt,
-                timestamp: Date.now(),
-            });
-
-            const type = transactionReceipt.status === 1
-                ? 'success'
-                : 'error';
-            const link = getEtherscanLink(transactionReceipt.transactionHash);
-            store.dispatch('ui/notify', {
-                text,
-                type,
-                link,
-            });
-        }
-
-        async function handleUnwrapTransaction(transaction: any): Promise<void> {
-            if (transaction.code) {
-                buttonLoading.value = false;
-                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                    store.dispatch('ui/notify', {
-                        text: 'Couldn\'t unwrap ether',
-                        type: 'warning',
-                        link: 'https://help.balancer.finance',
-                    });
-                }
-                return;
-            }
-
-            const text = 'Unwrap ether';
-            store.dispatch('account/saveTransaction', {
-                transaction,
-                text,
-            });
-
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
-            buttonLoading.value = false;
-            store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
-            store.dispatch('account/saveMinedTransaction', {
-                receipt: transactionReceipt,
-                timestamp: Date.now(),
-            });
-
-            const type = transactionReceipt.status === 1
-                ? 'success'
-                : 'error';
-            const link = getEtherscanLink(transactionReceipt.transactionHash);
-            store.dispatch('ui/notify', {
-                text,
-                type,
-                link,
-            });
-        }
-
-        async function handleSwapTransaction(transaction: any, assetIn: string, assetOut: string): Promise<void> {
-            if (transaction.code) {
-                buttonLoading.value = false;
-                if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                    store.dispatch('ui/notify', {
-                        text: 'Couldn\'t swap tokens',
-                        type: 'warning',
-                        link: 'https://help.balancer.finance',
-                    });
-                }
-                return;
-            }
-            const { metadata } = store.state.assets;
-            const assetInSymbol = metadata[assetIn].symbol;
-            const assetOutSymbol = metadata[assetOut].symbol;
-            const text = `Swap ${assetInSymbol} for ${assetOutSymbol}`;
-            store.dispatch('account/saveTransaction', {
-                transaction,
-                text,
-            });
-
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
-            buttonLoading.value = false;
-            if (transactionReceipt.status === 1) {
-                tokenInAmountInput.value = '';
-                tokenOutAmountInput.value = '';
-            }
-            store.dispatch('account/fetchAssets', [ assetIn, assetOut ]);
-            store.dispatch('account/saveMinedTransaction', {
-                receipt: transactionReceipt,
-                timestamp: Date.now(),
-            });
-            if (sor) {
-                sor.fetchPools();
-                onAmountChange(activeInput.value);
-            }
 
             const type = transactionReceipt.status === 1
                 ? 'success'
