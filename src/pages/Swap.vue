@@ -451,7 +451,7 @@ export default defineComponent({
             const { metadata } = store.state.assets;
             const assetSymbol = metadata[tokenInAddress].symbol;
             const text = `Unlock ${assetSymbol}`;
-            handleTransaction(tx, text);
+            await handleTransaction(tx, text);
             store.dispatch('account/fetchAssets', [ tokenInAddress ]);
         }
 
@@ -470,11 +470,11 @@ export default defineComponent({
                 if (tokenInAddress === ETH_KEY) {
                     const tx = await Helper.wrap(provider, tokenInAmount);
                     const text = 'Wrap ether';
-                    handleTransaction(tx, text);
+                    await handleTransaction(tx, text);
                 } else {
                     const tx = await Helper.unwrap(provider, tokenInAmount);
                     const text = 'Unwrap ether';
-                    handleTransaction(tx, text);
+                    await handleTransaction(tx, text);
                 }
                 store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
                 return;
@@ -487,11 +487,11 @@ export default defineComponent({
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
                 const minAmount = tokenOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
-                handleTransaction(tx, text);
+                await handleTransaction(tx, text);
             } else {
                 const tokenInAmountMax = tokenInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
-                handleTransaction(tx, text);
+                await handleTransaction(tx, text);
             }
             store.dispatch('account/fetchAssets', [ tokenInAddress, tokenOutAddress ]);
             if (sor) {
