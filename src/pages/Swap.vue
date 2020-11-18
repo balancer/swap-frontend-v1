@@ -450,7 +450,7 @@ export default defineComponent({
             const tx = await Helper.unlock(provider, tokenInAddress, spender);
             const { metadata } = store.state.assets;
             const assetSymbol = metadata[tokenInAddress].symbol;
-            const text = `unlock ${assetSymbol}`;
+            const text = `Unlock ${assetSymbol}`;
             handleTransaction(tx, text);
             store.dispatch('account/fetchAssets', [ tokenInAddress ]);
         }
@@ -469,11 +469,11 @@ export default defineComponent({
             if (isWrapPair(tokenInAddress, tokenOutAddress)) {
                 if (tokenInAddress === ETH_KEY) {
                     const tx = await Helper.wrap(provider, tokenInAmount);
-                    const text = 'wrap ether';
+                    const text = 'Wrap ether';
                     handleTransaction(tx, text);
                 } else {
                     const tx = await Helper.unwrap(provider, tokenInAmount);
-                    const text = 'unwrap ether';
+                    const text = 'Unwrap ether';
                     handleTransaction(tx, text);
                 }
                 store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
@@ -481,7 +481,7 @@ export default defineComponent({
             }
             const assetInSymbol = metadata[tokenInAddress].symbol;
             const assetOutSymbol = metadata[tokenOutAddress].symbol;
-            const text = `swap ${assetInSymbol} for ${assetOutSymbol}`;
+            const text = `Swap ${assetInSymbol} for ${assetOutSymbol}`;
             if (isExactIn.value) {
                 const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
                 const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
@@ -620,7 +620,7 @@ export default defineComponent({
                 buttonLoading.value = false;
                 if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
                     store.dispatch('ui/notify', {
-                        text: `Couldn't ${text}`,
+                        text: `${text} failed`,
                         type: 'warning',
                         link: 'https://help.balancer.finance',
                     });
