@@ -363,10 +363,9 @@ export default defineComponent({
 }
 
 .transaction {
-    padding: 8px 16px;
+    padding: 4px 16px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .transaction-meta {
@@ -381,17 +380,18 @@ export default defineComponent({
 }
 
 .transaction-icon {
-    width: 24px;
-    height: 24px;
+    width: 16px;
+    height: 16px;
 }
 
 .transaction-data {
     display: flex;
-    flex-direction: column;
-    margin-left: 16px;
+    margin-left: 8px;
+    align-items: baseline;
 }
 
 .transaction-date {
+    margin-left: 8px;
     font-size: 14px;
     color: var(--text-secondary);
 }
