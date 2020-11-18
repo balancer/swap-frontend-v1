@@ -54,7 +54,7 @@
                     {{ rateMessage }}
                 </span>
                 <RouteTooltip
-                    v-if="swaps.length > 0"
+                    v-if="rateMessage && swaps.length > 0"
                     class="route-tooltip"
                     :swaps="swaps"
                 />
