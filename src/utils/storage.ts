@@ -1,4 +1,4 @@
-import { TokenMetadata } from '@/config';
+import { AssetMetadata } from '@/config';
 import { Transaction } from '@/store/modules/account';
 
 const PREFERENCES = 'preferences';
@@ -17,7 +17,7 @@ interface Pair {
 }
 
 type Transactions = Record<string, Record<number, Record<string, Transaction>>>;
-type Assets = Record<number, Record<string, TokenMetadata>>;
+type Assets = Record<number, Record<string, AssetMetadata>>;
 
 export default class Storage {
     static getConnector(): string | null {
@@ -49,7 +49,7 @@ export default class Storage {
         return transactions[account][chainId];
     }
 
-    static getAssets(chainId: number): Record<string, TokenMetadata> {
+    static getAssets(chainId: number): Record<string, AssetMetadata> {
         const assetString = localStorage.getItem(ASSETS);
         const assets: Assets = assetString
             ? JSON.parse(assetString)
@@ -99,7 +99,7 @@ export default class Storage {
         localStorage.setItem(TRANSACTIONS, JSON.stringify(transactions));
     }
 
-    static saveAssets(chainId: number, assets: Record<string, TokenMetadata>): void {
+    static saveAssets(chainId: number, assets: Record<string, AssetMetadata>): void {
         const assetString = localStorage.getItem(ASSETS);
         const assetList: Assets = assetString
             ? JSON.parse(assetString)

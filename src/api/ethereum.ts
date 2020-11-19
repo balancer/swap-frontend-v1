@@ -3,7 +3,7 @@ import { Provider, Contract } from 'ethcall';
 import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
-import config, { TokenMetadata } from '@/config';
+import config, { AssetMetadata } from '@/config';
 import { ETH_KEY, getTrustwalletLink } from '@/utils/helpers';
 import provider from '@/utils/provider';
 
@@ -25,10 +25,10 @@ export default class Ethereum {
         const calls = [];
         // Fetch balances and allowances
         const exchangeProxyAddress = config.addresses.exchangeProxy;
-        for (const tokenAddress of assets) {
-            const tokenContract = new Contract(tokenAddress, erc20Abi);
-            const balanceCall = tokenContract.balanceOf(address);
-            const allowanceCall = tokenContract.allowance(address, exchangeProxyAddress);
+        for (const assetAddress of assets) {
+            const assetContract = new Contract(assetAddress, erc20Abi);
+            const balanceCall = assetContract.balanceOf(address);
+            const allowanceCall = assetContract.allowance(address, exchangeProxyAddress);
             calls.push(balanceCall);
             calls.push(allowanceCall);
         }
@@ -45,49 +45,49 @@ export default class Ethereum {
         calls.push(proxyCall);
         // Fetch data
         const data = await ethcallProvider.all(calls);
-        const tokenCount = assets.length;
+        const assetCount = assets.length;
         const allowances = {};
         allowances[exchangeProxyAddress] = {};
         const balances: Record<string, string> = {};
         let i = 0;
-        for (const tokenAddress of assets) {
-            balances[tokenAddress] = data[2 * i].toString();
-            allowances[exchangeProxyAddress][tokenAddress] = data[2 * i + 1].toString();
+        for (const assetAddress of assets) {
+            balances[assetAddress] = data[2 * i].toString();
+            allowances[exchangeProxyAddress][assetAddress] = data[2 * i + 1].toString();
             i++;
         }
-        balances.ether = data[2 * tokenCount].toString();
-        const proxy = data[2 * tokenCount + 1];
+        balances.ether = data[2 * assetCount].toString();
+        const proxy = data[2 * assetCount + 1];
         return { allowances, balances, proxy };
     }
 
-    static async fetchTokenMetadata(assets: string[]): Promise<Record<string, TokenMetadata>> {
+    static async fetchAssetMetadata(assets: string[]): Promise<Record<string, AssetMetadata>> {
         const ethcallProvider = new Provider();
         await ethcallProvider.init(provider);
         const calls = [];
-        // Fetch token metadata
-        for (const tokenAddress of assets) {
-            const tokenContract = new Contract(tokenAddress, erc20Abi);
-            const nameCall = tokenContract.name();
-            const symbolCall = tokenContract.symbol();
-            const decimalCall = tokenContract.decimals();
+        // Fetch asset metadata
+        for (const assetAddress of assets) {
+            const assetContract = new Contract(assetAddress, erc20Abi);
+            const nameCall = assetContract.name();
+            const symbolCall = assetContract.symbol();
+            const decimalCall = assetContract.decimals();
             calls.push(nameCall);
             calls.push(symbolCall);
             calls.push(decimalCall);
         }
         // Fetch data
         const data = await ethcallProvider.all(calls);
-        const metadata: Record<string, TokenMetadata> = {};
+        const metadata: Record<string, AssetMetadata> = {};
         for (let i = 0; i < assets.length; i++) {
-            const tokenAddress = assets[i];
+            const assetAddress = assets[i];
             const name = data[3 * i];
             const symbol = data[3 * i + 1];
             const decimals = data[3 * i + 2];
-            metadata[tokenAddress] = {
-                address: tokenAddress,
+            metadata[assetAddress] = {
+                address: assetAddress,
                 name,
                 symbol,
                 decimals,
-                logoURI: getTrustwalletLink(tokenAddress),
+                logoURI: getTrustwalletLink(assetAddress),
             };
         }
         return metadata;

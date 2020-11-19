@@ -12,8 +12,8 @@
                     </div>
                 </div>
                 <AssetInput
-                    v-model:address="tokenInAddressInput"
-                    v-model:amount="tokenInAmountInput"
+                    v-model:address="assetInAddressInput"
+                    v-model:amount="assetInAmountInput"
                     :modal-key="'input'"
                     :loading="swapsLoading && !isExactIn"
                     @change="value => {
@@ -37,8 +37,8 @@
                     </div>
                 </div>
                 <AssetInput
-                    v-model:address="tokenOutAddressInput"
-                    v-model:amount="tokenOutAmountInput"
+                    v-model:address="assetOutAddressInput"
+                    v-model:amount="assetOutAmountInput"
                     :modal-key="'output'"
                     :loading="swapsLoading && isExactIn"
                     @change="value => {
@@ -96,7 +96,7 @@
         </div>
         <ModalAssetSelector
             :open="isModalOpen"
-            :hidden="[tokenInAddressInput, tokenOutAddressInput]"
+            :hidden="[assetInAddressInput, assetOutAddressInput]"
             @select="handleAssetSelect"
         />
     </div>
@@ -165,10 +165,10 @@ export default defineComponent({
 
         const isInRate = ref(true);
         const isExactIn = ref(true);
-        const tokenInAddressInput = ref('');
-        const tokenInAmountInput = ref('');
-        const tokenOutAddressInput = ref('');
-        const tokenOutAmountInput = ref('');
+        const assetInAddressInput = ref('');
+        const assetInAmountInput = ref('');
+        const assetOutAddressInput = ref('');
+        const assetOutAmountInput = ref('');
         const slippage = ref(0);
         const slippageBuffer = ref('0.5');
         const buttonLoading = ref(false);
@@ -197,8 +197,8 @@ export default defineComponent({
                 return '';
             }
 
-            const assetMetadata = metadata[tokenInAddressInput.value];
-            const balance = balances[tokenInAddressInput.value];
+            const assetMetadata = metadata[assetInAddressInput.value];
+            const balance = balances[assetInAddressInput.value];
             const balanceNumber = new BigNumber(balance);
             if (!assetMetadata || !balance) {
                 return '';
@@ -221,8 +221,8 @@ export default defineComponent({
                 return '';
             }
 
-            const assetMetadata = metadata[tokenOutAddressInput.value];
-            const balance = balances[tokenOutAddressInput.value];
+            const assetMetadata = metadata[assetOutAddressInput.value];
+            const balance = balances[assetOutAddressInput.value];
             const balanceNumber = new BigNumber(balance);
             if (!assetMetadata || !balance) {
                 return '';
@@ -240,33 +240,33 @@ export default defineComponent({
         const isUnlocked = computed(() => {
             const { allowances } = store.state.account;
             const { metadata } = store.state.assets;
-            if (!tokenInAddressInput.value) {
+            if (!assetInAddressInput.value) {
                 return true;
             }
-            if (tokenInAddressInput.value === ETH_KEY) {
+            if (assetInAddressInput.value === ETH_KEY) {
                 return true;
             }
-            if (isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)) {
+            if (isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)) {
                 return true;
             }
-            if (!tokenInAmountInput.value) {
+            if (!assetInAmountInput.value) {
                 return true;
             }
             const exchangeProxyAddress = config.addresses.exchangeProxy;
             if (!allowances[exchangeProxyAddress]) {
                 return true;
             }
-            const allowance = allowances[exchangeProxyAddress][tokenInAddressInput.value];
+            const allowance = allowances[exchangeProxyAddress][assetInAddressInput.value];
             if (!allowance) {
                 return true;
             }
-            const decimals = metadata[tokenInAddressInput.value].decimals;
+            const decimals = metadata[assetInAddressInput.value].decimals;
             if (!decimals) {
                 return true;
             }
             const allowanceNumber = new BigNumber(allowance);
             const allowanceRaw = scale(allowanceNumber, -decimals);
-            return allowanceRaw.gte(tokenInAmountInput.value);
+            return allowanceRaw.gte(assetInAmountInput.value);
         });
 
         const validation = computed(() => {
@@ -280,7 +280,7 @@ export default defineComponent({
             }
             // No swaps
             if ((swapsLoading.value || swaps.value.length === 0) &&
-                !isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)
+                !isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)
             ) {
                 return Validation.NO_SWAPS;
             }
@@ -296,13 +296,13 @@ export default defineComponent({
             // Insufficient balance
             const { balances } = store.state.account;
             const { metadata } = store.state.assets;
-            const assetInBalance = balances[tokenInAddressInput.value];
-            const assetInMetadata = metadata[tokenInAddressInput.value];
+            const assetInBalance = balances[assetInAddressInput.value];
+            const assetInMetadata = metadata[assetInAddressInput.value];
             if (!assetInMetadata) {
                 return Validation.INSUFFICIENT_BALANCE;
             }
             const assetInDecimals = assetInMetadata.decimals;
-            const assetInAmountRaw = new BigNumber(tokenInAmountInput.value);
+            const assetInAmountRaw = new BigNumber(assetInAmountInput.value);
             const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
             if (!assetInBalance || assetInAmount.gt(assetInBalance)) {
                 return Validation.INSUFFICIENT_BALANCE;
@@ -319,13 +319,13 @@ export default defineComponent({
                 return '';
             }
             const { metadata } = store.state.assets;
-            const assetIn = metadata[tokenInAddressInput.value];
-            const assetOut = metadata[tokenOutAddressInput.value];
+            const assetIn = metadata[assetInAddressInput.value];
+            const assetOut = metadata[assetOutAddressInput.value];
             if (!assetIn || !assetOut) {
                 return '';
             }
-            const assetInAmount = new BigNumber(tokenInAmountInput.value);
-            const assetOutAmount = new BigNumber(tokenOutAmountInput.value);
+            const assetInAmount = new BigNumber(assetInAmountInput.value);
+            const assetOutAmount = new BigNumber(assetOutAmountInput.value);
             const rate = isInRate.value
                 ? assetOutAmount.div(assetInAmount)
                 : assetInAmount.div(assetOutAmount);
@@ -359,17 +359,17 @@ export default defineComponent({
 
         const activeInput = computed(() => {
             if (isExactIn.value) {
-                return tokenInAmountInput.value;
+                return assetInAmountInput.value;
             } else {
-                return tokenOutAmountInput.value;
+                return assetOutAmountInput.value;
             }
         });
 
         onMounted(async () => {
             const { assetIn, assetOut } = getInitialPair();
-            await fetchTokenMetadata(assetIn, assetOut);
-            tokenInAddressInput.value = assetIn;
-            tokenOutAddressInput.value = assetOut;
+            await fetchAssetMetadata(assetIn, assetOut);
+            assetInAddressInput.value = assetIn;
+            assetOutAddressInput.value = assetOut;
             slippageBuffer.value = (Storage.getSlippage() * 100).toString();
             initSor();
         });
@@ -386,18 +386,18 @@ export default defineComponent({
             store.dispatch('account/fetchAssets', assets);
         }, 5 * 60 * 1000);
 
-        watch(tokenInAddressInput, () => {
-            Storage.saveInputAsset(config.chainId, tokenInAddressInput.value);
+        watch(assetInAddressInput, () => {
+            Storage.saveInputAsset(config.chainId, assetInAddressInput.value);
             onAmountChange(activeInput.value);
         });
 
-        watch(tokenOutAddressInput, async () => {
-            Storage.saveOutputAsset(config.chainId, tokenOutAddressInput.value);
+        watch(assetOutAddressInput, async () => {
+            Storage.saveOutputAsset(config.chainId, assetOutAddressInput.value);
             if (sor) {
-                const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
+                const assetOutAddress = assetOutAddressInput.value === ETH_KEY
                     ? config.addresses.weth
-                    : tokenOutAddressInput.value;
-                await sor.setCostOutputToken(tokenOutAddress);
+                    : assetOutAddressInput.value;
+                await sor.setCostOutputToken(assetOutAddress);
             }
             onAmountChange(activeInput.value);
         });
@@ -419,23 +419,23 @@ export default defineComponent({
         function handleAssetSelect(assetAddress: string): void {
             const assetModalKey = store.state.ui.modal.asset.key;
             if (assetModalKey === 'input') {
-                tokenInAddressInput.value = assetAddress;
+                assetInAddressInput.value = assetAddress;
             }
             if (assetModalKey === 'output') {
-                tokenOutAddressInput.value = assetAddress;
+                assetOutAddressInput.value = assetAddress;
             }
         }
 
         async function togglePair(): Promise<void> {
-            const tokenInAddress = tokenOutAddressInput.value;
-            const tokenInAmount = tokenOutAmountInput.value;
-            const tokenOutAddress = tokenInAddressInput.value;
-            const tokenOutAmount = tokenInAmountInput.value;
+            const assetInAddress = assetOutAddressInput.value;
+            const assetInAmount = assetOutAmountInput.value;
+            const assetOutAddress = assetInAddressInput.value;
+            const assetOutAmount = assetInAmountInput.value;
             isExactIn.value = !isExactIn.value;
-            tokenInAddressInput.value = tokenInAddress;
-            tokenInAmountInput.value = tokenInAmount;
-            tokenOutAddressInput.value = tokenOutAddress;
-            tokenOutAmountInput.value = tokenOutAmount;
+            assetInAddressInput.value = assetInAddress;
+            assetInAmountInput.value = assetInAmount;
+            assetOutAddressInput.value = assetOutAddress;
+            assetOutAmountInput.value = assetOutAmount;
         }
 
         function openConnectorModal(): void {
@@ -445,55 +445,55 @@ export default defineComponent({
         async function unlock(): Promise<void> {
             buttonLoading.value = true;
             const provider = await store.getters['account/provider'];
-            const tokenInAddress = tokenInAddressInput.value;
+            const assetInAddress = assetInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
-            const tx = await Helper.unlock(provider, tokenInAddress, spender);
+            const tx = await Helper.unlock(provider, assetInAddress, spender);
             const { metadata } = store.state.assets;
-            const assetSymbol = metadata[tokenInAddress].symbol;
+            const assetSymbol = metadata[assetInAddress].symbol;
             const text = `Unlock ${assetSymbol}`;
             await handleTransaction(tx, text);
-            store.dispatch('account/fetchAssets', [ tokenInAddress ]);
+            store.dispatch('account/fetchAssets', [ assetInAddress ]);
         }
 
         async function swap(): Promise<void> {
             const { metadata } = store.state.assets;
             buttonLoading.value = true;
-            const tokenInAddress = tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value;
-            const tokenInDecimals = metadata[tokenInAddress].decimals;
-            const tokenOutDecimals = metadata[tokenOutAddress].decimals;
-            const tokenInAmountNumber = new BigNumber(tokenInAmountInput.value);
-            const tokenInAmount = scale(tokenInAmountNumber, tokenInDecimals);
+            const assetInAddress = assetInAddressInput.value;
+            const assetOutAddress = assetOutAddressInput.value;
+            const assetInDecimals = metadata[assetInAddress].decimals;
+            const assetOutDecimals = metadata[assetOutAddress].decimals;
+            const assetInAmountNumber = new BigNumber(assetInAmountInput.value);
+            const assetInAmount = scale(assetInAmountNumber, assetInDecimals);
             const slippageBufferRate = parseFloat(slippageBuffer.value) / 100;
             const provider = await store.getters['account/provider'];
-            if (isWrapPair(tokenInAddress, tokenOutAddress)) {
-                if (tokenInAddress === ETH_KEY) {
-                    const tx = await Helper.wrap(provider, tokenInAmount);
+            if (isWrapPair(assetInAddress, assetOutAddress)) {
+                if (assetInAddress === ETH_KEY) {
+                    const tx = await Helper.wrap(provider, assetInAmount);
                     const text = 'Wrap ether';
                     await handleTransaction(tx, text);
                 } else {
-                    const tx = await Helper.unwrap(provider, tokenInAmount);
+                    const tx = await Helper.unwrap(provider, assetInAmount);
                     const text = 'Unwrap ether';
                     await handleTransaction(tx, text);
                 }
                 store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
                 return;
             }
-            const assetInSymbol = metadata[tokenInAddress].symbol;
-            const assetOutSymbol = metadata[tokenOutAddress].symbol;
+            const assetInSymbol = metadata[assetInAddress].symbol;
+            const assetOutSymbol = metadata[assetOutAddress].symbol;
             const text = `Swap ${assetInSymbol} for ${assetOutSymbol}`;
             if (isExactIn.value) {
-                const tokenOutAmountNumber = new BigNumber(tokenOutAmountInput.value);
-                const tokenOutAmount = scale(tokenOutAmountNumber, tokenOutDecimals);
-                const minAmount = tokenOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapIn(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmount, minAmount);
+                const assetOutAmountNumber = new BigNumber(assetOutAmountInput.value);
+                const assetOutAmount = scale(assetOutAmountNumber, assetOutDecimals);
+                const minAmount = assetOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
+                const tx = await Swapper.swapIn(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmount, minAmount);
                 await handleTransaction(tx, text);
             } else {
-                const tokenInAmountMax = tokenInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapOut(provider, swaps.value, tokenInAddress, tokenOutAddress, tokenInAmountMax);
+                const assetInAmountMax = assetInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
+                const tx = await Swapper.swapOut(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmountMax);
                 await handleTransaction(tx, text);
             }
-            store.dispatch('account/fetchAssets', [ tokenInAddress, tokenOutAddress ]);
+            store.dispatch('account/fetchAssets', [ assetInAddress, assetOutAddress ]);
             if (sor) {
                 sor.fetchPools();
                 onAmountChange(activeInput.value);
@@ -509,14 +509,14 @@ export default defineComponent({
                 config.subgraphBackupUrl,
             );
 
-            const tokenInAddress = tokenInAddressInput.value === ETH_KEY
+            const assetInAddress = assetInAddressInput.value === ETH_KEY
                 ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
+                : assetInAddressInput.value;
+            const assetOutAddress = assetOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
-                : tokenOutAddressInput.value;
-            await sor.setCostOutputToken(tokenOutAddress);
-            await sor.fetchFilteredPairPools(tokenInAddress, tokenOutAddress);
+                : assetOutAddressInput.value;
+            await sor.setCostOutputToken(assetOutAddress);
+            await sor.fetchFilteredPairPools(assetInAddress, assetOutAddress);
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
             await onAmountChange(activeInput.value);
@@ -526,86 +526,86 @@ export default defineComponent({
             const { metadata } = store.state.assets;
             if (validateNumberInput(amount) !== ValidationError.NONE) {
                 if (isExactIn.value) {
-                    tokenOutAmountInput.value = '';
+                    assetOutAmountInput.value = '';
                 } else {
-                    tokenInAmountInput.value = '';
+                    assetInAmountInput.value = '';
                 }
                 slippage.value = 0;
                 return;
             }
 
-            if (isWrapPair(tokenInAddressInput.value, tokenOutAddressInput.value)) {
+            if (isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)) {
                 if (isExactIn.value) {
-                    tokenOutAmountInput.value = amount;
+                    assetOutAmountInput.value = amount;
                 } else {
-                    tokenInAmountInput.value = amount;
+                    assetInAmountInput.value = amount;
                 }
                 swaps.value = [];
                 return;
             }
 
-            const tokenInAddress = tokenInAddressInput.value === ETH_KEY
+            const assetInAddress = assetInAddressInput.value === ETH_KEY
                 ? config.addresses.weth
-                : tokenInAddressInput.value;
-            const tokenOutAddress = tokenOutAddressInput.value === ETH_KEY
+                : assetInAddressInput.value;
+            const assetOutAddress = assetOutAddressInput.value === ETH_KEY
                 ? config.addresses.weth
-                : tokenOutAddressInput.value;
+                : assetOutAddressInput.value;
 
-            if (tokenInAddress === tokenOutAddress) {
+            if (assetInAddress === assetOutAddress) {
                 return;
             }
 
-            if (!sor || !sor.hasDataForPair(tokenInAddress, tokenOutAddress)) {
+            if (!sor || !sor.hasDataForPair(assetInAddress, assetOutAddress)) {
                 swapsLoading.value = true;
                 return;
             }
 
-            const tokenInDecimals = metadata[tokenInAddress].decimals;
-            const tokenOutDecimals = metadata[tokenOutAddress].decimals;
+            const assetInDecimals = metadata[assetInAddress].decimals;
+            const assetOutDecimals = metadata[assetOutAddress].decimals;
 
             swapsLoading.value = true;
             if (isExactIn.value) {
-                const tokenInAmountRaw = new BigNumber(amount);
-                const tokenInAmount = scale(tokenInAmountRaw, tokenInDecimals);
+                const assetInAmountRaw = new BigNumber(amount);
+                const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
 
                 const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
-                    tokenInAddress,
-                    tokenOutAddress,
+                    assetInAddress,
+                    assetOutAddress,
                     'swapExactIn',
-                    tokenInAmount,
+                    assetInAmount,
                 );
                 swaps.value = tradeSwaps;
-                const tokenOutAmountRaw = scale(tradeAmount, -tokenOutDecimals);
-                const tokenOutPrecision = config.precision;
-                tokenOutAmountInput.value = tokenOutAmountRaw.toFixed(tokenOutPrecision, BigNumber.ROUND_DOWN);
+                const assetOutAmountRaw = scale(tradeAmount, -assetOutDecimals);
+                const assetOutPrecision = config.precision;
+                assetOutAmountInput.value = assetOutAmountRaw.toFixed(assetOutPrecision, BigNumber.ROUND_DOWN);
                 if (tradeSwaps.length === 0) {
                     slippage.value = 0;
                 } else {
-                    const price = tokenInAmount.div(tradeAmount).times('1e18');
+                    const price = assetInAmount.div(tradeAmount).times('1e18');
                     const slippageNumber = price.div(spotPrice).minus(1);
                     slippage.value = slippageNumber.isNegative()
                         ? 0.00001
                         : slippageNumber.toNumber();
                 }
             } else {
-                const tokenOutAmountRaw = new BigNumber(amount);
-                const tokenOutAmount = scale(tokenOutAmountRaw, tokenOutDecimals);
+                const assetOutAmountRaw = new BigNumber(amount);
+                const assetOutAmount = scale(assetOutAmountRaw, assetOutDecimals);
 
                 const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
-                    tokenInAddress,
-                    tokenOutAddress,
+                    assetInAddress,
+                    assetOutAddress,
                     'swapExactOut',
-                    tokenOutAmount,
+                    assetOutAmount,
                 );
                 swaps.value = tradeSwaps;
-                const tokenInAmountRaw = scale(tradeAmount, -tokenInDecimals);
-                const tokenInPrecision = config.precision;
-                tokenInAmountInput.value = tokenInAmountRaw.toFixed(tokenInPrecision, BigNumber.ROUND_UP);
+                const assetInAmountRaw = scale(tradeAmount, -assetInDecimals);
+                const assetInPrecision = config.precision;
+                assetInAmountInput.value = assetInAmountRaw.toFixed(assetInPrecision, BigNumber.ROUND_UP);
 
                 if (tradeSwaps.length === 0) {
                     slippage.value = 0;
                 } else {
-                    const price = tradeAmount.div(tokenOutAmount).times('1e18');
+                    const price = tradeAmount.div(assetOutAmount).times('1e18');
                     const slippageNumber = price.div(spotPrice).minus(1);
                     slippage.value = slippageNumber.isNegative()
                         ? 0.00001
@@ -651,20 +651,20 @@ export default defineComponent({
             });
         }
 
-        async function fetchTokenMetadata(assetIn: string, assetOut: string): Promise<void> {
+        async function fetchAssetMetadata(assetIn: string, assetOut: string): Promise<void> {
             const { metadata } = store.state.assets;
-            const unknownTokens = [];
+            const unknownAssets = [];
             if (!metadata[assetIn]) {
-                unknownTokens.push(assetIn);
+                unknownAssets.push(assetIn);
             }
             if (!metadata[assetOut]) {
-                unknownTokens.push(assetOut);
+                unknownAssets.push(assetOut);
             }
-            if (unknownTokens.length === 0) {
+            if (unknownAssets.length === 0) {
                 return;
             }
-            await store.dispatch('assets/fetch', unknownTokens);
-            await store.dispatch('account/fetchAssets', unknownTokens);
+            await store.dispatch('assets/fetch', unknownAssets);
+            await store.dispatch('account/fetchAssets', unknownAssets);
         }
 
         function getInitialPair(): Pair {
@@ -701,10 +701,10 @@ export default defineComponent({
             isExactIn,
             assetInBalanceLabel,
             assetOutBalanceLabel,
-            tokenInAddressInput,
-            tokenInAmountInput,
-            tokenOutAddressInput,
-            tokenOutAmountInput,
+            assetInAddressInput,
+            assetInAmountInput,
+            assetOutAddressInput,
+            assetOutAmountInput,
 
             swaps,
             rateMessage,

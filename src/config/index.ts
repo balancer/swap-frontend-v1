@@ -8,7 +8,7 @@ interface Connector {
     options: any;
 }
 
-export interface TokenMetadata {
+export interface AssetMetadata {
     address: string;
     name: string;
     symbol: string;
@@ -31,19 +31,19 @@ interface Config {
         weth: string;
         multicall: string;
     };
-    tokens: Record<string, TokenMetadata>;
+    assets: Record<string, AssetMetadata>;
     untrusted: string[];
     connectors: Record<string, Connector>;
 }
 
 const configs = {
     1: {
-        tokens: getTokensFromTokenlist(1),
+        assets: getAssetsFromTokenlist(1),
         untrusted: [],
         ...homestead,
     },
     42:{
-        tokens: getTokensFromTokenlist(42),
+        assets: getAssetsFromTokenlist(42),
         untrusted: [],
         ...kovan,
     },
@@ -53,8 +53,8 @@ const network = process.env.APP_CHAIN_ID || 1;
 
 const config: Config = configs[network];
 
-function getTokensFromTokenlist(chainId: number): Record<string, TokenMetadata> {
-    const tokens = {
+function getAssetsFromTokenlist(chainId: number): Record<string, AssetMetadata> {
+    const assets = {
         ether: {
             address: 'ether',
             name: 'Ether',
@@ -67,7 +67,7 @@ function getTokensFromTokenlist(chainId: number): Record<string, TokenMetadata> 
         if (token.chainId !== chainId) {
             continue;
         }
-        tokens[token.address] = {
+        assets[token.address] = {
             address: token.address,
             name: token.name,
             symbol: token.symbol,
@@ -75,7 +75,7 @@ function getTokensFromTokenlist(chainId: number): Record<string, TokenMetadata> 
             logoURI: token.logoURI,
         };
     }
-    return tokens;
+    return assets;
 }
 
 export default config;
