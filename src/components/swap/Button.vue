@@ -106,10 +106,10 @@ export default defineComponent({
 
         const errorText = computed(() => {
             if (validation.value === SwapValidation.EMPTY_INPUT) {
-                return 'Enter swap amount';
+                return 'Enter amount';
             }
             if (validation.value === SwapValidation.INVALID_INPUT) {
-                return 'Invalid swap amount';
+                return 'Invalid amount';
             }
             if (validation.value === SwapValidation.WRONG_NETWORK) {
                 return 'Wrong network';
