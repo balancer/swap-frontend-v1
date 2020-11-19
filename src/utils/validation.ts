@@ -5,6 +5,16 @@ export enum ValidationError {
     NOT_POSITIVE
 }
 
+export enum SwapValidation {
+    NONE,
+    EMPTY_INPUT,
+    INVALID_INPUT,
+    NO_ACCOUNT,
+    WRONG_NETWORK,
+    INSUFFICIENT_BALANCE,
+    NO_SWAPS,
+}
+
 export function validateNumberInput(input: string): ValidationError {
     if (!input) {
         return ValidationError.EMPTY;

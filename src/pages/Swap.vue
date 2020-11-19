@@ -63,35 +63,15 @@
                 v-model:buffer="slippageBuffer"
                 :value="slippage"
             />
-            <div class="validation-message">
-                {{ validationMessage }}
-            </div>
-            <Button
-                v-if="!account"
+            <SwapButton
                 class="swap-button"
-                :disabled="connectButtonLoading"
-                :text="'Connect'"
-                :primary="true"
-                :loading="connectButtonLoading"
-                @click="openConnectorModal"
-            />
-            <Button
-                v-else-if="isUnlocked"
-                class="swap-button"
-                :disabled="isDisabled || buttonLoading"
-                :text="'Swap'"
-                :primary="true"
-                :loading="buttonLoading"
-                @click="swap"
-            />
-            <Button
-                v-else
-                class="swap-button"
-                :disabled="isDisabled || buttonLoading"
-                :text="'Unlock'"
-                :primary="true"
-                :loading="buttonLoading"
-                @click="unlock"
+                :address-in="assetInAddressInput"
+                :amount-in="assetInAmountInput"
+                :address-out="assetOutAddressInput"
+                :transaction-pending="transactionPending"
+                :validation="validation"
+                @unlock="unlock"
+                @swap="swap"
             />
         </div>
         <ModalAssetSelector
@@ -116,32 +96,22 @@ import { Swap } from '@balancer-labs/sor/dist/types';
 import config from '@/config';
 import provider from '@/utils/provider';
 import { ETH_KEY, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
-import { ValidationError, validateNumberInput } from '@/utils/validation';
+import { ValidationError, SwapValidation, validateNumberInput } from '@/utils/validation';
 import Storage from '@/utils/storage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 import { RootState } from '@/store';
 
 import AssetInput from '@/components/AssetInput.vue';
-import Button from '@/components/Button.vue';
 import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import Slippage from '@/components/swap/Slippage.vue';
+import SwapButton from '@/components/swap/Button.vue';
 import RouteTooltip from '@/components/swap/RouteTooltip.vue';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 const MAX_POOLS = 4;
-
-enum Validation {
-    NONE,
-    EMPTY_INPUT,
-    INVALID_INPUT,
-    NO_ACCOUNT,
-    WRONG_NETWORK,
-    INSUFFICIENT_BALANCE,
-    NO_SWAPS,
-}
 
 interface Pair {
     assetIn: string;
@@ -151,10 +121,10 @@ interface Pair {
 export default defineComponent({
     components: {
         AssetInput,
-        Button,
         Icon,
         ModalAssetSelector,
         Slippage,
+        SwapButton,
         RouteTooltip,
     },
     setup() {
@@ -171,7 +141,7 @@ export default defineComponent({
         const assetOutAmountInput = ref('');
         const slippage = ref(0);
         const slippageBuffer = ref('0.5');
-        const buttonLoading = ref(false);
+        const transactionPending = ref(false);
         const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
 
@@ -183,11 +153,6 @@ export default defineComponent({
                 return '';
             }
             return address;
-        });
-
-        const connectButtonLoading = computed(() => {
-            const { connector, address } = store.state.account;
-            return !!connector && !!connector.id && !address;
         });
 
         const assetInBalanceLabel = computed(() => {
@@ -237,61 +202,29 @@ export default defineComponent({
             return `Balance: ${balanceShort} ${assetSymbol}`;
         });
 
-        const isUnlocked = computed(() => {
-            const { allowances } = store.state.account;
-            const { metadata } = store.state.assets;
-            if (!assetInAddressInput.value) {
-                return true;
-            }
-            if (assetInAddressInput.value === ETH_KEY) {
-                return true;
-            }
-            if (isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)) {
-                return true;
-            }
-            if (!assetInAmountInput.value) {
-                return true;
-            }
-            const exchangeProxyAddress = config.addresses.exchangeProxy;
-            if (!allowances[exchangeProxyAddress]) {
-                return true;
-            }
-            const allowance = allowances[exchangeProxyAddress][assetInAddressInput.value];
-            if (!allowance) {
-                return true;
-            }
-            const decimals = metadata[assetInAddressInput.value].decimals;
-            if (!decimals) {
-                return true;
-            }
-            const allowanceNumber = new BigNumber(allowance);
-            const allowanceRaw = scale(allowanceNumber, -decimals);
-            return allowanceRaw.gte(assetInAmountInput.value);
-        });
-
         const validation = computed(() => {
             // Invalid input
             const inputError = validateNumberInput(activeInput.value);
             if (inputError === ValidationError.EMPTY) {
-                return Validation.EMPTY_INPUT;
+                return SwapValidation.EMPTY_INPUT;
             }
             if (inputError !== ValidationError.NONE) {
-                return Validation.INVALID_INPUT;
+                return SwapValidation.INVALID_INPUT;
             }
             // No swaps
             if ((swapsLoading.value || swaps.value.length === 0) &&
                 !isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)
             ) {
-                return Validation.NO_SWAPS;
+                return SwapValidation.NO_SWAPS;
             }
             // No account
             if (!account.value) {
-                return Validation.NO_ACCOUNT;
+                return SwapValidation.NO_ACCOUNT;
             }
             // Wrong network
             const { chainId } = store.state.account;
             if (config.chainId !== chainId) {
-                return Validation.WRONG_NETWORK;
+                return SwapValidation.WRONG_NETWORK;
             }
             // Insufficient balance
             const { balances } = store.state.account;
@@ -299,23 +232,21 @@ export default defineComponent({
             const assetInBalance = balances[assetInAddressInput.value];
             const assetInMetadata = metadata[assetInAddressInput.value];
             if (!assetInMetadata) {
-                return Validation.INSUFFICIENT_BALANCE;
+                return SwapValidation.INSUFFICIENT_BALANCE;
             }
             const assetInDecimals = assetInMetadata.decimals;
             const assetInAmountRaw = new BigNumber(assetInAmountInput.value);
             const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
             if (!assetInBalance || assetInAmount.gt(assetInBalance)) {
-                return Validation.INSUFFICIENT_BALANCE;
+                return SwapValidation.INSUFFICIENT_BALANCE;
             }
-            return Validation.NONE;
+            return SwapValidation.NONE;
         });
 
-        const isDisabled = computed(() => validation.value !== Validation.NONE);
-
         const rateMessage = computed(() => {
-            if (validation.value === Validation.EMPTY_INPUT ||
-                validation.value === Validation.INVALID_INPUT ||
-                validation.value === Validation.NO_SWAPS) {
+            if (validation.value === SwapValidation.EMPTY_INPUT ||
+                validation.value === SwapValidation.INVALID_INPUT ||
+                validation.value === SwapValidation.NO_SWAPS) {
                 return '';
             }
             const { metadata } = store.state.assets;
@@ -333,28 +264,6 @@ export default defineComponent({
             return isInRate.value
                 ? `1 ${assetIn.symbol} = ${rateString} ${assetOut.symbol}`
                 : `1 ${assetOut.symbol} = ${rateString} ${assetIn.symbol}`;
-        });
-
-        const validationMessage = computed(() => {
-            if (validation.value === Validation.EMPTY_INPUT) {
-                return 'Enter swap amount';
-            }
-            if (validation.value === Validation.INVALID_INPUT) {
-                return 'Invalid swap amount';
-            }
-            if (validation.value === Validation.NO_ACCOUNT) {
-                return 'Connect account to continue';
-            }
-            if (validation.value === Validation.WRONG_NETWORK) {
-                return 'Change network to continue';
-            }
-            if (validation.value === Validation.INSUFFICIENT_BALANCE) {
-                return 'Not enough funds';
-            }
-            if (validation.value === Validation.NO_SWAPS) {
-                return 'Not enough liquidity';
-            }
-            return '';
         });
 
         const activeInput = computed(() => {
@@ -438,12 +347,8 @@ export default defineComponent({
             assetOutAmountInput.value = assetOutAmount;
         }
 
-        function openConnectorModal(): void {
-            store.dispatch('ui/openConnectorModal');
-        }
-
         async function unlock(): Promise<void> {
-            buttonLoading.value = true;
+            transactionPending.value = true;
             const provider = await store.getters['account/provider'];
             const assetInAddress = assetInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
@@ -457,7 +362,7 @@ export default defineComponent({
 
         async function swap(): Promise<void> {
             const { metadata } = store.state.assets;
-            buttonLoading.value = true;
+            transactionPending.value = true;
             const assetInAddress = assetInAddressInput.value;
             const assetOutAddress = assetOutAddressInput.value;
             const assetInDecimals = metadata[assetInAddress].decimals;
@@ -617,7 +522,7 @@ export default defineComponent({
 
         async function handleTransaction(transaction: any, text: string): Promise<void> {
             if (transaction.code) {
-                buttonLoading.value = false;
+                transactionPending.value = false;
                 if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
                     store.dispatch('ui/notify', {
                         text: `${text} failed`,
@@ -634,7 +539,7 @@ export default defineComponent({
             });
 
             const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
-            buttonLoading.value = false;
+            transactionPending.value = false;
             store.dispatch('account/saveMinedTransaction', {
                 receipt: transactionReceipt,
                 timestamp: Date.now(),
@@ -710,21 +615,17 @@ export default defineComponent({
             rateMessage,
             slippage,
             slippageBuffer,
-            validationMessage,
+            validation,
 
             account,
-            connectButtonLoading,
-            buttonLoading,
+            transactionPending,
             swapsLoading,
             isModalOpen,
-            isUnlocked,
-            isDisabled,
 
             toggleRate,
             handleAmountChange,
             handleAssetSelect,
             togglePair,
-            openConnectorModal,
             unlock,
             swap,
         };
