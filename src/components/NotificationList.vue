@@ -45,10 +45,10 @@ export default defineComponent({
 
 .slide-enter-active,
 .slide-leave-active {
-    transition: all 2s ease;
+    transition: all 1s cubic-bezier(0.5, 0, 0.54, 1.42);
 }
 
 .slide-move {
-    transition: all 1s ease;
+    transition: all 0.5s ease;
 }
 </style>

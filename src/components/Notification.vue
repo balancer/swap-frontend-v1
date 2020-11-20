@@ -156,12 +156,13 @@ export default defineComponent({
 }
 
 .progress {
+    width: 0%;
+    height: 4px;
     position: absolute;
-    height: 2px;
     bottom: 0;
     left: 0;
     background: white;
-    width: 0%;
+    opacity: 0.8;
     transition: width 1s linear;
 }
 </style>

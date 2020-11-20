@@ -2,7 +2,7 @@ import { RootState } from '@/store';
 import { sleep } from '@/utils/helpers';
 import { ActionContext } from 'vuex';
 
-export const NOTIFICATION_DURATION = 30 * 1000;
+export const NOTIFICATION_DURATION = 20 * 1000;
 
 export interface UIState {
     modal: {
