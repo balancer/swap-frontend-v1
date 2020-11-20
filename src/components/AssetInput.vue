@@ -75,7 +75,7 @@ export default defineComponent({
             default: false,
         },
     },
-    emits: ['update:amount', 'change'],
+    emits: ['change'],
     setup(props, { emit }) {
         const store = useStore<RootState>();
 
@@ -121,7 +121,6 @@ export default defineComponent({
 
         function handleInputChange(value: string): void {
             emit('change', value);
-            emit('update:amount', value);
         }
 
         function openModal(): void {

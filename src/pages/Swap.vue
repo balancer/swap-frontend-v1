@@ -1,51 +1,17 @@
 <template>
     <div>
         <div class="pair">
-            <div>
-                <div class="input-label">
-                    <div>
-                        Send
-                        <span v-if="!isExactIn">(approximate)</span>
-                    </div>
-                    <div class="balance-label">
-                        {{ assetInBalanceLabel }}
-                    </div>
-                </div>
-                <AssetInput
-                    v-model:address="assetInAddressInput"
-                    v-model:amount="assetInAmountInput"
-                    :modal-key="'input'"
-                    :loading="swapsLoading && !isExactIn"
-                    @change="value => {
-                        handleAmountChange(true, value);
-                    }"
-                />
-            </div>
-            <Icon
-                class="toggle-icon"
-                :title="'chevron'"
-                @click="togglePair"
+            <SwapPair
+                v-model:address-in="assetInAddressInput"
+                v-model:amount-in="assetInAmountInput"
+                v-model:address-out="assetOutAddressInput"
+                v-model:amount-out="assetOutAmountInput"
+                v-model:is-exact-in="isExactIn"
+                :swaps-loading="swapsLoading"
+                @change="value => {
+                    handleAmountChange(value);
+                }"
             />
-            <div>
-                <div class="input-label">
-                    <div>
-                        Receive
-                        <span v-if="isExactIn">(approximate)</span>
-                    </div>
-                    <div class="balance-label">
-                        {{ assetOutBalanceLabel }}
-                    </div>
-                </div>
-                <AssetInput
-                    v-model:address="assetOutAddressInput"
-                    v-model:amount="assetOutAmountInput"
-                    :modal-key="'output'"
-                    :loading="swapsLoading && isExactIn"
-                    @change="value => {
-                        handleAmountChange(false, value);
-                    }"
-                />
-            </div>
             <div class="rate-message">
                 <span
                     class="rate-label"
@@ -102,11 +68,10 @@ import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 import { RootState } from '@/store';
 
-import AssetInput from '@/components/AssetInput.vue';
-import Icon from '@/components/Icon.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import Slippage from '@/components/swap/Slippage.vue';
 import SwapButton from '@/components/swap/Button.vue';
+import SwapPair from '@/components/swap/Pair.vue';
 import RouteTooltip from '@/components/swap/RouteTooltip.vue';
 
 // eslint-disable-next-line no-undef
@@ -120,11 +85,10 @@ interface Pair {
 
 export default defineComponent({
     components: {
-        AssetInput,
-        Icon,
         ModalAssetSelector,
         Slippage,
         SwapButton,
+        SwapPair,
         RouteTooltip,
     },
     setup() {
@@ -153,53 +117,6 @@ export default defineComponent({
                 return '';
             }
             return address;
-        });
-
-        const assetInBalanceLabel = computed(() => {
-            const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
-            if (!balances || !metadata) {
-                return '';
-            }
-
-            const assetMetadata = metadata[assetInAddressInput.value];
-            const balance = balances[assetInAddressInput.value];
-            const balanceNumber = new BigNumber(balance);
-            if (!assetMetadata || !balance) {
-                return '';
-            }
-
-            const assetSymbol = assetMetadata.symbol;
-            const assetDecimals = assetMetadata.decimals;
-            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            const balanceShort = balanceShortNumber.isInteger()
-                ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(config.precision);
-            return `Balance: ${balanceShort} ${assetSymbol}`;
-        });
-
-        const assetOutBalanceLabel = computed(() => {
-            const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
-
-            if (!balances || !metadata) {
-                return '';
-            }
-
-            const assetMetadata = metadata[assetOutAddressInput.value];
-            const balance = balances[assetOutAddressInput.value];
-            const balanceNumber = new BigNumber(balance);
-            if (!assetMetadata || !balance) {
-                return '';
-            }
-
-            const assetSymbol = assetMetadata.symbol;
-            const assetDecimals = assetMetadata.decimals;
-            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            const balanceShort = balanceShortNumber.isInteger()
-                ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(config.precision);
-            return `Balance: ${balanceShort} ${assetSymbol}`;
         });
 
         const validation = computed(() => {
@@ -320,8 +237,7 @@ export default defineComponent({
             isInRate.value = !isInRate.value;
         }
 
-        function handleAmountChange(exactIn: boolean, amount: string): void {
-            isExactIn.value = exactIn;
+        function handleAmountChange(amount: string): void {
             onAmountChange(amount);
         }
 
@@ -333,18 +249,6 @@ export default defineComponent({
             if (assetModalKey === 'output') {
                 assetOutAddressInput.value = assetAddress;
             }
-        }
-
-        async function togglePair(): Promise<void> {
-            const assetInAddress = assetOutAddressInput.value;
-            const assetInAmount = assetOutAmountInput.value;
-            const assetOutAddress = assetInAddressInput.value;
-            const assetOutAmount = assetInAmountInput.value;
-            isExactIn.value = !isExactIn.value;
-            assetInAddressInput.value = assetInAddress;
-            assetInAmountInput.value = assetInAmount;
-            assetOutAddressInput.value = assetOutAddress;
-            assetOutAmountInput.value = assetOutAmount;
         }
 
         async function unlock(): Promise<void> {
@@ -604,8 +508,6 @@ export default defineComponent({
 
         return {
             isExactIn,
-            assetInBalanceLabel,
-            assetOutBalanceLabel,
             assetInAddressInput,
             assetInAmountInput,
             assetOutAddressInput,
@@ -625,7 +527,6 @@ export default defineComponent({
             toggleRate,
             handleAmountChange,
             handleAssetSelect,
-            togglePair,
             unlock,
             swap,
         };
@@ -647,28 +548,6 @@ export default defineComponent({
     align-items: center;
     border: 1px solid var(--outline);
     border-radius: var(--border-radius);
-}
-
-.input-label {
-    margin-bottom: 4px;
-    display: flex;
-    justify-content: space-between;
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-.balance-label {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.toggle-icon {
-    width: 24px;
-    height: 24px;
-    margin-top: 8px;
-    cursor: pointer;
 }
 
 .validation-message {
