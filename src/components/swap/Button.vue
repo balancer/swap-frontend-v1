@@ -48,7 +48,7 @@ export default defineComponent({
             required: true,
         },
         validation: {
-            type: Object as PropType<SwapValidation>,
+            type: Number as PropType<SwapValidation>,
             required: true,
         },
     },
