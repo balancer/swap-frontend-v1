@@ -25,7 +25,7 @@
             "dappId": "3f1c3cfc-7dd5-4e8a-aa03-71ff7396d9fe"
         },
         "walletlink": {
-            "appName": "Pool management - Balancer",
+            "appName": "Balancer Exchange",
             "darkMode": true,
             "chainId": 42,
             "ethJsonrpcUrl": "https://eth-kovan.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
