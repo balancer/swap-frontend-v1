@@ -1,5 +1,21 @@
 <template>
     <div class="input">
+        <div
+            class="asset-wrapper"
+            @click="openModal"
+        >
+            <div class="asset-meta">
+                <AssetIcon
+                    class="asset-icon"
+                    :address="address"
+                />
+                <span class="asset-symbol">{{ symbol }}</span>
+            </div>
+            <Icon
+                class="chevron-icon"
+                :title="'chevron'"
+            />
+        </div>
         <div class="amount-wrapper">
             <ButtonText
                 v-if="isMaxLabelShown"
@@ -19,22 +35,6 @@
                 placeholder="0"
                 @input="handleInputChange($event.target.value)"
             >
-        </div>
-        <div
-            class="asset-wrapper"
-            @click="openModal"
-        >
-            <div class="asset-meta">
-                <AssetIcon
-                    class="asset-icon"
-                    :address="address"
-                />
-                <span class="asset-symbol">{{ symbol }}</span>
-            </div>
-            <Icon
-                class="chevron-icon"
-                :title="'chevron'"
-            />
         </div>
     </div>
 </template>
@@ -153,7 +153,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-right: 1px solid var(--outline);
+    border-left: 1px solid var(--outline);
     border-radius: var(--border-radius);
 }
 
@@ -210,8 +210,8 @@ export default defineComponent({
 .asset-wrapper:hover {
     background: var(--background-primary);
     border-radius: var(--border-radius);
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .asset-meta {
