@@ -1,4 +1,3 @@
-import tokenlist from './listed.tokenlist.json';
 import homestead from './homestead.json';
 import kovan from './kovan.json';
 
@@ -38,12 +37,10 @@ interface Config {
 
 const configs = {
     1: {
-        assets: getAssetsFromTokenlist(1),
         untrusted: [],
         ...homestead,
     },
     42:{
-        assets: getAssetsFromTokenlist(42),
         untrusted: [],
         ...kovan,
     },
@@ -52,30 +49,5 @@ const configs = {
 const network = process.env.APP_CHAIN_ID || 1;
 
 const config: Config = configs[network];
-
-function getAssetsFromTokenlist(chainId: number): Record<string, AssetMetadata> {
-    const assets = {
-        ether: {
-            address: 'ether',
-            name: 'Ether',
-            symbol: 'ETH',
-            decimals: 18,
-            logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
-        },
-    };
-    for (const token of tokenlist.tokens) {
-        if (token.chainId !== chainId) {
-            continue;
-        }
-        assets[token.address] = {
-            address: token.address,
-            name: token.name,
-            symbol: token.symbol,
-            decimals: token.decimals,
-            logoURI: token.logoURI,
-        };
-    }
-    return assets;
-}
 
 export default config;

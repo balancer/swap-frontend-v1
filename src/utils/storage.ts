@@ -9,6 +9,7 @@ interface Preferences {
     connector: string | null;
     slippage: number;
     pairs: Record<number, Pair>;
+    list: string;
 }
 
 interface Pair {
@@ -33,6 +34,11 @@ export default class Storage {
     static getPair(chainId: number): Pair {
         const preferences = getPreferences();
         return preferences.pairs[chainId];
+    }
+
+    static getList(): string {
+        const preferences = getPreferences();
+        return preferences.list;
     }
 
     static getTransactions(account: string, chainId: number): Record<string, Transaction> {
@@ -138,6 +144,7 @@ function getPreferences(): Preferences {
                 outputAsset: '0xef13C0c8abcaf5767160018d268f9697aE4f5375',
             },
         },
+        list: 'balancer',
     };
     const preferenceString = localStorage.getItem(PREFERENCES);
     const preferences = JSON.parse(preferenceString || '{}');
