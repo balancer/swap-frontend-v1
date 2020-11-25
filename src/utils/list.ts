@@ -26,7 +26,7 @@ interface List {
 const lists: Record<string, List> = {
     'balancer': {
         url: '',
-        logoURI: '',
+        logoURI: 'https://raw.githubusercontent.com/balancer-labs/pebbles/master/images/pebbles-pad.256w.png',
         name: 'Balancer',
     },
     '1inch': {
