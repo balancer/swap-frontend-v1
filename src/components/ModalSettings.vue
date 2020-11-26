@@ -31,46 +31,6 @@
             </div>
             <div class="section">
                 <div class="section-header">
-                    Token list
-                </div>
-                <div class="section-body">
-                    <div class="list-selector">
-                        <div
-                            class="list-selected list-option"
-                            @click="toggleListOptions"
-                        >
-                            <img
-                                class="list-logo"
-                                :src="list.logoURI"
-                            >
-                            <div class="list-title">
-                                {{ list.name }}
-                            </div>
-                        </div>
-                        <div
-                            v-if="listOptionsVisible"
-                            class="list-options"
-                        >
-                            <div
-                                v-for="(list, listId) in lists"
-                                :key="listId"
-                                class="list-option"
-                                @click="selectList(listId)"
-                            >
-                                <img
-                                    class="list-logo"
-                                    :src="list.logoURI"
-                                >
-                                <div class="list-title">
-                                    {{ list.name }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="section">
-                <div class="section-header">
                     Transaction history
                 </div>
                 <div class="section-body">
@@ -100,7 +60,6 @@ import { defineComponent, ref, computed, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
-import { DEFAULT_LIST } from '@/utils/list';
 import { ValidationError, validateNumberInput } from '@/utils/validation';
 import Storage from '@/utils/storage';
 
@@ -124,15 +83,10 @@ export default defineComponent({
         const store = useStore<RootState>();
         const slippage = ref(0);
         const slippageInput = ref('');
-        const listOptionsVisible = ref(false);
-        const listId = ref(DEFAULT_LIST);
 
         const isCustomSlippage = computed(() => {
             return !slippageOptions.includes(slippage.value);
         });
-
-        const list = computed(() => lists.value[listId.value]);
-        const lists = computed(() => store.state.assets.lists);
 
         onMounted(() => {
             const slippageNumber = Storage.getSlippage();
@@ -140,8 +94,6 @@ export default defineComponent({
             if (isCustomSlippage.value) {
                 slippageInput.value = (slippage.value * 100).toFixed(1);
             }
-            listId.value = Storage.getList();
-            store.dispatch('assets/fetchLists');
         });
 
         watch(slippageInput, () => {
@@ -169,16 +121,6 @@ export default defineComponent({
             Storage.saveSlippage(slippage.value);
         }
 
-        function toggleListOptions(): void {
-            listOptionsVisible.value = !listOptionsVisible.value;
-        }
-
-        function selectList(list: string): void {
-            listOptionsVisible.value = false;
-            listId.value = list;
-            Storage.saveList(list);
-        }
-
         function clearTransactions(): void {
             store.dispatch('account/clearTransactions');
             Storage.clearTransactions();
@@ -197,12 +139,6 @@ export default defineComponent({
             slippageInput,
             isCustomSlippage,
             formatSlippage,
-
-            list,
-            lists,
-            listOptionsVisible,
-            toggleListOptions,
-            selectList,
 
             clearTransactions,
             clearAssets,
@@ -252,43 +188,4 @@ input.slippage-option {
 .slippage-option:hover {
     background: var(--background-primary);
 }
-
-.list-selected {
-    border: 1px solid var(--outline);
-    background: var(--background-secondary);
-}
-
-.list-option {
-    width: 200px;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-}
-
-.list-option:hover {
-    background: var(--background-primary);
-}
-
-.list-logo {
-    width: 16px;
-    height: 16px;
-    padding: 2px;
-    border-radius: 50%;
-    background: var(--text-primary);
-}
-
-.list-title {
-    margin-left: 8px;
-}
-
-.list-options {
-    position: absolute;
-    margin-top: 16px;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
-    background: var(--background-secondary);
-}
-
 </style>
