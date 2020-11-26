@@ -1,14 +1,5 @@
 <template>
     <div>
-        <div class="label">
-            <div>
-                Send
-                <span v-if="!isExactIn">(approximate)</span>
-            </div>
-            <div class="balance-label">
-                {{ assetInBalanceLabel }}
-            </div>
-        </div>
         <AssetInput
             :address="addressIn"
             :amount="amountIn"
@@ -19,21 +10,24 @@
             }"
         />
     </div>
-    <Icon
-        class="icon"
-        :title="'chevron'"
-        @click="toggle"
-    />
-    <div>
-        <div class="label">
-            <div>
-                Receive
-                <span v-if="isExactIn">(approximate)</span>
-            </div>
-            <div class="balance-label">
-                {{ assetOutBalanceLabel }}
-            </div>
+    <div class="rate-wrapper">
+        <div class="icon-wrapper">
+            <Icon
+                class="icon"
+                :title="'chevron'"
+                @click="toggle"
+            />
         </div>
+        <div class="rate-message">
+            <span
+                class="rate-label"
+                @click="toggleRate"
+            >
+                {{ rateMessage }}
+            </span>
+        </div>
+    </div>
+    <div>
         <AssetInput
             :address="addressOut"
             :amount="amountOut"
@@ -48,12 +42,12 @@
 
 <script lang="ts">
 import BigNumber from 'bignumber.js';
-import { defineComponent, computed } from 'vue';
+import { PropType, ref, defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
 import config from '@/config';
-import { scale } from '@/utils/helpers';
+import { SwapValidation } from '@/utils/validation';
 
 import AssetInput from '@/components/AssetInput.vue';
 import Icon from '@/components/Icon.vue';
@@ -88,6 +82,10 @@ export default defineComponent({
             type: Boolean,
             required: true,
         },
+        validation: {
+            type: Number as PropType<SwapValidation>,
+            required: true,
+        },
     },
     emits: [
         'update:address-in',
@@ -100,52 +98,31 @@ export default defineComponent({
     setup(props, { emit }) {
         const store = useStore<RootState>();
 
-        const assetInBalanceLabel = computed(() => {
-            const { balances } = store.state.account;
+        const isInRate = ref(true);
+
+        const rateMessage = computed(() => {
+            if (props.validation === SwapValidation.EMPTY_INPUT ||
+                props.validation === SwapValidation.INVALID_INPUT ||
+                props.validation === SwapValidation.NO_SWAPS) {
+                return '';
+            }
             const metadata = store.getters['assets/metadata'];
-            if (!balances || !metadata) {
+            const assetIn = metadata[props.addressIn];
+            const assetOut = metadata[props.addressOut];
+            if (!assetIn || !assetOut) {
                 return '';
             }
-
-            const assetMetadata = metadata[props.addressIn];
-            const balance = balances[props.addressIn];
-            const balanceNumber = new BigNumber(balance);
-            if (!assetMetadata || !balance) {
-                return '';
-            }
-
-            const assetSymbol = assetMetadata.symbol;
-            const assetDecimals = assetMetadata.decimals;
-            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            const balanceShort = balanceShortNumber.isInteger()
-                ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(config.precision);
-            return `Balance: ${balanceShort} ${assetSymbol}`;
+            const assetInAmount = new BigNumber(props.amountIn);
+            const assetOutAmount = new BigNumber(props.amountOut);
+            const rate = isInRate.value
+                ? assetOutAmount.div(assetInAmount)
+                : assetInAmount.div(assetOutAmount);
+            const rateString = rate.toFixed(config.precision);
+            return isInRate.value
+                ? `1 ${assetIn.symbol} = ${rateString} ${assetOut.symbol}`
+                : `1 ${assetOut.symbol} = ${rateString} ${assetIn.symbol}`;
         });
 
-        const assetOutBalanceLabel = computed(() => {
-            const { balances } = store.state.account;
-            const metadata = store.getters['assets/metadata'];
-
-            if (!balances || !metadata) {
-                return '';
-            }
-
-            const assetMetadata = metadata[props.addressOut];
-            const balance = balances[props.addressOut];
-            const balanceNumber = new BigNumber(balance);
-            if (!assetMetadata || !balance) {
-                return '';
-            }
-
-            const assetSymbol = assetMetadata.symbol;
-            const assetDecimals = assetMetadata.decimals;
-            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            const balanceShort = balanceShortNumber.isInteger()
-                ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(config.precision);
-            return `Balance: ${balanceShort} ${assetSymbol}`;
-        });
 
         function handleAmountChange(exactIn: boolean, amount: string): void {
             emit('update:is-exact-in', exactIn);
@@ -165,12 +142,16 @@ export default defineComponent({
             emit('update:amount-out', props.amountIn);
         }
 
-        return {
-            assetInBalanceLabel,
-            assetOutBalanceLabel,
+        function toggleRate(): void {
+            isInRate.value = !isInRate.value;
+        }
 
+        return {
             handleAmountChange,
+
             toggle,
+            rateMessage,
+            toggleRate,
         };
     },
 });
@@ -185,17 +166,42 @@ export default defineComponent({
     font-size: 14px;
 }
 
-.balance-label {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.rate-wrapper {
+    width: 100%;
+    margin: 24px 0;
+    display: flex;
+}
+
+.icon-wrapper {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 50%;
 }
 
 .icon {
     width: 24px;
     height: 24px;
+    color: black;
     margin-top: 8px;
     cursor: pointer;
+}
+
+.rate-message {
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.rate-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

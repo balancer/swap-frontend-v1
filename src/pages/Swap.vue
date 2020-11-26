@@ -1,6 +1,12 @@
 <template>
     <div>
         <div class="pair">
+            <div class="header">
+                <div class="header-text">
+                    Swap
+                </div>
+                <Settings />
+            </div>
             <SwapPair
                 v-model:address-in="assetInAddressInput"
                 v-model:amount-in="assetInAmountInput"
@@ -8,23 +14,11 @@
                 v-model:amount-out="assetOutAmountInput"
                 v-model:is-exact-in="isExactIn"
                 :swaps-loading="swapsLoading"
+                :validation="validation"
                 @change="value => {
                     handleAmountChange(value);
                 }"
             />
-            <div class="rate-message">
-                <span
-                    class="rate-label"
-                    @click="toggleRate"
-                >
-                    {{ rateMessage }}
-                </span>
-                <RouteTooltip
-                    v-if="rateMessage && swaps.length > 0"
-                    class="route-tooltip"
-                    :swaps="swaps"
-                />
-            </div>
             <Slippage
                 v-model:buffer="slippageBuffer"
                 :value="slippage"
@@ -69,10 +63,10 @@ import Helper from '@/web3/helper';
 import { RootState } from '@/store';
 
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
+import Settings from '@/components/Settings.vue';
 import Slippage from '@/components/swap/Slippage.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
-import RouteTooltip from '@/components/swap/RouteTooltip.vue';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -86,10 +80,10 @@ interface Pair {
 export default defineComponent({
     components: {
         ModalAssetSelector,
+        Settings,
         Slippage,
         SwapButton,
         SwapPair,
-        RouteTooltip,
     },
     setup() {
         let sor: SOR | undefined = undefined;
@@ -97,7 +91,6 @@ export default defineComponent({
         const router = useRouter();
         const store = useStore<RootState>();
 
-        const isInRate = ref(true);
         const isExactIn = ref(true);
         const assetInAddressInput = ref('');
         const assetInAmountInput = ref('');
@@ -160,29 +153,6 @@ export default defineComponent({
             return SwapValidation.NONE;
         });
 
-        const rateMessage = computed(() => {
-            if (validation.value === SwapValidation.EMPTY_INPUT ||
-                validation.value === SwapValidation.INVALID_INPUT ||
-                validation.value === SwapValidation.NO_SWAPS) {
-                return '';
-            }
-            const metadata = store.getters['assets/metadata'];
-            const assetIn = metadata[assetInAddressInput.value];
-            const assetOut = metadata[assetOutAddressInput.value];
-            if (!assetIn || !assetOut) {
-                return '';
-            }
-            const assetInAmount = new BigNumber(assetInAmountInput.value);
-            const assetOutAmount = new BigNumber(assetOutAmountInput.value);
-            const rate = isInRate.value
-                ? assetOutAmount.div(assetInAmount)
-                : assetInAmount.div(assetOutAmount);
-            const rateString = rate.toFixed(config.precision);
-            return isInRate.value
-                ? `1 ${assetIn.symbol} = ${rateString} ${assetOut.symbol}`
-                : `1 ${assetOut.symbol} = ${rateString} ${assetIn.symbol}`;
-        });
-
         const activeInput = computed(() => {
             if (isExactIn.value) {
                 return assetInAmountInput.value;
@@ -232,10 +202,6 @@ export default defineComponent({
             const slippage = parseFloat(slippageBuffer.value) / 100;
             Storage.saveSlippage(slippage);
         });
-
-        function toggleRate(): void {
-            isInRate.value = !isInRate.value;
-        }
 
         function handleAmountChange(amount: string): void {
             onAmountChange(amount);
@@ -514,7 +480,6 @@ export default defineComponent({
             assetOutAmountInput,
 
             swaps,
-            rateMessage,
             slippage,
             slippageBuffer,
             validation,
@@ -524,7 +489,6 @@ export default defineComponent({
             swapsLoading,
             isModalOpen,
 
-            toggleRate,
             handleAmountChange,
             handleAssetSelect,
             unlock,
@@ -535,12 +499,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .pair {
     padding: 60px 40px;
     display: flex;
@@ -551,31 +509,24 @@ export default defineComponent({
     background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);
 }
 
+.header {
+    width: 100%;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.header-text {
+    font-size: var(--font-size-header);
+}
+
 .validation-message {
     margin-top: 16px;
     min-height: 16.5px;
     font-size: 14px;
     color: var(--error);
-}
-
-.rate-message {
-    min-height: 16.5px;
-    margin-top: 16px;
-    display: flex;
-    font-size: 14px;
-    color: var(--text-secondary);
-    cursor: pointer;
-}
-
-.rate-label {
-    max-width: 240px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.route-tooltip {
-    margin-left: 4px;
 }
 
 .status-label {

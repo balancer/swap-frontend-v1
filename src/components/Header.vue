@@ -10,7 +10,6 @@
             </div>
         </router-link>
         <div class="header-right">
-            <Settings />
             <Account class="account" />
         </div>
     </div>
@@ -22,12 +21,10 @@ import { defineComponent } from 'vue';
 import logo from '@/assets/logo.svg';
 
 import Account from '@/components/Account.vue';
-import Settings from '@/components/Settings.vue';
 
 export default defineComponent({
     components: {
         Account,
-        Settings,
     },
     setup() {
         return {

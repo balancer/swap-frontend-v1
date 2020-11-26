@@ -38,8 +38,8 @@ export default defineComponent({
 
 <style scoped>
 .button {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -55,7 +55,7 @@ export default defineComponent({
 }
 
 .icon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
 }
 </style>
