@@ -11,11 +11,13 @@
         />
     </div>
     <div class="rate-wrapper">
-        <div class="icon-wrapper">
+        <div
+            class="icon-wrapper"
+            @click="toggle"
+        >
             <Icon
                 class="icon"
                 :title="'chevron'"
-                @click="toggle"
             />
         </div>
         <div class="rate-message">
@@ -180,6 +182,7 @@ export default defineComponent({
     align-items: center;
     background: white;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .icon {
@@ -187,7 +190,6 @@ export default defineComponent({
     height: 24px;
     color: black;
     margin-top: 8px;
-    cursor: pointer;
 }
 
 .rate-message {
