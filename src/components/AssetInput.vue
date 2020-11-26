@@ -80,7 +80,7 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const symbol = computed(() => {
-            const assets = store.state.assets.metadata;
+            const assets = store.getters['assets/metadata'];
             const asset = assets[props.address];
             if (!asset) {
                 return '';
@@ -95,7 +95,7 @@ export default defineComponent({
             if (props.address === ETH_KEY) {
                 return false;
             }
-            const assets = store.state.assets.metadata;
+            const assets = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             if (!balances) {
                 return false;
@@ -109,7 +109,7 @@ export default defineComponent({
         });
 
         function setMax(): void {
-            const assets = store.state.assets.metadata;
+            const assets = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             const balance = balances[props.address];
             const assetDecimals = assets[props.address].decimals;

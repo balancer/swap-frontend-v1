@@ -102,7 +102,7 @@ export default defineComponent({
 
         const assetInBalanceLabel = computed(() => {
             const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             if (!balances || !metadata) {
                 return '';
             }
@@ -125,7 +125,7 @@ export default defineComponent({
 
         const assetOutBalanceLabel = computed(() => {
             const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
 
             if (!balances || !metadata) {
                 return '';

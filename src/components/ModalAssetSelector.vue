@@ -83,21 +83,21 @@ export default defineComponent({
         const query = ref('');
 
         watch(query, () => {
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             if (!isAddress(query.value)) {
                 return;
             }
             const address = getAddress(query.value);
             const asset = metadata[address];
             if (!asset) {
-                store.dispatch('assets/fetch', [address]);
+                store.dispatch('assets/fetchMetadata', [address]);
                 store.dispatch('account/fetchAssets', [address]);
             }
         });
 
         const assets = computed(() => {
             const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assets = Object.keys(metadata)
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];

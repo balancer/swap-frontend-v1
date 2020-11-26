@@ -138,7 +138,7 @@ export default defineComponent({
 
         const isUnlocked = computed(() => {
             const { allowances } = store.state.account;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             if (!addressIn.value) {
                 return true;
             }

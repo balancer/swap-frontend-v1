@@ -3,51 +3,83 @@ import { ActionContext } from 'vuex';
 import Ethereum from '@/api/ethereum';
 import { RootState } from '@/store';
 import config, { AssetMetadata } from '@/config';
-import { getAssetsFromTokenlist } from '@/utils/list';
+import { TokenList, DEFAULT_LIST, listMetadata, getTokenlist, getAssetsFromTokenlist } from '@/utils/list';
 import Storage from '@/utils/storage';
 
+type Metadata = Record<string, AssetMetadata>;
+
 export interface AssetState {
-    metadata: Record<string, AssetMetadata>;
+    listId: string;
+    lists: Record<string, TokenList>;
+    custom: Metadata;
+}
+
+interface AddListPayload {
+    listId: string;
+    list: TokenList;
 }
 
 const mutations = {
-    clearMetadata: (_state: AssetState): void => {
-        _state.metadata = {};
+    selectList: (_state: AssetState, listId: string): void => {
+        _state.listId = listId;
     },
-    addMetadata: (_state: AssetState, metadata: Record<string, AssetMetadata>): void => {
-        for (const address in metadata) {
-            _state.metadata[address] = metadata[address];
+    addList: (_state: AssetState, payload: AddListPayload): void => {
+        _state.lists[payload.listId] = payload.list;
+    },
+    addCustomMetadata: (_state: AssetState, custom: Record<string, AssetMetadata>): void => {
+        for (const address in custom) {
+            _state.custom[address] = custom[address];
         }
     },
 };
 
 const actions = {
-    init: async({ dispatch }: ActionContext<AssetState, RootState>): Promise<void> => {
-        const list = Storage.getList();
-        dispatch('setList', list);
+    init: async({ commit }: ActionContext<AssetState, RootState>): Promise<void> => {
+        const listId = Storage.getList();
+        const list = await getTokenlist(listId);
+        commit('addList', { listId, list });
     },
-    setList: async({ commit }: ActionContext<AssetState, RootState>, listId: string): Promise<void> => {
-        const list = await getAssetsFromTokenlist(config.chainId, listId);
-        commit('clearMetadata');
-        commit('addMetadata', list);
-        commit('addMetadata', Storage.getAssets(config.chainId));
+    fetchLists: async({ commit }: ActionContext<AssetState, RootState>): Promise<void> => {
+        const listIds = Object.keys(listMetadata);
+        const lists = await Promise.all(listIds.map(listId => getTokenlist(listId)));
+        for (const index in lists) {
+            commit('addList', {
+                listId: listIds[index],
+                list: lists[index],
+            });
+        }
     },
-    fetch: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
+    fetchMetadata: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
         const metadata = await Ethereum.fetchAssetMetadata(assets);
         Storage.saveAssets(config.chainId, metadata);
-        commit('addMetadata', metadata);
+        commit('addCustomMetadata', metadata);
+    },
+};
+
+const getters = {
+    metadata: (state: AssetState): Metadata => {
+        const list = state.lists[state.listId];
+        const listAssets = getAssetsFromTokenlist(config.chainId, list);
+        const metadata = {
+            ...listAssets,
+            ...state.custom,
+        };
+        return metadata;
     },
 };
 
 function state(): AssetState {
     return {
-        metadata: {},
+        listId: DEFAULT_LIST,
+        lists: {},
+        custom: {},
     };
 }
 
 export default {
     namespaced: true,
     state,
+    getters,
     actions,
     mutations,
 };

@@ -90,6 +90,12 @@ export default class Storage {
         localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
     }
 
+    static saveList(list: string): void {
+        const preferences = getPreferences();
+        preferences.list = list;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
+    }
+
     static saveTransaction(account: string, chainId: number, transaction: Transaction): void {
         const transactionString = localStorage.getItem(TRANSACTIONS);
         const transactions: Transactions = transactionString
@@ -127,6 +133,10 @@ export default class Storage {
 
     static clearTransactions(): void {
         localStorage.removeItem(TRANSACTIONS);
+    }
+
+    static clearAssets(): void {
+        localStorage.removeItem(ASSETS);
     }
 }
 

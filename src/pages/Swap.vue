@@ -145,7 +145,7 @@ export default defineComponent({
             }
             // Insufficient balance
             const { balances } = store.state.account;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assetInBalance = balances[assetInAddressInput.value];
             const assetInMetadata = metadata[assetInAddressInput.value];
             if (!assetInMetadata) {
@@ -166,7 +166,7 @@ export default defineComponent({
                 validation.value === SwapValidation.NO_SWAPS) {
                 return '';
             }
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assetIn = metadata[assetInAddressInput.value];
             const assetOut = metadata[assetOutAddressInput.value];
             if (!assetIn || !assetOut) {
@@ -208,7 +208,7 @@ export default defineComponent({
         }, 60 * 1000);
 
         useIntervalFn(async () => {
-            const assets = Object.keys(store.state.assets.metadata);
+            const assets = Object.keys(store.getters['assets/metadata']);
             store.dispatch('account/fetchAssets', assets);
         }, 5 * 60 * 1000);
 
@@ -257,7 +257,7 @@ export default defineComponent({
             const assetInAddress = assetInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
             const tx = await Helper.unlock(provider, assetInAddress, spender);
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assetSymbol = metadata[assetInAddress].symbol;
             const text = `Unlock ${assetSymbol}`;
             await handleTransaction(tx, text);
@@ -265,7 +265,7 @@ export default defineComponent({
         }
 
         async function swap(): Promise<void> {
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             transactionPending.value = true;
             const assetInAddress = assetInAddressInput.value;
             const assetOutAddress = assetOutAddressInput.value;
@@ -332,7 +332,7 @@ export default defineComponent({
         }
 
         async function onAmountChange(amount: string): Promise<void> {
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             if (validateNumberInput(amount) !== ValidationError.NONE) {
                 if (isExactIn.value) {
                     assetOutAmountInput.value = '';
@@ -461,7 +461,7 @@ export default defineComponent({
         }
 
         async function fetchAssetMetadata(assetIn: string, assetOut: string): Promise<void> {
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const unknownAssets = [];
             if (!metadata[assetIn]) {
                 unknownAssets.push(assetIn);
@@ -472,7 +472,7 @@ export default defineComponent({
             if (unknownAssets.length === 0) {
                 return;
             }
-            await store.dispatch('assets/fetch', unknownAssets);
+            await store.dispatch('assets/fetchMetadata', unknownAssets);
             await store.dispatch('account/fetchAssets', unknownAssets);
         }
 

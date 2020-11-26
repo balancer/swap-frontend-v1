@@ -168,9 +168,9 @@ const actions = {
         commit('setTransactions', transactions);
         dispatch('fetchState');
     },
-    fetchState: async({ commit, state, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
+    fetchState: async({ commit, state, rootGetters }: ActionContext<AccountState, RootState>): Promise<void> => {
         const { address } = state;
-        const { metadata } = rootState.assets;
+        const metadata = rootGetters['assets/metadata'];
         const assets = Object.keys(metadata);
         const { proxy, balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('setProxy', proxy);

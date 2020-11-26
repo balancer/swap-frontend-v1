@@ -77,7 +77,7 @@ export default defineComponent({
 
         const routes = computed(() => {
             const swaps = props.swaps as Swap[][];
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
 
             const totalSwapAmount = swaps.reduce((swapAmount, route) => {
                 return swapAmount.plus(route[0].swapAmount || '0');

@@ -35,7 +35,7 @@ export default defineComponent({
 
         const assetIcon = computed(() => {
             let address = props.address;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assetMetadata = metadata[address];
 
             if (address === ETH_KEY) {

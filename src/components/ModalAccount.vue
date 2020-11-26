@@ -59,16 +59,7 @@
                     class="transactions"
                 >
                     <div
-                        v-if="transactions.length > 0"
-                        class="clear-button-wrapper"
-                    >
-                        <ButtonText
-                            :text="'clear'"
-                            @click="clearTransactions"
-                        />
-                    </div>
-                    <div
-                        v-else
+                        v-if="transactions.length === 0"
                         class="transactions-empty"
                     >
                         Your transactions will appear here
@@ -156,7 +147,6 @@ import { useStore } from 'vuex';
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
 import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
-import Storage from '@/utils/storage';
 import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
@@ -197,7 +187,7 @@ export default defineComponent({
         }];
 
         const accountBalances = computed(() => {
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             return Object.keys(balances)
                 .map(assetAddress => {
@@ -239,11 +229,6 @@ export default defineComponent({
             activeTab.value = optionId;
         }
 
-        function clearTransactions(): void {
-            store.dispatch('account/clearTransactions');
-            Storage.clearTransactions();
-        }
-
         function copyAddress(): void {
             const { address } = store.state.account;
             navigator.clipboard.writeText(address);
@@ -273,7 +258,6 @@ export default defineComponent({
             getAccountLink,
 
             handleToggleSelect,
-            clearTransactions,
             copyAddress,
             disconnect,
             close,
@@ -350,11 +334,6 @@ export default defineComponent({
 
 .transactions {
     margin: 16px 0;
-}
-
-.clear-button-wrapper {
-    display: flex;
-    margin: 16px;
 }
 
 .transactions-empty {
