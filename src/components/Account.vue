@@ -8,7 +8,7 @@
             <Jazzicon
                 class="account-icon"
                 :address="address"
-                :size="16"
+                :size="28"
             />
             <div class="account-address">
                 {{ formatAddress(address) }}
@@ -84,7 +84,7 @@ export default defineComponent({
 <style scoped>
 .account-wrapper {
     height: var(--block-height);
-    width: 170px;
+    width: 186px;
     padding: 8px;
     box-sizing: border-box;
     display: flex;
@@ -106,14 +106,14 @@ export default defineComponent({
 }
 
 .account-icon {
-    width: 16px;
-    height: 16px;
+    width: 28px;
+    height: 28px;
     box-sizing: border-box;
     border-radius: 50%;
 }
 
 .account-address {
-    margin-left: 4px;
+    margin-left: 8px;
 }
 
 .chevron-icon {
