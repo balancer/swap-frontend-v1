@@ -17,13 +17,6 @@
             />
         </div>
         <div class="amount-wrapper">
-            <ButtonText
-                v-if="isMaxLabelShown"
-                :text="'max'"
-                class="max-label"
-                @click="setMax"
-            />
-            <span v-else />
             <div
                 v-if="loading"
                 class="loading"
@@ -35,6 +28,13 @@
                 placeholder="0"
                 @input="handleInputChange($event.target.value)"
             >
+            <ButtonText
+                v-if="isMaxLabelShown"
+                :text="'max'"
+                class="max-label"
+                @click="setMax"
+            />
+            <span v-else />
         </div>
     </div>
 </template>
@@ -187,11 +187,12 @@ export default defineComponent({
 
 .amount {
     min-width: 160px;
+    margin-left: 8px;
     font-size: var(--font-size-large);
     color: var(--text-primary);
     border: none;
     background: transparent;
-    text-align: right;
+    text-align: left;
     outline: none;
 }
 
