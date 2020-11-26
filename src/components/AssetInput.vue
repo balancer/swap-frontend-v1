@@ -205,6 +205,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
 
