@@ -542,12 +542,13 @@ export default defineComponent({
 }
 
 .pair {
-    padding: 32px 16px;
+    padding: 60px 40px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border: 1px solid var(--border-form);
+    border-radius: var(--border-radius-large);
+    background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);
 }
 
 .validation-message {
@@ -584,6 +585,7 @@ export default defineComponent({
 
 .swap-button {
     margin-top: 16px;
+    width: 100%;
 }
 
 @media only screen and (max-width: 768px) {

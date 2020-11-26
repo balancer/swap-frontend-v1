@@ -47,9 +47,9 @@ export default defineComponent({
 <style scoped>
 .toggle {
     background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-small);
     display: flex;
-    border: 1px solid var(--outline);
+    border: 1px solid var(--border-input);
 }
 
 .toggle-option {
@@ -62,6 +62,6 @@ export default defineComponent({
 }
 
 .toggle-option.active {
-    background-color: var(--outline);
+    background-color: var(--border-input);
 }
 </style>

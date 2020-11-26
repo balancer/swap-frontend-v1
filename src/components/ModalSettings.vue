@@ -168,8 +168,8 @@ export default defineComponent({
 .slippage-option {
     padding: 8px;
     margin-right: 8px;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-small);
     background: var(--background-secondary);
     cursor: pointer;
 }

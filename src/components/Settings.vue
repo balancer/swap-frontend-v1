@@ -44,9 +44,9 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--background-secondary);
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    background: var(--background-control);
+    border: 1px solid var(--border-input);
+    border-radius: 50%;
     cursor: pointer;
 }
 

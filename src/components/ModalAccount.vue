@@ -328,8 +328,8 @@ export default defineComponent({
 
 .state {
     margin: 32px 16px 16px 16px;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-small);
 }
 
 .transactions {

@@ -40,18 +40,17 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: var(--font-size-large);
     background: var(--background-secondary);
-    border: 1px solid var(--outline);
     color: var(--text-primary);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-medium);
+    border-color: var(--background-secondary);
     cursor: pointer;
     transition: background 0.25s ease-in, border-color 0.25s ease-in;
 }
 
 button.primary {
     background: var(--accent);
-    border-color: var(--accent);
 }
 
 button:hover {
@@ -60,13 +59,11 @@ button:hover {
 
 button.primary:hover {
     background: var(--accent-dark);
-    border-color: var(--accent-dark);
 }
 
 button:disabled,
 button:disabled:hover {
     background: var(--text-secondary);
-    border-color: var(--text-secondary);
     cursor: not-allowed;
     transition: background 0.35s ease-out, border-color 0.35s ease-out;
 }

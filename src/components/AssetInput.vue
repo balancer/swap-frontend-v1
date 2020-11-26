@@ -141,20 +141,20 @@ export default defineComponent({
 <style scoped>
 .input {
     display: flex;
-    height: 48px;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    height: 58px;
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-medium);
     background: var(--background-secondary);
 }
 
 .amount-wrapper {
-    width: 260px;
+    width: 210px;
     padding: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-left: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border-left: 1px solid var(--border-input);
+    border-radius: var(--border-radius-medium);
 }
 
 .max-label {
@@ -186,8 +186,8 @@ export default defineComponent({
 }
 
 .amount {
-    min-width: 200px;
-    font-size: 24px;
+    min-width: 160px;
+    font-size: var(--font-size-large);
     color: var(--text-primary);
     border: none;
     background: transparent;
@@ -200,7 +200,7 @@ export default defineComponent({
 }
 
 .asset-wrapper {
-    width: 120px;
+    width: 140px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -209,7 +209,7 @@ export default defineComponent({
 
 .asset-wrapper:hover {
     background: var(--background-primary);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-medium);
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
 }
@@ -220,15 +220,16 @@ export default defineComponent({
 }
 
 .asset-icon {
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    margin-left: 8px;
+    margin-left: 10px;
 }
 
 .asset-symbol {
     max-width: 68px;
-    margin-left: 4px;
+    margin-left: 8px;
+    font-size: var(--font-size-large);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -237,7 +238,7 @@ export default defineComponent({
 .chevron-icon {
     width: 16px;
     height: 16px;
-    margin-right: 8px;
+    margin-right: 11.5px;
 }
 
 @media only screen and (max-width: 768px) {

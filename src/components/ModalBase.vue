@@ -101,8 +101,7 @@ export default defineComponent({
     flex-direction: column;
     overflow: hidden;
     background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--outline);
+    border-radius: var(--border-radius-large);
 }
 
 .appear-enter > .modal {
@@ -119,7 +118,7 @@ export default defineComponent({
 
 .header {
     padding: 16px;
-    border-bottom: 1px solid var(--outline);
+    border-bottom: 1px solid var(--border-input);
 }
 
 .header-top {

@@ -107,7 +107,7 @@ export default defineComponent({
     padding: 16px;
     box-sizing: border-box;
     display: flex;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-medium);
     justify-content: space-between;
     align-items: center;
 }
