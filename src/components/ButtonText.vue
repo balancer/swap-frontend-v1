@@ -19,9 +19,12 @@ export default defineComponent({
 
 <style scoped>
 .button {
+    padding: 4px;
     color: var(--info);
-    text-decoration: underline;
-    cursor: pointer;
     font-size: 14px;
+    text-transform: uppercase;
+    border: 1px solid var(--info);
+    border-radius: var(--border-radius);
+    cursor: pointer;
 }
 </style>

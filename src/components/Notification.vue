@@ -7,16 +7,18 @@
             error: type === 'error',
         }"
     >
-        <Icon
-            :title="icon"
-            class="icon"
-        />
-        <div class="body">
-            <div class="body-title">
-                {{ title }}
-            </div>
-            <div class="body-text">
-                {{ text }}
+        <div class="meta">
+            <Icon
+                :title="icon"
+                class="icon"
+            />
+            <div class="body">
+                <div class="body-title">
+                    {{ title }}
+                </div>
+                <div class="body-text">
+                    {{ text }}
+                </div>
             </div>
         </div>
         <div class="button-wrapper">
@@ -25,12 +27,18 @@
                 :link="link"
             />
         </div>
-        <div class="progress" />
+        <div
+            class="progress"
+            :style="{ width: `${(progress * 100).toFixed(0)}%` }"
+        />
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
+import { useTransition } from '@vueuse/core';
+
+import { NOTIFICATION_DURATION } from '@/store/modules/ui';
 
 import Icon from '@/components/Icon.vue';
 import NotificationButton from '@/components/NotificationButton.vue';
@@ -55,6 +63,17 @@ export default defineComponent({
         },
     },
     setup(props) {
+        const totalProgress = ref(0);
+
+        const progress = useTransition(totalProgress, {
+            duration: NOTIFICATION_DURATION,
+            transition: 'linear',
+        });
+
+        onMounted(() => {
+            totalProgress.value = 1;
+        });
+
         const icon = computed(() => {
             if (props.type === 'success') {
                 return 'success';
@@ -74,29 +93,28 @@ export default defineComponent({
         return {
             icon,
             title,
+            progress,
         };
     },
 });
 </script>
 
 <style scoped>
-.notification-wrapper {
-    position: fixed;
-    z-index: 1;
-}
-
 .notification {
-    position: fixed;
-    z-index: 2;
-    bottom: 16px;
-    right: 16px;
+    position: relative;
+    width: 280px;
+    margin-top: 16px;
     padding: 16px;
     box-sizing: border-box;
     display: flex;
     border-radius: var(--border-radius);
+    justify-content: space-between;
     align-items: center;
-    animation-name: slide;
-    animation-duration: 10000ms;
+}
+
+.meta {
+    display: flex;
+    align-items: center;
 }
 
 .icon {
@@ -126,7 +144,11 @@ export default defineComponent({
 }
 
 .body-text {
+    max-width: 140px;
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .button-wrapper {
@@ -134,44 +156,13 @@ export default defineComponent({
 }
 
 .progress {
-    position: fixed;
-    height: 2px;
+    width: 0%;
+    height: 4px;
+    position: absolute;
     bottom: 0;
     left: 0;
     background: white;
-    animation-name: grow;
-    animation-duration: 10000ms;
-}
-
-@keyframes slide {
-    0% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-
-    10% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    90% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateX(300px);
-    }
-}
-
-@keyframes grow {
-    0% {
-        width: 0;
-    }
-
-    100% {
-        width: 100%;
-    }
+    opacity: 0.8;
+    transition: width 1s linear;
 }
 </style>

@@ -13,6 +13,10 @@ export default defineComponent({
             type: String,
             required: true,
         },
+        size: {
+            type: Number,
+            required: true,
+        },
     },
     setup(props) {
         const icon = ref(null);
@@ -30,7 +34,7 @@ export default defineComponent({
             // @ts-ignore
             icon.value.innerHTML = '';
             // @ts-ignore
-            icon.value.appendChild(jazzicon(16, parseInt(address.slice(2, 10), 16)));
+            icon.value.appendChild(jazzicon(props.size, parseInt(address.slice(2, 10), 16)));
         }
 
         return {

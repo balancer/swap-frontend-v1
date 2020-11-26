@@ -4,13 +4,11 @@
         <router-view class="view" />
         <Footer class="footer" />
 
-        <ModalAccount v-if="isAccountModalOpen" />
-        <ModalConnectorSelector v-if="isConnectorModalOpen" />
-        <Notification
-            v-if="notification"
-            :type="notification.type"
-            :text="notification.text"
-            :link="notification.link"
+        <ModalSettings :open="isSettingsModalOpen" />
+        <ModalAccount :open="isAccountModalOpen" />
+        <ModalConnectorSelector :open="isConnectorModalOpen" />
+        <NotificationList
+            :items="notifications"
         />
     </div>
 </template>
@@ -19,11 +17,14 @@
 import { defineComponent, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
-import Header from './components/Header.vue';
-import Footer from './components/Footer.vue';
+import { RootState } from '@/store';
+
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
 import ModalConnectorSelector from '@/components/ModalConnectorSelector.vue';
-import Notification from '@/components/Notification.vue';
+import ModalSettings from '@/components/ModalSettings.vue';
+import NotificationList from '@/components/NotificationList.vue';
 
 export default defineComponent({
     components: {
@@ -31,15 +32,17 @@ export default defineComponent({
         Footer,
         ModalAccount,
         ModalConnectorSelector,
-        Notification,
+        ModalSettings,
+        NotificationList,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
+        const isSettingsModalOpen = computed(() => store.state.ui.modal.settings.isOpen);
         const isAccountModalOpen = computed(() => store.state.ui.modal.account.isOpen);
         const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);
 
-        const notification = computed(() => store.state.ui.notification);
+        const notifications = computed(() => store.state.ui.notifications);
 
         onMounted(() => {
             store.dispatch('assets/init');
@@ -47,9 +50,10 @@ export default defineComponent({
         });
 
         return {
+            isSettingsModalOpen,
             isAccountModalOpen,
             isConnectorModalOpen,
-            notification,
+            notifications,
         };
     },
 });

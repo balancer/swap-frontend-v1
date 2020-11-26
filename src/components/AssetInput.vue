@@ -1,23 +1,5 @@
 <template>
     <div class="input">
-        <div class="amount-wrapper">
-            <ButtonText
-                v-if="modalKey === 'input' && address !== 'ether'"
-                :text="'max'"
-                @click="setMax"
-            />
-            <span v-else />
-            <div
-                v-if="loading"
-                class="loading"
-            />
-            <input
-                v-else
-                :value="amount"
-                class="amount"
-                @input="handleInputChange($event.target.value)"
-            >
-        </div>
         <div
             class="asset-wrapper"
             @click="openModal"
@@ -34,6 +16,26 @@
                 :title="'chevron'"
             />
         </div>
+        <div class="amount-wrapper">
+            <ButtonText
+                v-if="isMaxLabelShown"
+                :text="'max'"
+                class="max-label"
+                @click="setMax"
+            />
+            <span v-else />
+            <div
+                v-if="loading"
+                class="loading"
+            />
+            <input
+                v-else
+                :value="amount"
+                class="amount"
+                placeholder="0"
+                @input="handleInputChange($event.target.value)"
+            >
+        </div>
     </div>
 </template>
 
@@ -42,7 +44,8 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import { scale } from '@/utils/helpers';
+import { RootState } from '@/store';
+import { ETH_KEY, scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
@@ -72,12 +75,12 @@ export default defineComponent({
             default: false,
         },
     },
-    emits: ['update:amount', 'change'],
+    emits: ['change'],
     setup(props, { emit }) {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const symbol = computed(() => {
-            const assets = store.state.assets.metadata;
+            const assets = store.getters['assets/metadata'];
             const asset = assets[props.address];
             if (!asset) {
                 return '';
@@ -85,8 +88,28 @@ export default defineComponent({
             return asset.symbol;
         });
 
+        const isMaxLabelShown = computed(() => {
+            if (props.modalKey !== 'input') {
+                return false;
+            }
+            if (props.address === ETH_KEY) {
+                return false;
+            }
+            const assets = store.getters['assets/metadata'];
+            const { balances } = store.state.account;
+            if (!balances) {
+                return false;
+            }
+            const balance = balances[props.address];
+            const assetMetadata = assets[props.address];
+            if (!balance || !assetMetadata) {
+                return false;
+            }
+            return true;
+        });
+
         function setMax(): void {
-            const assets = store.state.assets.metadata;
+            const assets = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             const balance = balances[props.address];
             const assetDecimals = assets[props.address].decimals;
@@ -98,7 +121,6 @@ export default defineComponent({
 
         function handleInputChange(value: string): void {
             emit('change', value);
-            emit('update:amount', value);
         }
 
         function openModal(): void {
@@ -107,6 +129,7 @@ export default defineComponent({
 
         return {
             symbol,
+            isMaxLabelShown,
             setMax,
             handleInputChange,
             openModal,
@@ -118,25 +141,29 @@ export default defineComponent({
 <style scoped>
 .input {
     display: flex;
-    height: var(--block-height);
+    height: 48px;
     border: 1px solid var(--outline);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: var(--background-secondary);
 }
 
 .amount-wrapper {
-    width: 240px;
+    width: 260px;
     padding: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-right: 1px solid var(--outline);
-    border-radius: 4px;
+    border-left: 1px solid var(--outline);
+    border-radius: var(--border-radius);
+}
+
+.max-label {
+    margin-right: 8px;
 }
 
 .loading {
-    width: 80px;
-    height: 21px;
+    width: 100px;
+    height: 29px;
     background: var(--text-primary);
     animation-name: pulse;
     animation-duration: 2s;
@@ -159,16 +186,21 @@ export default defineComponent({
 }
 
 .amount {
+    min-width: 200px;
+    font-size: 24px;
+    color: var(--text-primary);
     border: none;
     background: transparent;
-    color: var(--text-primary);
-    font-size: 16px;
     text-align: right;
     outline: none;
 }
 
+.amount::placeholder {
+    color: var(--text-secondary);
+}
+
 .asset-wrapper {
-    width: 140px;
+    width: 120px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -177,7 +209,9 @@ export default defineComponent({
 
 .asset-wrapper:hover {
     background: var(--background-primary);
-    border-radius: 0 4px 4px 0;
+    border-radius: var(--border-radius);
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
 }
 
 .asset-meta {
@@ -193,11 +227,11 @@ export default defineComponent({
 }
 
 .asset-symbol {
+    max-width: 68px;
     margin-left: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 88px;
 }
 
 .chevron-icon {
@@ -208,11 +242,19 @@ export default defineComponent({
 
 @media only screen and (max-width: 768px) {
     .amount-wrapper {
-        width: 160px;
+        width: 220px;
     }
 
     .amount {
-        width: 120px;
+        min-width: 100px;
+    }
+
+    .asset-wrapper {
+        width: 100px;
+    }
+
+    .asset-symbol {
+        max-width: 48px;
     }
 }
 </style>

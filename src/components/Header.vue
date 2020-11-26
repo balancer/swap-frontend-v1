@@ -9,7 +9,10 @@
                 <span class="title">Balancer</span>
             </div>
         </router-link>
-        <Account class="account" />
+        <div class="header-right">
+            <Settings />
+            <Account class="account" />
+        </div>
     </div>
 </template>
 
@@ -19,10 +22,12 @@ import { defineComponent } from 'vue';
 import logo from '@/assets/logo.svg';
 
 import Account from '@/components/Account.vue';
+import Settings from '@/components/Settings.vue';
 
 export default defineComponent({
     components: {
         Account,
+        Settings,
     },
     setup() {
         return {
@@ -38,6 +43,10 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.header-right {
+    display: flex;
 }
 
 a {
@@ -61,6 +70,7 @@ a {
 }
 
 .account {
+    margin-left: 8px;
     margin-right: 16px;
 }
 </style>

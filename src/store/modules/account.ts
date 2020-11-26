@@ -3,10 +3,9 @@ import { Web3Provider, Provider } from '@ethersproject/providers';
 
 import Ethereum, { Allowances, Balances } from '@/api/ethereum';
 import { RootState } from '@/store';
-import lock from '@/utils/connectors';
-import wsProvider from '@/utils/provider';
-
-const LS_CONNECTOR_KEY = 'connector';
+import lock, { getConnectorName, getConnectorLogo } from '@/utils/connectors';
+import provider from '@/utils/provider';
+import Storage from '@/utils/storage';
 
 enum TransactionStatus {
     PENDING,
@@ -15,19 +14,25 @@ enum TransactionStatus {
 }
 
 export interface AccountState {
-    web3Provider: boolean;
+    connector: Connector | null;
     address: string;
     chainId: number;
     proxy: string;
     balances: Balances;
     allowances: Allowances;
-    transactions: Transaction[];
+    transactions: Record<string, Transaction>;
 }
 
-interface Transaction {
+export interface Transaction {
     text: string;
     hash: string;
     status: TransactionStatus;
+    timestamp: number;
+}
+
+interface Connector {
+    id: string;
+    name: string;
 }
 
 interface TransactionData {
@@ -37,9 +42,14 @@ interface TransactionData {
     };
 }
 
+interface MinedTransaction {
+    receipt: any;
+    timestamp: number;
+}
+
 const mutations = {
-    setWeb3Provider: (_state: AccountState, hasProvider: boolean): void => {
-        _state.web3Provider = hasProvider;
+    setConnector: (_state: AccountState, connector: Connector | null): void => {
+        _state.connector = connector;
     },
     setAddress: (_state: AccountState, address: string): void => {
         _state.address = address;
@@ -66,75 +76,83 @@ const mutations = {
             }
         }
     },
-    addTransaction: (_state: AccountState, transactionData: TransactionData): void => {
-        const { transaction, text } = transactionData;
-        _state.transactions.push({
-            text,
-            hash: transaction.hash,
-            status: TransactionStatus.PENDING,
-        });
+    setTransactions: (_state: AccountState, transactions: Record<string, Transaction>): void => {
+        _state.transactions = transactions;
     },
-    addTransactionReceipt: (_state: AccountState, transactionReceipt: any): void => {
-        const hash = transactionReceipt.transactionHash;
-        const status = transactionReceipt.status === 1
-            ? TransactionStatus.OK
-            : TransactionStatus.FAILED;
-        const transactionIndex = _state.transactions
-            .findIndex(transaction => transaction.hash === hash);
-        _state.transactions[transactionIndex].status = status;
+    setTransaction: (_state: AccountState, transaction: Transaction): void => {
+        _state.transactions[transaction.hash] = transaction;
     },
-    clean: (_state: AccountState): void => {
+    clearTransactions: (_state: AccountState): void => {
+        _state.transactions = {};
+    },
+    clear: (_state: AccountState): void => {
         _state.proxy = '';
         _state.balances = {};
         _state.allowances = {};
-        _state.transactions = [];
+        _state.transactions = {};
     },
 };
 
 const actions = {
     init: async({ dispatch }: ActionContext<AccountState, RootState>): Promise<void> => {
         // Save Web3 provider if available
-        const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
-        if (connectorKey) {
-            const connector = lock.getConnector(connectorKey);
-            const provider = await connector.connect();
-            dispatch('saveWeb3Provider', provider);
-        }
+        const connectorId = Storage.getConnector();
+        dispatch('connect', connectorId);
     },
-    connect: async({ dispatch }: ActionContext<AccountState, RootState>, connectorKey: string): Promise<void> => {
-        const connector = lock.getConnector(connectorKey);
-        const provider = await connector.connect();
-        if (provider) {
-            localStorage.setItem(LS_CONNECTOR_KEY, connectorKey);
-            dispatch('saveWeb3Provider', provider);
+    connect: async({ commit, dispatch }: ActionContext<AccountState, RootState>, connectorId: string): Promise<void> => {
+        if (!connectorId) {
+            return;
         }
+        const connector = lock.getConnector(connectorId);
+        if (!connector) {
+            return;
+        }
+        commit('setConnector', {
+            id: connectorId,
+            name: getConnectorName(connectorId),
+            logo: getConnectorLogo(connectorId),
+        });
+        const provider = await connector.connect();
+        if (!provider) {
+            dispatch('disconnect');
+            return;
+        }
+        const web3Provider = new Web3Provider(provider);
+        const accounts = await web3Provider.listAccounts();
+        if (accounts.length === 0) {
+            dispatch('disconnect');
+            return;
+        }
+        dispatch('saveProvider', provider);
+        Storage.saveConnector(connectorId);
     },
     disconnect: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
-        const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY);
-        if (connectorKey) {
-            const connector = lock.getConnector(connectorKey);
+        const connectorId = Storage.getConnector();
+        if (connectorId) {
+            const connector = lock.getConnector(connectorId);
             const isLoggedIn = connector.isLoggedIn();
             if (isLoggedIn) {
                 await connector.logout();
             }
-            localStorage.removeItem(LS_CONNECTOR_KEY);
+            Storage.clearConnector();
         }
-        commit('setWeb3Provider', false);
+        commit('setConnector', null);
         commit('setAddress', '');
         commit('setChainId', 0);
+        commit('clear');
     },
-    saveWeb3Provider: async({ commit, dispatch }: ActionContext<AccountState, RootState>, provider: any): Promise<void> => {
+    saveProvider: async({ commit, dispatch }: ActionContext<AccountState, RootState>, provider: any): Promise<void> => {
         if (provider.removeAllListeners) {
             provider.removeAllListeners();
         }
         if (provider && provider.on) {
             provider.on('chainChanged', async () => {
-                dispatch('clean');
-                dispatch('saveWeb3Provider', provider);
+                commit('clear');
+                dispatch('saveProvider', provider);
             });
             provider.on('accountsChanged', async () => {
-                dispatch('clean');
-                dispatch('saveWeb3Provider', provider);
+                commit('clear');
+                dispatch('saveProvider', provider);
             });
             provider.on('disconnect', async () => {
                 dispatch('disconnect');
@@ -143,17 +161,16 @@ const actions = {
         const web3Provider = new Web3Provider(provider);
         const network = await web3Provider.getNetwork();
         const accounts = await web3Provider.listAccounts();
-        commit('setWeb3Provider', true);
-        commit('setAddress', accounts[0]);
+        const account = accounts[0];
+        const transactions = Storage.getTransactions(account, network.chainId);
+        commit('setAddress', account);
         commit('setChainId', network.chainId);
+        commit('setTransactions', transactions);
         dispatch('fetchState');
     },
-    clean: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
-        commit('clean');
-    },
-    fetchState: async({ commit, state, rootState }: ActionContext<AccountState, RootState>): Promise<void> => {
+    fetchState: async({ commit, state, rootGetters }: ActionContext<AccountState, RootState>): Promise<void> => {
         const { address } = state;
-        const { metadata } = rootState.assets;
+        const metadata = rootGetters['assets/metadata'];
         const assets = Object.keys(metadata);
         const { proxy, balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('setProxy', proxy);
@@ -162,39 +179,65 @@ const actions = {
     },
     fetchAssets: async({ commit, state }: ActionContext<AccountState, RootState>, assets: string[]): Promise<void> => {
         const { address } = state;
+        if (!address) {
+            return;
+        }
         const { balances, allowances } = await Ethereum.fetchAccountState(address, assets);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },
-    saveTransaction: async({ commit }: ActionContext<AccountState, RootState>, transactionData: TransactionData): Promise<void> => {
-        commit('addTransaction', transactionData);
+    clearTransactions: async({ commit }: ActionContext<AccountState, RootState>): Promise<void> => {
+        commit('clearTransactions');
     },
-    saveTransactionReceipt: async({ commit }: ActionContext<AccountState, RootState>, transactionReceipt: any): Promise<void> => {
-        commit('addTransactionReceipt', transactionReceipt);
+    saveTransaction: async({ commit }: ActionContext<AccountState, RootState>, transactionData: TransactionData): Promise<void> => {
+        const { text } = transactionData;
+        const { hash } = transactionData.transaction;
+        const transaction = {
+            text,
+            hash,
+            status: TransactionStatus.PENDING,
+            timestamp: 0,
+        };
+        commit('setTransaction', transaction);
+    },
+    saveMinedTransaction: async({ state, commit }: ActionContext<AccountState, RootState>, transaction: MinedTransaction): Promise<void> => {
+        const { receipt, timestamp } = transaction;
+        const hash = receipt.transactionHash;
+        const status = receipt.status === 1
+            ? TransactionStatus.OK
+            : TransactionStatus.FAILED;
+        const oldTransaction = state.transactions[hash];
+        const updatedTransaction = {
+            text: oldTransaction.text,
+            hash,
+            status,
+            timestamp,
+        };
+        commit('setTransaction', updatedTransaction);
+        Storage.saveTransaction(state.address, state.chainId, updatedTransaction);
     },
 };
 
 const getters = {
     provider: async(state: AccountState): Promise<Provider> => {
-        if (state.web3Provider) {
-            const connectorKey = localStorage.getItem(LS_CONNECTOR_KEY) || 'injected';
-            const connector = lock.getConnector(connectorKey);
+        if (state.connector && state.connector.id) {
+            const connector = lock.getConnector(state.connector.id);
             const provider = await connector.connect();
             return new Web3Provider(provider);
         }
-        return wsProvider;
+        return provider;
     },
 };
 
 function state(): AccountState {
     return {
-        web3Provider: false,
+        connector: null,
         address: '',
         chainId: 0,
         proxy: '',
         balances: {},
         allowances: {},
-        transactions: [],
+        transactions: {},
     };
 }
 

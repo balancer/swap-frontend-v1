@@ -2,11 +2,16 @@ import { RootState } from '@/store';
 import { sleep } from '@/utils/helpers';
 import { ActionContext } from 'vuex';
 
+export const NOTIFICATION_DURATION = 20 * 1000;
+
 export interface UIState {
     modal: {
         asset: {
             isOpen: boolean;
             key: string;
+        };
+        settings: {
+            isOpen: boolean;
         };
         account: {
             isOpen: boolean;
@@ -15,7 +20,7 @@ export interface UIState {
             isOpen: boolean;
         };
     };
-    notification: Notification | null;
+    notifications: Notification[];
 }
 
 interface Notification {
@@ -31,14 +36,20 @@ const mutations = {
     setAssetModalKey: (_state: UIState, key: string): void => {
         _state.modal.asset.key= key;
     },
+    setSettingsModal: (_state: UIState, isOpen: boolean): void => {
+        _state.modal.settings.isOpen = isOpen;
+    },
     setAccountModal: (_state: UIState, isOpen: boolean): void => {
         _state.modal.account.isOpen = isOpen;
     },
     setConnectorModal: (_state: UIState, isOpen: boolean): void => {
         _state.modal.connector.isOpen = isOpen;
     },
-    setNotification: (_state: UIState, notification: Notification): void => {
-        _state.notification = notification;
+    addNotification: (_state: UIState, notification: Notification): void => {
+        _state.notifications.push(notification);
+    },
+    removeTopNotification: (_state: UIState): void => {
+        _state.notifications.splice(0, 1);
     },
 };
 
@@ -49,6 +60,12 @@ const actions = {
     },
     closeAssetModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setAssetModalOpen', false);
+    },
+    openSettingsModal: ({ commit }: ActionContext<UIState, RootState>): void => {
+        commit('setSettingsModal', true);
+    },
+    closeSettingsModal: ({ commit }: ActionContext<UIState, RootState>): void => {
+        commit('setSettingsModal', false);
     },
     openAccountModal: ({ commit }: ActionContext<UIState, RootState>): void => {
         commit('setAccountModal', true);
@@ -63,9 +80,9 @@ const actions = {
         commit('setConnectorModal', false);
     },
     notify: async ({ commit }: ActionContext<UIState, RootState>, notification: Notification): Promise<void> => {
-        commit('setNotification', notification);
-        await sleep(10 * 1000);
-        commit('setNotification', null);
+        commit('addNotification', notification);
+        await sleep(NOTIFICATION_DURATION);
+        commit('removeTopNotification');
     },
 };
 
@@ -76,6 +93,9 @@ function state(): UIState {
                 isOpen: false,
                 key: '',
             },
+            settings: {
+                isOpen: false,
+            },
             account: {
                 isOpen: false,
             },
@@ -83,7 +103,7 @@ function state(): UIState {
                 isOpen: false,
             },
         },
-        notification: null,
+        notifications: [],
     };
 }
 

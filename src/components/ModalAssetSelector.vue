@@ -1,13 +1,14 @@
 <template>
     <ModalBase
         :title="'Select Asset'"
+        :open="open"
         @close="close"
     >
         <template #header>
             <div class="query-input-wrapper">
                 <input
-                    ref="queryEl"
                     v-model="query"
+                    v-autofocus
                     class="query-input"
                     placeholder="Search by symbol, name, or address"
                 >
@@ -15,9 +16,10 @@
         </template>
         <template #default>
             <div
-                v-for="asset in assets"
+                v-for="asset in visibleAssets"
                 :key="asset.address"
                 class="asset"
+                :class="{ incompatible: isIncompatible(asset.address) }"
                 @click="select(asset.address)"
             >   
                 <div class="asset-meta">
@@ -31,8 +33,14 @@
                     <div class="asset-symbol">
                         {{ asset.symbol }}
                     </div>
+                    <div
+                        v-if="isIncompatible(asset.address)"
+                        class="asset-incompatible"
+                    >
+                        Incompatible
+                    </div>
                 </div>
-                <div class="asset-amount">
+                <div>
                     {{ asset.amount }}
                 </div>
             </div>
@@ -43,10 +51,12 @@
 <script lang="ts">
 import { getAddress } from '@ethersproject/address';
 import BigNumber from 'bignumber.js';
-import { defineComponent, onMounted, watch, computed, ref } from 'vue';
+import { defineComponent, watch, computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { isAddress, scale } from '@/utils/helpers';
+import { RootState } from '@/store';
+import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ModalBase from '@/components/ModalBase.vue';
@@ -56,51 +66,69 @@ export default defineComponent({
         AssetIcon,
         ModalBase,
     },
+    props: {
+        open: {
+            type: Boolean,
+            required: true,
+        },
+        hidden: {
+            type: Array,
+            default: (): any[] => [],
+        },
+    },
     emits: ['select'],
     setup(props, { emit }) {
-        const store = useStore();
-        const { metadata } = store.state.assets;
-        const { balances } = store.state.account;
+        const store = useStore<RootState>();
 
         const query = ref('');
-        const queryEl = ref(null);
-
-        onMounted(() => {
-            // @ts-ignore
-            queryEl.value.focus();
-        });
 
         watch(query, () => {
+            const metadata = store.getters['assets/metadata'];
             if (!isAddress(query.value)) {
                 return;
             }
             const address = getAddress(query.value);
             const asset = metadata[address];
             if (!asset) {
-                store.dispatch('assets/fetch', [address]);
+                store.dispatch('assets/fetchMetadata', [address]);
                 store.dispatch('account/fetchAssets', [address]);
             }
         });
 
         const assets = computed(() => {
-            return Object.keys(metadata)
+            const { balances } = store.state.account;
+            const metadata = store.getters['assets/metadata'];
+            const assets = Object.keys(metadata)
                 .map(assetAddress => {
                     const asset = metadata[assetAddress];
-                    const { address, name, symbol, decimals, precision } = asset;
+                    const { address, name, symbol, decimals } = asset;
                     const balance = balances[address] || '0';
                     const balanceNumber = new BigNumber(balance);
                     const amountNumber = scale(balanceNumber, -decimals);
                     const amount = amountNumber.isZero()
                         ? ''
-                        : amountNumber.toFixed(precision);
+                        : amountNumber.toFixed(config.precision);
                     return {
                         address,
                         name,
                         symbol,
                         amount,
                     };
-                })
+                });
+
+            const ownedAssets = assets.filter(asset => asset.amount);
+            const notOwnedAssets = assets.filter(asset => !asset.amount);
+            return [...ownedAssets, ...notOwnedAssets];
+        });
+
+        const visibleAssets = computed(() => {
+            return assets.value
                 .filter(asset => {
+                    // Filter by "hidden" prop
+                    if (props.hidden.includes(asset.address)) {
+                        return false;
+                    }
+                    // Filter by query
                     const queryString = query.value.toLowerCase();
                     if (!queryString) {
                         return true;
@@ -114,24 +142,33 @@ export default defineComponent({
                     if (asset.symbol.toLowerCase().includes(queryString)) {
                         return true;
                     }
+                    return false;
                 });
         });
 
         function select(assetAddress: string): void {
+            if (isIncompatible(assetAddress)) {
+                return;
+            }
             emit('select', assetAddress);
             close();
         }
 
         function close(): void {
+            query.value = '';
             store.dispatch('ui/closeAssetModal');
+        }
+
+        function isIncompatible(assetAddress: string): boolean {
+            return config.untrusted.includes(assetAddress);
         }
 
         return {
             query,
-            queryEl,
-            assets,
+            visibleAssets,
             select,
             close,
+            isIncompatible,
         };
     },
 });
@@ -159,8 +196,16 @@ export default defineComponent({
     cursor: pointer;
 }
 
+.asset.incompatible {
+    cursor: not-allowed;
+}
+
 .asset:hover {
     background: var(--outline);
+}
+
+.asset.incompatible:hover {
+    background: transparent;
 }
 
 .asset-meta {
@@ -182,7 +227,16 @@ export default defineComponent({
 }
 
 .asset-symbol {
+    max-width: 140px;
     padding-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     color: var(--text-secondary);
+}
+
+.asset-incompatible {
+    padding-left: 8px;
+    color: var(--error);
 }
 </style>

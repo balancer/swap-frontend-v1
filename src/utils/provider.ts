@@ -1,7 +1,7 @@
-import { WebSocketProvider } from '@ethersproject/providers';
+import { AlchemyProvider } from '@ethersproject/providers';
 
 import config from '@/config';
 
-const provider = new WebSocketProvider(config.alchemyWsUrl, config.chainId);
+const provider = new AlchemyProvider(config.network, config.alchemyKey);
 
 export default provider;

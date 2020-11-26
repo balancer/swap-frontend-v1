@@ -7,8 +7,7 @@ import { Swap } from '@balancer-labs/sor/dist/types';
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
-import { logRevertedTx } from '@/utils/helpers';
-import { ETH_KEY } from '@/utils/assets';
+import { ETH_KEY, logRevertedTx } from '@/utils/helpers';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 const exchangeProxyAddress = config.addresses.exchangeProxy;
@@ -17,27 +16,27 @@ export default class Swapper {
     static async swapIn(
         provider: Web3Provider,
         swaps: Swap[][],
-        tokenInAddress: string,
-        tokenOutAddress: string,
-        tokenInAmount: BigNumber,
-        tokenOutAmountMin: BigNumber,
+        assetInAddress: string,
+        assetOutAddress: string,
+        assetInAmount: BigNumber,
+        assetOutAmountMin: BigNumber,
     ): Promise<any> {
         const overrides: any = {};
-        if (tokenInAddress === ETH_KEY) {
-            tokenInAddress = ETH_ADDRESS;
-            overrides.value = `0x${tokenInAmount.toString(16)}`;
+        if (assetInAddress === ETH_KEY) {
+            assetInAddress = ETH_ADDRESS;
+            overrides.value = `0x${assetInAmount.toString(16)}`;
         }
-        if (tokenOutAddress === ETH_KEY) {
-            tokenOutAddress = ETH_ADDRESS;
+        if (assetOutAddress === ETH_KEY) {
+            assetOutAddress = ETH_ADDRESS;
         }
         const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
         try {
             return await exchangeProxyContract.multihopBatchSwapExactIn(
                 swaps,
-                tokenInAddress,
-                tokenOutAddress,
-                tokenInAmount.toString(),
-                tokenOutAmountMin.toString(),
+                assetInAddress,
+                assetOutAddress,
+                assetInAmount.toString(),
+                assetOutAmountMin.toString(),
                 overrides,
             );
         } catch(e) {
@@ -49,10 +48,10 @@ export default class Swapper {
                     'multihopBatchSwapExactIn',
                     [
                         swaps,
-                        tokenInAddress,
-                        tokenOutAddress,
-                        tokenInAmount.toString(),
-                        tokenOutAmountMin.toString(),
+                        assetInAddress,
+                        assetOutAddress,
+                        assetInAmount.toString(),
+                        assetOutAmountMin.toString(),
                     ],
                     overrides,
                 );
@@ -64,25 +63,25 @@ export default class Swapper {
     static async swapOut(
         provider: Web3Provider,
         swaps: Swap[][],
-        tokenInAddress: string,
-        tokenOutAddress: string,
-        tokenInAmountMax: BigNumber,
+        assetInAddress: string,
+        assetOutAddress: string,
+        assetInAmountMax: BigNumber,
     ): Promise<any> {
         const overrides: any = {};
-        if (tokenInAddress === ETH_KEY) {
-            tokenInAddress = ETH_ADDRESS;
-            overrides.value = `0x${tokenInAmountMax.toString(16)}`;
+        if (assetInAddress === ETH_KEY) {
+            assetInAddress = ETH_ADDRESS;
+            overrides.value = `0x${assetInAmountMax.toString(16)}`;
         }
-        if (tokenOutAddress === ETH_KEY) {
-            tokenOutAddress = ETH_ADDRESS;
+        if (assetOutAddress === ETH_KEY) {
+            assetOutAddress = ETH_ADDRESS;
         }
         const exchangeProxyContract = new Contract(exchangeProxyAddress, ExchangeProxyABI, provider.getSigner());
         try {
             return await exchangeProxyContract.multihopBatchSwapExactOut(
                 swaps,
-                tokenInAddress,
-                tokenOutAddress,
-                tokenInAmountMax.toString(),
+                assetInAddress,
+                assetOutAddress,
+                assetInAmountMax.toString(),
                 overrides,
             );
         } catch(e) {
@@ -94,9 +93,9 @@ export default class Swapper {
                     'multihopBatchSwapExactOut',
                     [
                         swaps,
-                        tokenInAddress,
-                        tokenOutAddress,
-                        tokenInAmountMax.toString(),
+                        assetInAddress,
+                        assetOutAddress,
+                        assetInAmountMax.toString(),
                     ],
                     overrides,
                 );

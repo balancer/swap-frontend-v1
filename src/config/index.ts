@@ -1,6 +1,3 @@
-import homesteadAssets from '@balancer-labs/assets/generated/dex/registry.homestead.json';
-import kovanAssets from '@balancer-labs/assets/generated/dex/registry.kovan.json';
-
 import homestead from './homestead.json';
 import kovan from './kovan.json';
 
@@ -10,23 +7,21 @@ interface Connector {
     options: any;
 }
 
-interface Token {
+export interface AssetMetadata {
     address: string;
     name: string;
     symbol: string;
     decimals: number;
-    precision: number;
-    hasIcon: boolean;
-    logoUrl: string;
+    logoURI: string | undefined;
 }
 
 interface Config {
     network: string;
     chainId: number;
-    defaultPrecision: number;
+    precision: number;
+    alchemyKey: string;
     subgraphUrl: string;
-    alchemyUrl: string;
-    alchemyWsUrl: string;
+    subgraphBackupUrl: string;
     addresses: {
         bFactory: string;
         bActions: string;
@@ -35,13 +30,20 @@ interface Config {
         weth: string;
         multicall: string;
     };
-    tokens: Record<string, Token>;
+    assets: Record<string, AssetMetadata>;
+    untrusted: string[];
     connectors: Record<string, Connector>;
 }
 
 const configs = {
-    1: {...homesteadAssets, ...homestead},
-    42:{...kovanAssets, ...kovan},
+    1: {
+        untrusted: [],
+        ...homestead,
+    },
+    42:{
+        untrusted: [],
+        ...kovan,
+    },
 };
 // eslint-disable-next-line no-undef
 const network = process.env.APP_CHAIN_ID || 1;

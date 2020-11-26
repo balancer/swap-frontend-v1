@@ -8,6 +8,7 @@
             <Jazzicon
                 class="account-icon"
                 :address="address"
+                :size="16"
             />
             <div class="account-address">
                 {{ formatAddress(address) }}
@@ -22,6 +23,8 @@
         v-else
         :text="'Connect'"
         :primary="true"
+        :loading="loading"
+        :disabled="loading"
         @click="openConnectorModal"
     />
 </template>
@@ -30,6 +33,7 @@
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import { RootState } from '@/store';
 import { formatAddress } from '@/utils/helpers';
 
 import Button from '@/components/Button.vue';
@@ -43,14 +47,19 @@ export default defineComponent({
         Jazzicon,
     },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const address = computed(() => {
-            const { web3Provider, address } = store.state.account;
-            if (!web3Provider || !address) {
+            const { connector, address } = store.state.account;
+            if (!connector || !connector.id || !address) {
                 return '';
             }
             return address;
+        });
+
+        const loading = computed(() => {
+            const { connector, address } = store.state.account;
+            return !!connector && !!connector.id && !address;
         });
 
         function openAccountModal(): void {
@@ -63,6 +72,7 @@ export default defineComponent({
 
         return {
             address,
+            loading,
             formatAddress,
             openAccountModal,
             openConnectorModal,
@@ -99,7 +109,7 @@ export default defineComponent({
     width: 16px;
     height: 16px;
     box-sizing: border-box;
-    border-radius: 8px;
+    border-radius: 50%;
 }
 
 .account-address {

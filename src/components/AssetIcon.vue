@@ -1,14 +1,19 @@
 <template>
-    <img :src="assetIcon">
+    <img
+        :src="assetIcon"
+        @error="handleError"
+    >
 </template>
 
-<script>
-import { defineComponent, computed } from 'vue';
+<script lang="ts">
+import { defineComponent, computed, ref, toRefs, watch } from 'vue';
 import { useStore } from 'vuex';
 
 import defaultIcon from '@/assets/defaultAssetIcon.svg';
 
+import { ETH_KEY } from '@/utils/helpers';
 import config from '@/config';
+import { RootState } from '@/store';
 
 export default defineComponent({
     props: {
@@ -18,27 +23,40 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const store = useStore();
+        const store = useStore<RootState>();
+
+        const loadingFailed = ref(false);
+
+        const { address } = toRefs(props);
+
+        watch(address, () => {
+            loadingFailed.value = false;
+        });
 
         const assetIcon = computed(() => {
             let address = props.address;
-            const { metadata } = store.state.assets;
+            const metadata = store.getters['assets/metadata'];
             const assetMetadata = metadata[address];
 
-            if (address === 'ether') {
+            if (address === ETH_KEY) {
                 address = config.addresses.weth;
             }
             if (!assetMetadata) {
                 return defaultIcon;
             }
-            if (!assetMetadata.hasIcon) {
+            if (loadingFailed.value) {
                 return defaultIcon;
             }
-            return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+            return assetMetadata.logoURI;
         });
+
+        function handleError(): void {
+            loadingFailed.value = true;
+        }
 
         return {
             assetIcon,
+            handleError,
         };
     },
 });

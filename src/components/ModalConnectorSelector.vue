@@ -1,24 +1,22 @@
 <template>
     <ModalBase
         :title="'Select Wallet'"
+        :open="open"
         @close="close"
     >
         <template #default>
             <div
                 v-for="connector in connectors"
-                :key="connector.key"
+                :key="connector.id"
                 class="connector"
-                @click="select(connector.key)"
+                @click="select(connector.id)"
             >
                 <img
-                    :src="
-                        `https://raw.githubusercontent.com/bonustrack/lock/master/connectors/assets/${connector.key}.png`
-                    "
-                    height="20"
-                    width="20"
+                    :src="connector.logo"
+                    class="connector-icon"
                 >
                 <div class="connector-title">
-                    {{ connector.title }}
+                    {{ connector.name }}
                 </div>
             </div>
         </template>
@@ -30,6 +28,8 @@ import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import config from '@/config';
+import { RootState } from '@/store';
+import { hasInjectedProvider, getConnectorName, getConnectorLogo } from '@/utils/connectors';
 
 import ModalBase from '@/components/ModalBase.vue';
 
@@ -37,22 +37,35 @@ export default defineComponent({
     components: {
         ModalBase,
     },
+    props: {
+        open: {
+            type: Boolean,
+            required: true,
+        },
+    },
     setup() {
-        const store = useStore();
+        const store = useStore<RootState>();
 
         const connectors = computed(() => {
-            return Object.keys(config.connectors).map(connectorKey => {
-                const connector = config.connectors[connectorKey];
-                return {
-                    key: connector.id,
-                    title: connector.name,
-                };
-            });
+            return Object.keys(config.connectors)
+                .filter(connectorId => {
+                    if (connectorId === 'injected') {
+                        return hasInjectedProvider();
+                    }
+                    return true;
+                })
+                .map(connectorId => {
+                    return {
+                        id: connectorId,
+                        name: getConnectorName(connectorId),
+                        logo: getConnectorLogo(connectorId),
+                    };
+                });
         });
 
-        function select(connectorKey: string): void {
+        function select(connectorId: string): void {
             close();
-            store.dispatch('account/connect', connectorKey);
+            store.dispatch('account/connect', connectorId);
         }
 
         function close(): void {
@@ -78,6 +91,11 @@ export default defineComponent({
 
 .connector:hover {
     background: var(--outline);
+}
+
+.connector-icon {
+    width: 20px;
+    height: 20px;
 }
 
 .connector-title {

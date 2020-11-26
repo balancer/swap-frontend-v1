@@ -44,19 +44,14 @@ button {
     background: var(--background-secondary);
     border: 1px solid var(--outline);
     color: var(--text-primary);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: pointer;
+    transition: background 0.25s ease-in, border-color 0.25s ease-in;
 }
 
 button.primary {
     background: var(--accent);
     border-color: var(--accent);
-}
-
-button:disabled {
-    background: var(--text-secondary);
-    border-color: var(--text-secondary);
-    cursor: not-allowed;
 }
 
 button:hover {
@@ -68,9 +63,11 @@ button.primary:hover {
     border-color: var(--accent-dark);
 }
 
+button:disabled,
 button:disabled:hover {
     background: var(--text-secondary);
     border-color: var(--text-secondary);
     cursor: not-allowed;
+    transition: background 0.35s ease-out, border-color 0.35s ease-out;
 }
 </style>
