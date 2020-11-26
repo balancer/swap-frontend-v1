@@ -43,7 +43,7 @@ button {
     font-size: var(--font-size-large);
     font-weight: bold;
     color: var(--text-primary);
-    background: linear-gradient(190deg, #f0f -110%, #00f 100%);
+    background: var(--accent);
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
     border-radius: var(--border-radius-medium);
     border-color: var(--background-secondary);
@@ -51,15 +51,15 @@ button {
 }
 
 button.primary {
-    background: linear-gradient(190deg, #f0f -110%, #00f 100%);
+    background: var(--accent);
 }
 
 button:hover {
-    background: linear-gradient(190deg, #f0f -80%, #00f 100%);
+    background: var(--accent-dark);
 }
 
 button.primary:hover {
-    background: linear-gradient(190deg, #f0f -80%, #00f 100%);
+    background: var(--accent-dark);
 }
 
 button:disabled,
