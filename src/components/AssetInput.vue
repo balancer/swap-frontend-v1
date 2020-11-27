@@ -61,6 +61,8 @@ import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
 
+const GAS_BUFFER = 0.1;
+
 export default defineComponent({
     components: {
         AssetIcon,
@@ -102,9 +104,6 @@ export default defineComponent({
             if (props.modalKey !== 'input') {
                 return false;
             }
-            if (props.address === ETH_KEY) {
-                return false;
-            }
             const assets = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             if (!balances) {
@@ -143,7 +142,9 @@ export default defineComponent({
             const assetDecimals = assets[props.address].decimals;
             const balanceNumber = new BigNumber(balance);
             const amountNumber = scale(balanceNumber, -assetDecimals);
-            const amount = amountNumber.toString();
+            const amount = props.address === ETH_KEY
+                ? amountNumber.minus(GAS_BUFFER).toString()
+                : amountNumber.toString();
             handleInputChange(amount);
         }
 
