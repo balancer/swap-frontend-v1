@@ -22,7 +22,7 @@ export default defineComponent({
     padding: 4px;
     color: var(--text-control);
     font-size: var(--font-size-tiny);
-    text-transform: uppercase;
+    text-transform: capitalize;
     border-radius: var(--border-radius-small);
     background: var(--background-control);
     cursor: pointer;
