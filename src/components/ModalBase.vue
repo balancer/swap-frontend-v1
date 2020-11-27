@@ -12,19 +12,13 @@
             />
             <div class="modal">
                 <div class="header">
-                    <div class="header-top">
-                        <div>
-                            {{ title }}
-                        </div>
-                        <Icon
-                            class="close-icon"
-                            :title="'close'"
-                            @click="$emit('close')"
-                        />
+                    <div>
+                        {{ title }}
                     </div>
-                    <slot
-                        class="header-bottom"
-                        name="header"
+                    <Icon
+                        class="close-icon"
+                        :title="'close'"
+                        @click="$emit('close')"
                     />
                 </div>
                 <div class="body">
@@ -100,7 +94,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: var(--background-secondary);
+    background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);
     border-radius: var(--border-radius-large);
 }
 
@@ -117,19 +111,19 @@ export default defineComponent({
 }
 
 .header {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-input);
-}
-
-.header-top {
+    min-height: 96px;
+    box-sizing: border-box;
+    padding: 0 18px 24px 18px;
     display: flex;
     justify-content: space-between;
-    font-weight: 700;
+    align-items: end;
+    font-size: 22px;
+    font-weight: bold;
+    background: var(--border-input);
 }
 
 .close-icon {
-    width: 20px;
-    height: 20px;
+    width: 16px;
 }
 
 .body {

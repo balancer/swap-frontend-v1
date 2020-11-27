@@ -186,6 +186,6 @@ input.slippage-option {
 }
 
 .slippage-option:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
 }
 </style>
