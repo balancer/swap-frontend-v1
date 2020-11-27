@@ -189,6 +189,7 @@ export default defineComponent({
     min-width: 160px;
     margin-left: 8px;
     font-size: var(--font-size-large);
+    font-weight: bold;
     color: var(--text-primary);
     border: none;
     background: transparent;
@@ -232,6 +233,7 @@ export default defineComponent({
     max-width: 68px;
     margin-left: 8px;
     font-size: var(--font-size-large);
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
