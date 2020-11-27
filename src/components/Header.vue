@@ -74,4 +74,14 @@ a {
     margin-left: 8px;
     margin-right: 16px;
 }
+
+@media only screen and (max-width: 768px) {
+    .brand {
+        margin-left: 16px;
+    }
+
+    .title {
+        display: none;
+    }
+}
 </style>

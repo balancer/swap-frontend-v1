@@ -288,19 +288,11 @@ export default defineComponent({
 
 @media only screen and (max-width: 768px) {
     .amount-wrapper {
-        width: 220px;
+        width: 180px;
     }
 
     .amount {
         min-width: 100px;
-    }
-
-    .asset-wrapper {
-        width: 100px;
-    }
-
-    .asset-symbol {
-        max-width: 48px;
     }
 }
 </style>

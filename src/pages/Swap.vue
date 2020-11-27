@@ -542,6 +542,8 @@ export default defineComponent({
 @media only screen and (max-width: 768px) {
     .pair {
         padding: 16px 8px;
+        border: none;
+        background: transparent;
     }
 }
 </style>

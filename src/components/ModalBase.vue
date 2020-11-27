@@ -149,4 +149,15 @@ export default defineComponent({
         transform: scale(1);
     }
 }
+
+@media only screen and (max-width: 768px) {
+    .modal-wrapper {
+        align-items: start;
+    }
+
+    .modal {
+        border-radius: 0;
+        max-height: 100%;
+    }
+}
 </style>

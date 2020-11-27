@@ -98,16 +98,23 @@ body {
 }
 
 .view {
-    height: 85vh;
+    height: 70vh;
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: center;
 }
 
-.footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
+@media only screen and (max-width: 768px) {
+    .brand {
+        margin-left: 16px;
+    }
+
+    .title {
+        display: none;
+    }
+
+    .view {
+        height: initial;
+    }
 }
 </style>
