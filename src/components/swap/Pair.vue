@@ -17,7 +17,7 @@
         >
             <Icon
                 class="icon"
-                :title="'swapToggle'"
+                :title="'pairToggle'"
             />
         </div>
         <div class="rate-message">
