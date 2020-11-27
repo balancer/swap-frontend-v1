@@ -129,7 +129,6 @@ export default defineComponent({
             const balance = balances[props.address];
             const balanceNumber = new BigNumber(balance);
 
-            const assetSymbol = assetMetadata.symbol;
             const assetDecimals = assetMetadata.decimals;
             const balanceShortNumber = scale(balanceNumber, -assetDecimals);
             return balanceShortNumber.isInteger()
