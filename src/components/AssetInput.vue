@@ -190,7 +190,7 @@ export default defineComponent({
 .balance-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .max-button {

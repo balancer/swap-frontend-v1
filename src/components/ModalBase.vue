@@ -116,7 +116,7 @@ export default defineComponent({
     padding: 0 18px 24px 18px;
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: flex-end;
     font-size: 22px;
     font-weight: bold;
     background: var(--border-input);
@@ -152,7 +152,7 @@ export default defineComponent({
 
 @media only screen and (max-width: 768px) {
     .modal-wrapper {
-        align-items: start;
+        align-items: flex-start;
     }
 
     .modal {

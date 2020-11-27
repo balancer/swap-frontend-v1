@@ -100,7 +100,7 @@ body {
 .view {
     height: 70vh;
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     justify-content: center;
 }
 
