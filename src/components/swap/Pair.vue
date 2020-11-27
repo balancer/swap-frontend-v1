@@ -17,7 +17,7 @@
         >
             <Icon
                 class="icon"
-                :title="'chevron'"
+                :title="'swapToggle'"
             />
         </div>
         <div class="rate-message">
@@ -186,10 +186,9 @@ export default defineComponent({
 }
 
 .icon {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 16px;
     color: black;
-    margin-top: 8px;
 }
 
 .rate-message {
