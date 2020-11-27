@@ -503,7 +503,6 @@ export default defineComponent({
     padding: 60px 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     border: 1px solid var(--border-form);
     border-radius: var(--border-radius-large);
     background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);

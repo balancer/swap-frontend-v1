@@ -169,7 +169,6 @@ export default defineComponent({
 }
 
 .rate-wrapper {
-    width: 100%;
     margin: 24px 0;
     display: flex;
 }
