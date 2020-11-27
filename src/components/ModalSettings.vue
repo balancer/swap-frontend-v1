@@ -166,19 +166,27 @@ export default defineComponent({
 }
 
 .slippage-option {
-    padding: 8px;
+    height: 44px;
+    width: 56px;
     margin-right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--border-input);
     border-radius: var(--border-radius-small);
     background: var(--background-secondary);
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 input.slippage-option {
+    padding: 0;
     outline: none;
     color: var(--text-primary);
     font-size: 16px;
-    width: 38px;
+    text-align: center;
+    cursor: text;
+    box-shadow: none;
 }
 
 .slippage-option.selected {
