@@ -44,6 +44,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--text-control);
     background: var(--background-control);
     border: 1px solid var(--border-input);
     border-radius: 50%;
