@@ -6,7 +6,10 @@
                     class="logo"
                     :src="logo"
                 >
-                <span class="title">Balancer</span>
+                <img
+                    class="title"
+                    :src="title"
+                >
             </div>
         </router-link>
         <div class="header-right">
@@ -19,6 +22,7 @@
 import { defineComponent } from 'vue';
 
 import logo from '@/assets/logo.svg';
+import title from '@/assets/title.svg';
 
 import Account from '@/components/Account.vue';
 
@@ -29,6 +33,7 @@ export default defineComponent({
     setup() {
         return {
             logo,
+            title,
         };
     },
 });
