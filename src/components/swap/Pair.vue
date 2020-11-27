@@ -180,7 +180,7 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    background: white;
+    background: var(--background-secondary);
     border-radius: 50%;
     cursor: pointer;
 }
@@ -188,7 +188,7 @@ export default defineComponent({
 .icon {
     width: 20px;
     height: 16px;
-    color: black;
+    color: var(--text-primary);
 }
 
 .rate-message {
