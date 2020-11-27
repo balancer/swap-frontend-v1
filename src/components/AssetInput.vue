@@ -281,9 +281,9 @@ export default defineComponent({
 }
 
 .chevron-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 11.5px;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
 }
 
 @media only screen and (max-width: 768px) {
