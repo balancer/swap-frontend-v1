@@ -48,6 +48,7 @@ button {
     border-radius: var(--border-radius-medium);
     border-color: transparent;
     cursor: pointer;
+    transition: background 0.25s ease-in, border-color 0.25s ease-in;
 }
 
 button.primary {
@@ -66,5 +67,6 @@ button:disabled,
 button:disabled:hover {
     background: var(--text-secondary);
     cursor: not-allowed;
+    transition: background 0.35s ease-out, border-color 0.35s ease-out;
 }
 </style>
