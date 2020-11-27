@@ -28,12 +28,21 @@
                 placeholder="0"
                 @input="handleInputChange($event.target.value)"
             >
-            <ButtonText
-                v-if="isMaxLabelShown"
-                :text="'max'"
-                class="max-label"
-                @click="setMax"
-            />
+            <div
+                v-if="balanceAvailable"
+                class="balance-wrapper"
+            >
+                <div>
+                    <ButtonText
+                        :text="'max'"
+                        class="max-button"
+                        @click="setMax"
+                    />
+                </div>
+                <div class="balance-label">
+                    {{ balanceLabel }}
+                </div>
+            </div>
             <span v-else />
         </div>
     </div>
@@ -44,6 +53,7 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
+import config from '@/config';
 import { RootState } from '@/store';
 import { ETH_KEY, scale } from '@/utils/helpers';
 
@@ -88,7 +98,7 @@ export default defineComponent({
             return asset.symbol;
         });
 
-        const isMaxLabelShown = computed(() => {
+        const balanceAvailable = computed(() => {
             if (props.modalKey !== 'input') {
                 return false;
             }
@@ -106,6 +116,25 @@ export default defineComponent({
                 return false;
             }
             return true;
+        });
+
+        const balanceLabel = computed(() => {
+            const { balances } = store.state.account;
+            const metadata = store.getters['assets/metadata'];
+            if (!balances || !metadata) {
+                return '';
+            }
+
+            const assetMetadata = metadata[props.address];
+            const balance = balances[props.address];
+            const balanceNumber = new BigNumber(balance);
+
+            const assetSymbol = assetMetadata.symbol;
+            const assetDecimals = assetMetadata.decimals;
+            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
+            return balanceShortNumber.isInteger()
+                ? balanceShortNumber.toString()
+                : balanceShortNumber.toFixed(config.precision);
         });
 
         function setMax(): void {
@@ -129,7 +158,8 @@ export default defineComponent({
 
         return {
             symbol,
-            isMaxLabelShown,
+            balanceAvailable,
+            balanceLabel,
             setMax,
             handleInputChange,
             openModal,
@@ -149,7 +179,7 @@ export default defineComponent({
 
 .amount-wrapper {
     width: 210px;
-    padding: 8px;
+    padding: 10px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -157,8 +187,20 @@ export default defineComponent({
     border-radius: var(--border-radius-medium);
 }
 
-.max-label {
-    margin-right: 8px;
+.balance-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.max-button {
+    display: flex;
+}
+
+.balance-label {
+    margin-top: 4px;
+    font-size: var(--font-size-tiny);
+    color: var(--text-control);
 }
 
 .loading {
@@ -186,8 +228,7 @@ export default defineComponent({
 }
 
 .amount {
-    min-width: 160px;
-    margin-left: 8px;
+    min-width: 120px;
     font-size: var(--font-size-large);
     font-weight: bold;
     color: var(--text-primary);
