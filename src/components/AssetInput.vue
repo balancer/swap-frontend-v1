@@ -251,7 +251,7 @@ export default defineComponent({
 }
 
 .asset-wrapper:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
     border-radius: var(--border-radius-medium);
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;

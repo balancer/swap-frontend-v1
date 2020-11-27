@@ -175,14 +175,19 @@ export default defineComponent({
 }
 
 .icon-wrapper {
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     display: flex;
     justify-content: center;
     align-items: center;
     background: var(--background-secondary);
+    border: 1px solid var(--border-input);
     border-radius: 50%;
     cursor: pointer;
+}
+
+.icon-wrapper:hover {
+    background: var(--background-hover);
 }
 
 .icon {

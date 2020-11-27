@@ -97,7 +97,7 @@ export default defineComponent({
 }
 
 .account-wrapper:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
 }
 
 .account-meta {

@@ -46,7 +46,7 @@ button {
     background: var(--accent);
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
     border-radius: var(--border-radius-medium);
-    border-color: var(--background-secondary);
+    border-color: transparent;
     cursor: pointer;
 }
 

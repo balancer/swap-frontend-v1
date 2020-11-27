@@ -65,6 +65,7 @@ export default defineComponent({
     --background-header: #1a1a1a;
     --background-form: #1f1f1f;
     --background-control: #2c2d3a;
+    --background-hover: #1c1c24;
     --border-form: #262626;
     --border-input: #242424;
     --accent: #4965ff;
