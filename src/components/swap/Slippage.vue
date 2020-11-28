@@ -19,7 +19,6 @@ export default defineComponent({
             required: true,
         },
     },
-    emits: ['change', 'update:buffer'],
     setup(props) {
         const label = computed(() => {
             if (props.value < 0.0001) {

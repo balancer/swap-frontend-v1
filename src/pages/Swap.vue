@@ -20,7 +20,6 @@
                 }"
             />
             <Slippage
-                v-model:buffer="slippageBuffer"
                 :value="slippage"
             />
             <SwapButton
@@ -97,7 +96,6 @@ export default defineComponent({
         const assetOutAddressInput = ref('');
         const assetOutAmountInput = ref('');
         const slippage = ref(0);
-        const slippageBuffer = ref('0.5');
         const transactionPending = ref(false);
         const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
@@ -166,7 +164,6 @@ export default defineComponent({
             await fetchAssetMetadata(assetIn, assetOut);
             assetInAddressInput.value = assetIn;
             assetOutAddressInput.value = assetOut;
-            slippageBuffer.value = (Storage.getSlippage() * 100).toString();
             initSor();
         });
 
@@ -196,11 +193,6 @@ export default defineComponent({
                 await sor.setCostOutputToken(assetOutAddress);
             }
             onAmountChange(activeInput.value);
-        });
-
-        watch(slippageBuffer, async () => {
-            const slippage = parseFloat(slippageBuffer.value) / 100;
-            Storage.saveSlippage(slippage);
         });
 
         function handleAmountChange(amount: string): void {
@@ -239,7 +231,7 @@ export default defineComponent({
             const assetOutDecimals = metadata[assetOutAddress].decimals;
             const assetInAmountNumber = new BigNumber(assetInAmountInput.value);
             const assetInAmount = scale(assetInAmountNumber, assetInDecimals);
-            const slippageBufferRate = parseFloat(slippageBuffer.value) / 100;
+            const slippageBufferRate = Storage.getSlippage();
             const provider = await store.getters['account/provider'];
             if (isWrapPair(assetInAddress, assetOutAddress)) {
                 if (assetInAddress === ETH_KEY) {
@@ -481,7 +473,6 @@ export default defineComponent({
 
             swaps,
             slippage,
-            slippageBuffer,
             validation,
 
             account,
