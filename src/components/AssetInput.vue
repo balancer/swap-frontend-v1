@@ -1,5 +1,5 @@
 <template>
-    <div class="input">
+    <div class="asset-input">
         <div
             class="asset-wrapper"
             @click="openModal"
@@ -17,33 +17,30 @@
             />
         </div>
         <div class="amount-wrapper">
-            <div
-                v-if="loading"
-                class="loading"
-            />
-            <input
-                v-else
-                :value="amount"
-                class="amount"
-                placeholder="0"
-                @input="handleInputChange($event.target.value)"
-            >
-            <div
-                v-if="balanceAvailable"
-                class="balance-wrapper"
-            >
-                <div>
+            <div class="amount">
+                <div class="input-wrapper">
+                    <div
+                        v-if="loading"
+                        class="loading"
+                    />
+                    <input
+                        v-else
+                        :value="amount"
+                        class="input"
+                        placeholder="0"
+                        @input="handleInputChange($event.target.value)"
+                    >
                     <ButtonText
+                        v-if="isMaxLabelShown"
                         :text="'max'"
                         class="max-button"
                         @click="setMax"
                     />
                 </div>
-                <div class="balance-label">
-                    {{ balanceLabel }}
+                <div class="label">
+                    {{ label }}
                 </div>
             </div>
-            <span v-else />
         </div>
     </div>
 </template>
@@ -53,15 +50,12 @@ import BigNumber from 'bignumber.js';
 import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
-import config from '@/config';
 import { RootState } from '@/store';
 import { ETH_KEY, scale } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
-
-const GAS_BUFFER = 0.1;
 
 export default defineComponent({
     components: {
@@ -82,6 +76,10 @@ export default defineComponent({
             type: String,
             required: true,
         },
+        label: {
+            type: String,
+            default: '',
+        },
         loading: {
             type: Boolean,
             default: false,
@@ -100,8 +98,12 @@ export default defineComponent({
             return asset.symbol;
         });
 
-        const balanceAvailable = computed(() => {
+        const isMaxLabelShown = computed(() => {
             if (props.modalKey !== 'input') {
+                return false;
+            }
+            console.log(props.address);
+            if (props.address === ETH_KEY) {
                 return false;
             }
             const assets = store.getters['assets/metadata'];
@@ -117,24 +119,6 @@ export default defineComponent({
             return true;
         });
 
-        const balanceLabel = computed(() => {
-            const { balances } = store.state.account;
-            const metadata = store.getters['assets/metadata'];
-            if (!balances || !metadata) {
-                return '';
-            }
-
-            const assetMetadata = metadata[props.address];
-            const balance = balances[props.address];
-            const balanceNumber = new BigNumber(balance);
-
-            const assetDecimals = assetMetadata.decimals;
-            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            return balanceShortNumber.isInteger()
-                ? balanceShortNumber.toString()
-                : balanceShortNumber.toFixed(config.precision);
-        });
-
         function setMax(): void {
             const assets = store.getters['assets/metadata'];
             const { balances } = store.state.account;
@@ -142,9 +126,7 @@ export default defineComponent({
             const assetDecimals = assets[props.address].decimals;
             const balanceNumber = new BigNumber(balance);
             const amountNumber = scale(balanceNumber, -assetDecimals);
-            const amount = props.address === ETH_KEY
-                ? amountNumber.minus(GAS_BUFFER).toString()
-                : amountNumber.toString();
+            const amount = amountNumber.toString();
             handleInputChange(amount);
         }
 
@@ -158,8 +140,7 @@ export default defineComponent({
 
         return {
             symbol,
-            balanceAvailable,
-            balanceLabel,
+            isMaxLabelShown,
             setMax,
             handleInputChange,
             openModal,
@@ -169,77 +150,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.input {
+.asset-input {
     display: flex;
     height: 58px;
     border: 1px solid var(--border-input);
     border-radius: var(--border-radius-medium);
     background: var(--background-secondary);
-}
-
-.amount-wrapper {
-    width: 210px;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-left: 1px solid var(--border-input);
-    border-radius: var(--border-radius-medium);
-}
-
-.balance-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.max-button {
-    display: flex;
-}
-
-.balance-label {
-    margin-top: 4px;
-    font-size: var(--font-size-tiny);
-    color: var(--text-control);
-}
-
-.loading {
-    width: 100px;
-    height: 29px;
-    background: var(--text-primary);
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-}
-
-@keyframes pulse {
-    0% {
-        opacity: 0.2;
-    }
-
-    10% {
-        opacity: 0.7;
-    }
-
-    100% {
-        opacity: 0.2;
-    }
-}
-
-.amount {
-    min-width: 120px;
-    font-size: var(--font-size-large);
-    font-weight: bold;
-    color: var(--text-primary);
-    border: none;
-    background: transparent;
-    text-align: left;
-    outline: none;
-}
-
-.amount::placeholder {
-    color: var(--text-secondary);
 }
 
 .asset-wrapper {
@@ -280,6 +196,79 @@ export default defineComponent({
     text-overflow: ellipsis;
 }
 
+.amount-wrapper {
+    width: 210px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-left: 1px solid var(--border-input);
+    border-radius: var(--border-radius-medium);
+}
+
+.amount {
+    width: 100%;
+}
+
+.input-wrapper {
+    display: flex;
+}
+
+.balance-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.loading {
+    width: 100px;
+    height: 29px;
+    background: var(--text-primary);
+    animation-name: pulse;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.2;
+    }
+
+    10% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 0.2;
+    }
+}
+
+.input {
+    min-width: 120px;
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    color: var(--text-primary);
+    border: none;
+    background: transparent;
+    text-align: left;
+    outline: none;
+}
+
+.input::placeholder {
+    color: var(--text-secondary);
+}
+
+.max-button {
+    display: flex;
+}
+
+.label {
+    margin-top: 4px;
+    font-size: var(--font-size-tiny);
+    color: var(--text-secondary);
+}
+
 .chevron-icon {
     width: 12px;
     height: 12px;
@@ -291,7 +280,7 @@ export default defineComponent({
         width: 180px;
     }
 
-    .amount {
+    .input {
         min-width: 100px;
     }
 }
