@@ -88,6 +88,9 @@ export default defineComponent({
         });
 
         const text = computed(() => {
+            if (loading.value) {
+                return actionText.value;
+            }
             if (disabled.value) {
                 return errorText.value;
             } else {
