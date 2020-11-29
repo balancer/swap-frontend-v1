@@ -521,7 +521,7 @@ export default defineComponent({
 }
 
 .swap-button {
-    margin-top: 16px;
+    margin-top: 40px;
     width: 100%;
 }
 

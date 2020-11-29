@@ -22,7 +22,7 @@
     <Button
         v-else
         :text="'Connect'"
-        :primary="true"
+        :primary="false"
         :loading="loading"
         :disabled="loading"
         @click="openConnectorModal"
