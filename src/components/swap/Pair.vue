@@ -3,6 +3,7 @@
         <AssetInput
             :address="addressIn"
             :amount="amountIn"
+            :label="balanceLabel"
             :modal-key="'input'"
             :loading="swapsLoading && !isExactIn"
             @change="value => {
@@ -33,6 +34,7 @@
         <AssetInput
             :address="addressOut"
             :amount="amountOut"
+            :label="slippageLabel"
             :modal-key="'output'"
             :loading="swapsLoading && isExactIn"
             @change="value => {
@@ -49,6 +51,7 @@ import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
 import config from '@/config';
+import { scale } from '@/utils/helpers';
 import { SwapValidation } from '@/utils/validation';
 
 import AssetInput from '@/components/AssetInput.vue';
@@ -80,6 +83,10 @@ export default defineComponent({
             type: Boolean,
             required: true,
         },
+        slippage: {
+            type: Number,
+            required: true,
+        },
         swapsLoading: {
             type: Boolean,
             required: true,
@@ -101,6 +108,35 @@ export default defineComponent({
         const store = useStore<RootState>();
 
         const isInRate = ref(true);
+
+        const slippageLabel = computed(() => {
+            if (props.slippage === 0) {
+                return '';
+            }
+            if (props.slippage < 0.0001) {
+                return 'Price impact: 0.01%';
+            }
+            return `Price impact: ${(props.slippage * 100).toFixed(2)}%`;
+        });
+
+        const balanceLabel = computed(() => {
+            const { balances } = store.state.account;
+            const metadata = store.getters['assets/metadata'];
+            if (!balances || !metadata) {
+                return '';
+            }
+
+            const assetMetadata = metadata[props.addressIn];
+            const balance = balances[props.addressIn];
+            if (!assetMetadata || !balance) {
+                return '';
+            }
+
+            const balanceNumber = new BigNumber(balance);
+            const assetDecimals = assetMetadata.decimals;
+            const balanceShortNumber = scale(balanceNumber, -assetDecimals);
+            return `Balance: ${balanceShortNumber.toFixed(config.precision)}`;
+        });
 
         const rateMessage = computed(() => {
             if (props.validation === SwapValidation.EMPTY_INPUT ||
@@ -150,6 +186,9 @@ export default defineComponent({
 
         return {
             handleAmountChange,
+
+            balanceLabel,
+            slippageLabel,
 
             toggle,
             rateMessage,

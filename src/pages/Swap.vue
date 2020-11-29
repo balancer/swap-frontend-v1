@@ -13,14 +13,12 @@
                 v-model:address-out="assetOutAddressInput"
                 v-model:amount-out="assetOutAmountInput"
                 v-model:is-exact-in="isExactIn"
+                :slippage="slippage"
                 :swaps-loading="swapsLoading"
                 :validation="validation"
                 @change="value => {
                     handleAmountChange(value);
                 }"
-            />
-            <Slippage
-                :value="slippage"
             />
             <SwapButton
                 class="swap-button"
@@ -63,7 +61,6 @@ import { RootState } from '@/store';
 
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import Settings from '@/components/Settings.vue';
-import Slippage from '@/components/swap/Slippage.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
 
@@ -80,7 +77,6 @@ export default defineComponent({
     components: {
         ModalAssetSelector,
         Settings,
-        Slippage,
         SwapButton,
         SwapPair,
     },
