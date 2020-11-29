@@ -60,7 +60,8 @@ export default defineComponent({
     align-items: center;
 }
 
-.toggle-option.active {
+.toggle-option.active,
+.toggle-option:hover {
     background-color: var(--border-input);
 }
 </style>
