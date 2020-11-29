@@ -102,7 +102,6 @@ export default defineComponent({
             if (props.modalKey !== 'input') {
                 return false;
             }
-            console.log(props.address);
             if (props.address === ETH_KEY) {
                 return false;
             }
