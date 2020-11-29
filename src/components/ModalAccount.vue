@@ -48,58 +48,11 @@
                     @click="disconnect"
                 />
             </div>
-            <div class="state">
-                <Toggle
-                    :options="tabs"
-                    :selected="activeTab"
-                    @select="handleToggleSelect"
-                />
-                <div
-                    v-if="activeTab === 'transactions'"
-                    class="transactions"
-                >
-                    <div
-                        v-if="transactions.length === 0"
-                        class="transactions-empty"
-                    >
-                        Your transactions will appear here
-                    </div>
-                    <div
-                        v-for="transaction in transactions"
-                        :key="transaction.hash"
-                        class="transaction"
-                    >
-                        <div class="transaction-meta">
-                            <div class="transaction-icon-wrapper">
-                                <TransactionIcon
-                                    class="transaction-icon"
-                                    :status="transaction.status"
-                                />
-                            </div>
-                            <div class="transaction-data">
-                                <span class="transaction-text">{{ transaction.text }}</span>
-                                <div class="transaction-date">
-                                    <span v-if="transaction.timestamp > 0">{{ formatDate(transaction.timestamp) }}</span>
-                                    <span v-else>Mining…</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <a
-                                class="transaction-link"
-                                :href="getEtherscanLink(transaction.hash)"
-                                target="_blank"
-                            >
-                                <Icon
-                                    class="transaction-link-icon"
-                                    :title="'externalLink'"
-                                />
-                            </a>
-                        </div>
-                    </div>
+            <div class="wallet">
+                <div class="wallet-header">
+                    Wallet
                 </div>
                 <div
-                    v-if="activeTab === 'wallet'"
                     class="balances"
                 >
                     <div
@@ -113,14 +66,14 @@
                         :key="balance.address"
                         class="balance"
                     >
-                        <div class="asset-meta">
+                        <div class="balance-asset">
                             <div class="asset-icon-wrapper">
                                 <AssetIcon
                                     class="asset-icon"
                                     :address="balance.address"
                                 />
                             </div>
-                            <div class="asset-data">
+                            <div class="asset-meta">
                                 <div class="asset-name">
                                     {{ balance.name }}
                                 </div>
@@ -129,7 +82,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="balance-amount">
                             {{ balance.amount }}
                         </div>
                     </div>
@@ -141,12 +94,12 @@
 
 <script lang="ts">
 import BigNumber from 'bignumber.js';
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
 import { scale } from '@/utils/helpers';
-import { formatAddress, formatTxHash, formatDate, getEtherscanLink, getAccountLink } from '@/utils/helpers';
+import { formatAddress, getAccountLink } from '@/utils/helpers';
 import config from '@/config';
 
 import AssetIcon from '@/components/AssetIcon.vue';
@@ -154,8 +107,6 @@ import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
 import Jazzicon from '@/components/Jazzicon.vue';
 import ModalBase from '@/components/ModalBase.vue';
-import Toggle from '@/components/Toggle.vue';
-import TransactionIcon from '@/components/TransactionIcon.vue';
 
 export default defineComponent({
     components: {
@@ -164,8 +115,6 @@ export default defineComponent({
         Icon,
         Jazzicon,
         ModalBase,
-        Toggle,
-        TransactionIcon,
     },
     props: {
         open: {
@@ -176,17 +125,11 @@ export default defineComponent({
     setup() {
         const store = useStore<RootState>();
 
-        const activeTab = ref('transactions');
+        const connector = computed(() => store.state.account.connector);
 
-        const tabs = [{
-            id: 'transactions',
-            title: 'Transactions',
-        }, {
-            id: 'wallet',
-            title: 'Wallet',
-        }];
+        const address = computed(() => store.state.account.address);
 
-        const accountBalances = computed(() => {
+        const balances = computed(() => {
             const metadata = store.getters['assets/metadata'];
             const { balances } = store.state.account;
             return Object.keys(balances)
@@ -209,26 +152,6 @@ export default defineComponent({
                 filter(balance => balance.amount !== '');
         });
 
-        const accountTransactions = computed(() => {
-            const transactions = Object.values(store.state.account.transactions);
-            return transactions.sort((a, b) => {
-                if (a.timestamp === 0 && b.timestamp === 0) {
-                    return a.hash < b.hash ? -1 : 1;
-                }
-                if (a.timestamp === 0) {
-                    return 1;
-                }
-                if (b.timestamp === 0) {
-                    return 1;
-                }
-                return b.timestamp - a.timestamp;
-            });
-        });
-
-        function handleToggleSelect(optionId: string): void {
-            activeTab.value = optionId;
-        }
-
         function copyAddress(): void {
             const { address } = store.state.account;
             navigator.clipboard.writeText(address);
@@ -244,20 +167,13 @@ export default defineComponent({
         }
 
         return {
-            connector: computed(() => store.state.account.connector),
-            address: computed(() => store.state.account.address),
-            activeTab,
-            tabs,
-            transactions: accountTransactions,
-            balances: accountBalances,
+            connector,
+            address,
+            balances,
 
             formatAddress,
-            formatTxHash,
-            formatDate,
-            getEtherscanLink,
             getAccountLink,
 
-            handleToggleSelect,
             copyAddress,
             disconnect,
             close,
@@ -326,62 +242,16 @@ export default defineComponent({
     font-size: 14px;
 }
 
-.state {
-    margin: 32px 16px 16px 16px;
-    border: 1px solid var(--border-input);
-    border-radius: var(--border-radius-small);
+.wallet {
+    margin: 16px;
+    border: 1px solid var(--border-form);
+    border-radius: var(--border-radius-medium);
 }
 
-.transactions {
-    margin: 16px 0;
-}
-
-.transactions-empty {
-    text-align: center;
-    color: var(--text-secondary);
-}
-
-.transaction {
-    padding: 4px 16px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.transaction-meta {
-    display: flex;
-    align-items: center;
-}
-
-.transaction-icon-wrapper {
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.transaction-icon {
-    width: 16px;
-    height: 16px;
-}
-
-.transaction-data {
-    display: flex;
-    margin-left: 8px;
-    align-items: baseline;
-}
-
-.transaction-date {
-    margin-left: 8px;
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.transaction-link {
-    color: var(--text-primary);
-}
-
-.transaction-link-icon {
-    height: 12px;
-    width: 12px;
+.wallet-header {
+    margin: 16px;
+    font-weight: bold;
+    font-size: var(--font-size-large);
 }
 
 .balances {
@@ -404,7 +274,7 @@ export default defineComponent({
     padding: 8px 16px;
 }
 
-.asset-meta {
+.balance-asset {
     display: flex;
 }
 
@@ -420,7 +290,7 @@ export default defineComponent({
     border-radius: 50%;
 }
 
-.asset-data {
+.asset-meta {
     display: flex;
     flex-direction: column;
     margin-left: 16px;
@@ -428,6 +298,12 @@ export default defineComponent({
 
 .asset-symbol {
     font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.balance-amount {
+    display: flex;
+    align-items: center;
     color: var(--text-secondary);
 }
 </style>
