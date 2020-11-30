@@ -34,13 +34,10 @@ export default defineComponent({
         });
 
         const assetIcon = computed(() => {
-            let address = props.address;
+            const address = props.address;
             const metadata = store.getters['assets/metadata'];
             const assetMetadata = metadata[address];
 
-            if (address === ETH_KEY) {
-                address = config.addresses.weth;
-            }
             if (!assetMetadata) {
                 return defaultIcon;
             }
