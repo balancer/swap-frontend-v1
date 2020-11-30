@@ -11,8 +11,6 @@ import { useStore } from 'vuex';
 
 import defaultIcon from '@/assets/defaultAssetIcon.svg';
 
-import { ETH_KEY } from '@/utils/helpers';
-import config from '@/config';
 import { RootState } from '@/store';
 
 export default defineComponent({
