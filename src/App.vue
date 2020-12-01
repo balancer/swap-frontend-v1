@@ -101,6 +101,12 @@ input {
     appearance: textfield;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 input:invalid {
     box-shadow: none;
 }
