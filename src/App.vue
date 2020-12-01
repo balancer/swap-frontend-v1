@@ -98,10 +98,11 @@ body {
 }
 
 .view {
-    height: 70vh;
+    height: calc(100vh - 96px);
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
+    overflow-y: scroll;
 }
 
 @media only screen and (max-width: 768px) {
