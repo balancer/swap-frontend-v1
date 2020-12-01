@@ -84,7 +84,7 @@ export default defineComponent({
     left: 0;
     right: 0;
     z-index: 2;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .modal {
