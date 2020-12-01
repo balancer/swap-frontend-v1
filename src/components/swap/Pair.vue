@@ -12,15 +12,7 @@
         />
     </div>
     <div class="rate-wrapper">
-        <div
-            class="icon-wrapper"
-            @click="toggle"
-        >
-            <Icon
-                class="icon"
-                :title="'pairToggle'"
-            />
-        </div>
+        <PairToggle @toggle="toggle" />
         <div class="rate-message">
             <span
                 class="rate-label"
@@ -55,12 +47,12 @@ import { scale } from '@/utils/helpers';
 import { SwapValidation } from '@/utils/validation';
 
 import AssetInput from '@/components/AssetInput.vue';
-import Icon from '@/components/Icon.vue';
+import PairToggle from '@/components/swap/PairToggle.vue';
 
 export default defineComponent({
     components: {
         AssetInput,
-        Icon,
+        PairToggle,
     },
     props: {
         addressIn: {
@@ -210,28 +202,6 @@ export default defineComponent({
 .rate-wrapper {
     margin: 24px 0;
     display: flex;
-}
-
-.icon-wrapper {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--background-secondary);
-    border: 1px solid var(--border-input);
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.icon-wrapper:hover {
-    background: var(--background-hover);
-}
-
-.icon {
-    width: 20px;
-    height: 16px;
-    color: var(--text-primary);
 }
 
 .rate-message {
