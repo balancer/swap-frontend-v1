@@ -25,6 +25,7 @@
                             class="slippage-option"
                             :class="{ selected: isCustomSlippage }"
                             placeholder="2.0"
+                            type="number"
                         >
                     </div>
                 </div>

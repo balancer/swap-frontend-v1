@@ -28,6 +28,7 @@
                         :value="amount"
                         class="input"
                         placeholder="0"
+                        type="number"
                         @input="handleInputChange($event.target.value)"
                     >
                     <ButtonText
