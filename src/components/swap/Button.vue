@@ -128,7 +128,7 @@ export default defineComponent({
 
         const actionText = computed(() => {
             if (type.value === Type.Connect) {
-                return 'Connect';
+                return 'Connect Wallet';
             }
             if (type.value === Type.Unlock) {
                 return 'Unlock';
