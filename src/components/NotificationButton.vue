@@ -65,7 +65,7 @@ a {
     padding: 4px;
     background: var(--text-primary);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-small);
     display: flex;
     align-items: center;
     font-size: 14px;

@@ -88,6 +88,9 @@ export default defineComponent({
         });
 
         const text = computed(() => {
+            if (loading.value) {
+                return actionText.value;
+            }
             if (disabled.value) {
                 return errorText.value;
             } else {
@@ -125,7 +128,7 @@ export default defineComponent({
 
         const actionText = computed(() => {
             if (type.value === Type.Connect) {
-                return 'Connect';
+                return 'Connect Wallet';
             }
             if (type.value === Type.Unlock) {
                 return 'Unlock';

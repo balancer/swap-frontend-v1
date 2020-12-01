@@ -20,11 +20,16 @@ export default defineComponent({
 <style scoped>
 .button {
     padding: 4px;
-    color: var(--info);
-    font-size: 14px;
-    text-transform: uppercase;
-    border: 1px solid var(--info);
-    border-radius: var(--border-radius);
+    color: var(--text-control);
+    font-size: var(--font-size-tiny);
+    text-transform: capitalize;
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-small);
+    background: var(--background-control);
     cursor: pointer;
+}
+
+.button:hover {
+    background: var(--background-hover);
 }
 </style>

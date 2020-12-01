@@ -4,7 +4,7 @@
         :open="open"
         @close="close"
     >
-        <template #header>
+        <template #default>
             <div class="query-input-wrapper">
                 <input
                     v-model="query"
@@ -13,8 +13,6 @@
                     placeholder="Search by symbol, name, or address"
                 >
             </div>
-        </template>
-        <template #default>
             <div
                 v-for="asset in visibleAssets"
                 :key="asset.address"
@@ -27,9 +25,6 @@
                         class="asset-icon"
                         :address="asset.address"
                     />
-                    <div class="asset-name">
-                        {{ asset.name }}
-                    </div>
                     <div class="asset-symbol">
                         {{ asset.symbol }}
                     </div>
@@ -40,7 +35,7 @@
                         Incompatible
                     </div>
                 </div>
-                <div>
+                <div class="asset-amount">
                     {{ asset.amount }}
                 </div>
             </div>
@@ -176,7 +171,7 @@ export default defineComponent({
 
 <style scoped>
 .query-input-wrapper {
-    margin-top: 16px;
+    padding: 16px;
 }
 
 .query-input {
@@ -192,7 +187,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    border-bottom: 1px solid var(--outline);
+    border-bottom: 1px solid var(--border-input);
     cursor: pointer;
 }
 
@@ -201,7 +196,7 @@ export default defineComponent({
 }
 
 .asset:hover {
-    background: var(--outline);
+    background: var(--border-input);
 }
 
 .asset.incompatible:hover {
@@ -210,33 +205,34 @@ export default defineComponent({
 
 .asset-meta {
     display: flex;
+    align-items: center;
 }
 
 .asset-icon {
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-}
-
-.asset-name {
-    max-width: 180px;
-    padding-left: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .asset-symbol {
     max-width: 140px;
-    padding-left: 8px;
+    padding-left: 12px;
+    font-size: var(--font-size-large);
+    font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-secondary);
 }
 
 .asset-incompatible {
     padding-left: 8px;
     color: var(--error);
+}
+
+.asset-amount {
+    display: flex;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: var(--font-size-large);
 }
 </style>

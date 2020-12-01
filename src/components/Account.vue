@@ -8,7 +8,7 @@
             <Jazzicon
                 class="account-icon"
                 :address="address"
-                :size="16"
+                :size="28"
             />
             <div class="account-address">
                 {{ formatAddress(address) }}
@@ -22,7 +22,7 @@
     <Button
         v-else
         :text="'Connect'"
-        :primary="true"
+        :primary="false"
         :loading="loading"
         :disabled="loading"
         @click="openConnectorModal"
@@ -84,20 +84,20 @@ export default defineComponent({
 <style scoped>
 .account-wrapper {
     height: var(--block-height);
-    width: 170px;
+    width: 186px;
     padding: 8px;
     box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-small);
     background: var(--background-secondary);
     cursor: pointer;
 }
 
 .account-wrapper:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
 }
 
 .account-meta {
@@ -106,18 +106,18 @@ export default defineComponent({
 }
 
 .account-icon {
-    width: 16px;
-    height: 16px;
+    width: 28px;
+    height: 28px;
     box-sizing: border-box;
     border-radius: 50%;
 }
 
 .account-address {
-    margin-left: 4px;
+    margin-left: 8px;
 }
 
 .chevron-icon {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
 }
 </style>

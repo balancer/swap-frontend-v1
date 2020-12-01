@@ -6,11 +6,13 @@
                     class="logo"
                     :src="logo"
                 >
-                <span class="title">Balancer</span>
+                <img
+                    class="title"
+                    :src="title"
+                >
             </div>
         </router-link>
         <div class="header-right">
-            <Settings />
             <Account class="account" />
         </div>
     </div>
@@ -20,18 +22,18 @@
 import { defineComponent } from 'vue';
 
 import logo from '@/assets/logo.svg';
+import title from '@/assets/title.svg';
 
 import Account from '@/components/Account.vue';
-import Settings from '@/components/Settings.vue';
 
 export default defineComponent({
     components: {
         Account,
-        Settings,
     },
     setup() {
         return {
             logo,
+            title,
         };
     },
 });
@@ -39,10 +41,12 @@ export default defineComponent({
 
 <style scoped>
 .header {
-    height: 64px;
+    height: 96px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: var(--background-header);
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
 }
 
 .header-right {
@@ -55,22 +59,34 @@ a {
 }
 
 .brand {
-    margin-left: 16px;
+    margin-left: 40px;
     display: flex;
     align-items: center;
 }
 
 .logo {
-    height: 32px;
-    width: 32px;
+    height: 40px;
+    width: 40px;
 }
 
 .title {
     margin-left: 16px;
+    font-size: 20px;
+    text-transform: uppercase;
 }
 
 .account {
     margin-left: 8px;
     margin-right: 16px;
+}
+
+@media only screen and (max-width: 768px) {
+    .brand {
+        margin-left: 16px;
+    }
+
+    .title {
+        display: none;
+    }
 }
 </style>

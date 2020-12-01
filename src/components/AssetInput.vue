@@ -1,5 +1,5 @@
 <template>
-    <div class="input">
+    <div class="asset-input">
         <div
             class="asset-wrapper"
             @click="openModal"
@@ -17,24 +17,31 @@
             />
         </div>
         <div class="amount-wrapper">
-            <ButtonText
-                v-if="isMaxLabelShown"
-                :text="'max'"
-                class="max-label"
-                @click="setMax"
-            />
-            <span v-else />
-            <div
-                v-if="loading"
-                class="loading"
-            />
-            <input
-                v-else
-                :value="amount"
-                class="amount"
-                placeholder="0"
-                @input="handleInputChange($event.target.value)"
-            >
+            <div class="amount">
+                <div class="input-wrapper">
+                    <div
+                        v-if="loading"
+                        class="loading"
+                    />
+                    <input
+                        v-else
+                        :value="amount"
+                        class="input"
+                        placeholder="0"
+                        type="number"
+                        @input="handleInputChange($event.target.value)"
+                    >
+                    <ButtonText
+                        v-if="isMaxLabelShown"
+                        :text="'max'"
+                        class="max-button"
+                        @click="setMax"
+                    />
+                </div>
+                <div class="label">
+                    {{ label }}
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -69,6 +76,10 @@ export default defineComponent({
         amount: {
             type: String,
             required: true,
+        },
+        label: {
+            type: String,
+            default: '',
         },
         loading: {
             type: Boolean,
@@ -139,26 +150,74 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.input {
+.asset-input {
     display: flex;
-    height: 48px;
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    height: 58px;
+    border: 1px solid var(--border-input);
+    border-radius: var(--border-radius-medium);
     background: var(--background-secondary);
 }
 
-.amount-wrapper {
-    width: 260px;
-    padding: 8px;
+.asset-wrapper {
+    width: 140px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-left: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 }
 
-.max-label {
-    margin-right: 8px;
+.asset-wrapper:hover {
+    background: var(--background-hover);
+    border-radius: var(--border-radius-medium);
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.asset-meta {
+    display: flex;
+    align-items: center;
+}
+
+.asset-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.asset-symbol {
+    max-width: 68px;
+    margin-left: 8px;
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.amount-wrapper {
+    width: 210px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-left: 1px solid var(--border-input);
+    border-radius: var(--border-radius-medium);
+}
+
+.amount {
+    width: 100%;
+}
+
+.input-wrapper {
+    display: flex;
+}
+
+.balance-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 .loading {
@@ -185,76 +244,44 @@ export default defineComponent({
     }
 }
 
-.amount {
-    min-width: 200px;
-    font-size: 24px;
+.input {
+    min-width: 120px;
+    font-size: var(--font-size-large);
+    font-weight: bold;
     color: var(--text-primary);
     border: none;
     background: transparent;
-    text-align: right;
+    text-align: left;
     outline: none;
 }
 
-.amount::placeholder {
+.input::placeholder {
     color: var(--text-secondary);
 }
 
-.asset-wrapper {
-    width: 120px;
+.max-button {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
 }
 
-.asset-wrapper:hover {
-    background: var(--background-primary);
-    border-radius: var(--border-radius);
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-}
-
-.asset-meta {
-    display: flex;
-    align-items: center;
-}
-
-.asset-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin-left: 8px;
-}
-
-.asset-symbol {
-    max-width: 68px;
-    margin-left: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.label {
+    margin-top: 4px;
+    font-size: var(--font-size-tiny);
+    color: var(--text-secondary);
 }
 
 .chevron-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
 }
 
 @media only screen and (max-width: 768px) {
     .amount-wrapper {
-        width: 220px;
+        width: 180px;
     }
 
-    .amount {
+    .input {
         min-width: 100px;
-    }
-
-    .asset-wrapper {
-        width: 100px;
-    }
-
-    .asset-symbol {
-        max-width: 48px;
     }
 }
 </style>

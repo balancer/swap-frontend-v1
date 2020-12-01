@@ -12,19 +12,13 @@
             />
             <div class="modal">
                 <div class="header">
-                    <div class="header-top">
-                        <div>
-                            {{ title }}
-                        </div>
-                        <Icon
-                            class="close-icon"
-                            :title="'close'"
-                            @click="$emit('close')"
-                        />
+                    <div>
+                        {{ title }}
                     </div>
-                    <slot
-                        class="header-bottom"
-                        name="header"
+                    <Icon
+                        class="close-icon"
+                        :title="'close'"
+                        @click="$emit('close')"
                     />
                 </div>
                 <div class="body">
@@ -90,7 +84,7 @@ export default defineComponent({
     left: 0;
     right: 0;
     z-index: 2;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .modal {
@@ -100,9 +94,8 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background-color: var(--background-secondary);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--outline);
+    background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);
+    border-radius: var(--border-radius-large);
 }
 
 .appear-enter > .modal {
@@ -118,19 +111,19 @@ export default defineComponent({
 }
 
 .header {
-    padding: 16px;
-    border-bottom: 1px solid var(--outline);
-}
-
-.header-top {
+    min-height: 96px;
+    box-sizing: border-box;
+    padding: 0 18px 24px 18px;
     display: flex;
     justify-content: space-between;
-    font-weight: 700;
+    align-items: flex-end;
+    font-size: 22px;
+    font-weight: bold;
+    background: var(--border-input);
 }
 
 .close-icon {
-    width: 20px;
-    height: 20px;
+    width: 16px;
 }
 
 .body {
@@ -154,6 +147,17 @@ export default defineComponent({
 
     100% {
         transform: scale(1);
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .modal-wrapper {
+        align-items: flex-start;
+    }
+
+    .modal {
+        border-radius: 0;
+        max-height: 100%;
     }
 }
 </style>
