@@ -30,6 +30,15 @@
                 @unlock="unlock"
                 @swap="swap"
             />
+            <Routing
+                :address-in="assetInAddressInput"
+                :amount-in="assetInAmountInput"
+                :address-out="assetOutAddressInput"
+                :amount-out="assetOutAmountInput"
+                :pools="pools"
+                :swaps="swaps"
+                class="routing"
+            />
         </div>
         <ModalAssetSelector
             :open="isModalOpen"
@@ -48,7 +57,7 @@ import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
 import { ErrorCode } from '@ethersproject/logger';
 import { SOR } from '@balancer-labs/sor';
-import { Swap } from '@balancer-labs/sor/dist/types';
+import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 
 import config from '@/config';
 import provider from '@/utils/provider';
@@ -60,6 +69,7 @@ import Helper from '@/web3/helper';
 import { RootState } from '@/store';
 
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
+import Routing from '@/components/swap/Routing.vue';
 import Settings from '@/components/Settings.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
@@ -76,6 +86,7 @@ interface Pair {
 export default defineComponent({
     components: {
         ModalAssetSelector,
+        Routing,
         Settings,
         SwapButton,
         SwapPair,
@@ -95,6 +106,7 @@ export default defineComponent({
         const transactionPending = ref(false);
         const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
+        const pools = ref<Pool[]>([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
         
@@ -283,6 +295,7 @@ export default defineComponent({
             await onAmountChange(activeInput.value);
             await sor.fetchPools();
             await onAmountChange(activeInput.value);
+            pools.value = sor.onChainCache.pools;
         }
 
         async function onAmountChange(amount: string): Promise<void> {
@@ -294,6 +307,7 @@ export default defineComponent({
                     assetInAmountInput.value = '';
                 }
                 slippage.value = 0;
+                swaps.value = [];
                 return;
             }
 
@@ -467,6 +481,7 @@ export default defineComponent({
             assetOutAddressInput,
             assetOutAmountInput,
 
+            pools,
             swaps,
             slippage,
             validation,
@@ -525,11 +540,21 @@ export default defineComponent({
     width: 100%;
 }
 
+.routing {
+    max-width: 385px;
+    margin-top: 40px;
+}
+
 @media only screen and (max-width: 768px) {
     .pair {
         padding: 16px 8px;
         border: none;
         background: transparent;
+    }
+
+    .routing {
+        max-width: initial;
+        width: 100%;
     }
 }
 </style>
