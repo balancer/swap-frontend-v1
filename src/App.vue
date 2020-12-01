@@ -97,6 +97,14 @@ body {
     color: var(--text-primary);
 }
 
+input {
+    appearance: textfield;
+}
+
+input:invalid {
+    box-shadow: none;
+}
+
 .view {
     height: calc(100vh - 96px);
     display: flex;
