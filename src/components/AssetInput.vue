@@ -38,8 +38,14 @@
                         @click="setMax"
                     />
                 </div>
-                <div class="label">
-                    {{ label }}
+                <div
+                    class="label"
+                    :class="{
+                        warning: label.style === LabelStyle.Warning,
+                        error: label.style === LabelStyle.Error,
+                    }"
+                >
+                    {{ label.text }}
                 </div>
             </div>
         </div>
@@ -48,7 +54,7 @@
 
 <script lang="ts">
 import BigNumber from 'bignumber.js';
-import { defineComponent, computed } from 'vue';
+import { PropType, defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
@@ -57,6 +63,17 @@ import { ETH_KEY, scale } from '@/utils/helpers';
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
+
+export interface Label {
+    text: string;
+    style: LabelStyle;
+}
+
+export enum LabelStyle {
+    Normal,
+    Warning,
+    Error,
+}
 
 export default defineComponent({
     components: {
@@ -78,8 +95,11 @@ export default defineComponent({
             required: true,
         },
         label: {
-            type: String,
-            default: '',
+            type: Object as PropType<Label>,
+            default: {
+                text: '',
+                style: LabelStyle.Normal,
+            },
         },
         loading: {
             type: Boolean,
@@ -139,6 +159,8 @@ export default defineComponent({
         }
 
         return {
+            LabelStyle,
+
             symbol,
             isMaxLabelShown,
             setMax,
@@ -267,6 +289,16 @@ export default defineComponent({
     margin-top: 4px;
     font-size: var(--font-size-tiny);
     color: var(--text-secondary);
+}
+
+.label.warning {
+    color: var(--warning);
+    font-weight: bold;
+}
+
+.label.error {
+    color: var(--error);
+    font-weight: bold;
 }
 
 .chevron-icon {

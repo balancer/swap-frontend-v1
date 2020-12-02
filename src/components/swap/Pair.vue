@@ -44,10 +44,12 @@ import { useStore } from 'vuex';
 import { RootState } from '@/store';
 import config from '@/config';
 import { scale } from '@/utils/helpers';
-import { SwapValidation } from '@/utils/validation';
+import { SwapValidation, ValidationError, validateNumberInput } from '@/utils/validation';
 
-import AssetInput from '@/components/AssetInput.vue';
+import AssetInput, { LabelStyle } from '@/components/AssetInput.vue';
 import PairToggle from '@/components/swap/PairToggle.vue';
+
+const SLIPPAGE_WARNING = 0.02;
 
 export default defineComponent({
     components: {
@@ -103,31 +105,58 @@ export default defineComponent({
 
         const slippageLabel = computed(() => {
             if (props.slippage === 0) {
-                return '';
+                return {
+                    text: '',
+                    style: LabelStyle.Normal,
+                };
             }
             if (props.slippage < 0.0001) {
-                return 'Price impact: 0.01%';
+                return {
+                    text: 'Price impact: 0.01%',
+                    style: LabelStyle.Normal,
+                };
             }
-            return `Price impact: ${(props.slippage * 100).toFixed(2)}%`;
+            const text = `Price impact: ${(props.slippage * 100).toFixed(2)}%`;
+            const style = props.slippage < SLIPPAGE_WARNING
+                ? LabelStyle.Normal
+                : LabelStyle.Warning;
+            return {
+                text,
+                style,
+            };
         });
 
         const balanceLabel = computed(() => {
             const { balances } = store.state.account;
             const metadata = store.getters['assets/metadata'];
             if (!balances || !metadata) {
-                return '';
+                return {
+                    text: '',
+                    style: LabelStyle.Normal,
+                };
             }
 
             const assetMetadata = metadata[props.addressIn];
             const balance = balances[props.addressIn];
             if (!assetMetadata || !balance) {
-                return '';
+                return {
+                    text: '',
+                    style: LabelStyle.Normal,
+                };
             }
 
             const balanceNumber = new BigNumber(balance);
             const assetDecimals = assetMetadata.decimals;
             const balanceShortNumber = scale(balanceNumber, -assetDecimals);
-            return `Balance: ${balanceShortNumber.toFixed(config.precision)}`;
+            const text = `Balance: ${balanceShortNumber.toFixed(config.precision)}`;
+            const error = validateNumberInput(props.amountIn);
+            const style = error == ValidationError.NONE && balanceShortNumber.lt(props.amountIn)
+                ? LabelStyle.Error
+                : LabelStyle.Normal;
+            return {
+                text,
+                style,
+            };
         });
 
         const rateMessage = computed(() => {
