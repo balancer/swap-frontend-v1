@@ -172,7 +172,9 @@ const actions = {
         const { address } = state;
         const metadata = rootGetters['assets/metadata'];
         const assets = Object.keys(metadata);
+        console.time(`[API] fetchAccountState: ${address}`);
         const { proxy, balances, allowances } = await Ethereum.fetchAccountState(address, assets);
+        console.timeEnd(`[API] fetchAccountState: ${address}`);
         commit('setProxy', proxy);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
@@ -182,7 +184,9 @@ const actions = {
         if (!address) {
             return;
         }
+        console.time(`[API] fetchAccountState: ${address}`);
         const { balances, allowances } = await Ethereum.fetchAccountState(address, assets);
+        console.timeEnd(`[API] fetchAccountState: ${address}`);
         commit('addBalances', balances);
         commit('addAllowances', allowances);
     },

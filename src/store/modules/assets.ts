@@ -50,7 +50,9 @@ const actions = {
         }
     },
     fetchMetadata: async({ commit }: ActionContext<AssetState, RootState>, assets: string[]): Promise<void> => {
+        console.time(`[API] fetchAssetMetadata: N=${assets.length}`);
         const metadata = await Ethereum.fetchAssetMetadata(assets);
+        console.timeEnd(`[API] fetchAssetMetadata: N=${assets.length}`);
         Storage.saveAssets(config.chainId, metadata);
         commit('addCustomMetadata', metadata);
     },
