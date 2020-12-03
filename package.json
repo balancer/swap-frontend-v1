@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@balancer-labs/assets": "github:balancer-labs/assets#master",
-    "@balancer-labs/sor": "^1.0.0-0",
+    "@balancer-labs/sor": "^1.0.0-1",
     "@ethersproject/address": "^5.0.6",
     "@ethersproject/constants": "^5.0.6",
     "@ethersproject/contracts": "^5.0.6",
