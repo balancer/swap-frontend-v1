@@ -128,7 +128,7 @@ input:invalid {
     }
 
     .view {
-        height: initial;
+        min-height: initial;
     }
 }
 </style>
