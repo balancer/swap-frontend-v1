@@ -514,6 +514,7 @@ export default defineComponent({
 
 <style scoped>
 .pair {
+    margin: 20px;
     padding: 60px 40px;
     display: flex;
     flex-direction: column;
@@ -559,6 +560,7 @@ export default defineComponent({
 
 @media only screen and (max-width: 768px) {
     .pair {
+        margin: 0;
         padding: 16px 8px;
         border: none;
         background: transparent;
