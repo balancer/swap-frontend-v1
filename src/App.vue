@@ -112,11 +112,10 @@ input:invalid {
 }
 
 .view {
-    height: calc(100vh - 96px);
+    min-height: calc(100vh - 96px);
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-y: scroll;
 }
 
 @media only screen and (max-width: 768px) {
