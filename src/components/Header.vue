@@ -6,10 +6,7 @@
                     class="logo"
                     :src="logo"
                 >
-                <img
-                    class="title"
-                    :src="title"
-                >
+                <span class="title">Balancer</span>
             </div>
         </router-link>
         <div class="header-right">
@@ -72,7 +69,6 @@ a {
 .title {
     margin-left: 16px;
     font-size: 20px;
-    text-transform: uppercase;
 }
 
 .account {
