@@ -225,7 +225,6 @@ export default defineComponent({
     align-items: center;
     justify-content: space-between;
     border-left: 1px solid var(--border-input);
-    border-radius: var(--border-radius-medium);
 }
 
 .amount {
