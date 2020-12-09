@@ -2,7 +2,7 @@
     "network": "homestead",
     "chainId": 1,
     "precision": 6,
-    "alchemyKey": "8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn",
+    "infuraKey": "237c3102f39b4940abbe12dc49165cd6",
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
     "subgraphBackupUrl": "https://ipfs.fleek.co/ipns/balancer-team-bucket.storage.fleek.co/balancer-exchange/pools",
     "addresses": {
@@ -17,7 +17,7 @@
         "injected": {},
         "walletconnect": {
             "rpc": {
-                "1": "https://eth-mainnet.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
+                "1": "https://mainnet.infura.io/v3/237c3102f39b4940abbe12dc49165cd6"
             }
         },
         "portis": {
@@ -28,7 +28,7 @@
             "appName": "Balancer Exchange",
             "darkMode": true,
             "chainId": 1,
-            "ethJsonrpcUrl": "https://eth-mainnet.alchemyapi.io/v2/8qWZglPmwKt5rxa24Qr_pvbzWaQR1lnn"
+            "ethJsonrpcUrl": "https://mainnet.infura.io/v3/237c3102f39b4940abbe12dc49165cd6"
         },
         "fortmatic": {
             "apiKey": "pk_live_9CE8FD92E54684ED"

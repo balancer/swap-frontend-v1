@@ -36,7 +36,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
-import { useTransition } from '@vueuse/core';
+import { TransitionPresets, useTransition } from '@vueuse/core';
 
 import { NOTIFICATION_DURATION } from '@/store/modules/ui';
 
@@ -67,7 +67,7 @@ export default defineComponent({
 
         const progress = useTransition(totalProgress, {
             duration: NOTIFICATION_DURATION,
-            transition: 'linear',
+            transition: TransitionPresets.linear,
         });
 
         onMounted(() => {
@@ -107,7 +107,7 @@ export default defineComponent({
     padding: 16px;
     box-sizing: border-box;
     display: flex;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-small);
     justify-content: space-between;
     align-items: center;
 }

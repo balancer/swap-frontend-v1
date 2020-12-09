@@ -40,34 +40,33 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    background: var(--background-secondary);
-    border: 1px solid var(--outline);
+    font-size: var(--font-size-large);
+    font-weight: bold;
     color: var(--text-primary);
-    border-radius: var(--border-radius);
+    background: var(--background-secondary);
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-medium);
+    border: none;
     cursor: pointer;
-    transition: background 0.25s ease-in, border-color 0.25s ease-in;
+    transition: background 0.25s ease-in;
 }
 
 button.primary {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: linear-gradient(185deg, #f0f -100%, #00f 100%) 40% / 200%;
+    transition: background 0.25s ease-in;
 }
 
 button:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
 }
 
 button.primary:hover {
-    background: var(--accent-dark);
-    border-color: var(--accent-dark);
+    background: linear-gradient(185deg, #f0f -100%, #00f 100%) 70% / 200%;
 }
 
 button:disabled,
 button:disabled:hover {
     background: var(--text-secondary);
-    border-color: var(--text-secondary);
     cursor: not-allowed;
-    transition: background 0.35s ease-out, border-color 0.35s ease-out;
 }
 </style>

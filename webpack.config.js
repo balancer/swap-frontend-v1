@@ -3,6 +3,7 @@ const Dotenv = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const webpack = require('webpack');
 
 const isDev = process.argv.some(v => v.includes('webpack-dev-server'));
 
@@ -64,6 +65,10 @@ module.exports =
             systemvars: true,
         }),
         new CleanWebpackPlugin(),
+        new webpack.DefinePlugin({
+            __VUE_OPTIONS_API__: false,
+            __VUE_PROD_DEVTOOLS__: false,
+        }),
         new HtmlWebpackPlugin({
             template: 'public/index.html',
             favicon: 'public/favicon.ico',

@@ -11,8 +11,6 @@ import { useStore } from 'vuex';
 
 import defaultIcon from '@/assets/defaultAssetIcon.svg';
 
-import { ETH_KEY } from '@/utils/helpers';
-import config from '@/config';
 import { RootState } from '@/store';
 
 export default defineComponent({
@@ -34,13 +32,10 @@ export default defineComponent({
         });
 
         const assetIcon = computed(() => {
-            let address = props.address;
+            const address = props.address;
             const metadata = store.getters['assets/metadata'];
             const assetMetadata = metadata[address];
 
-            if (address === ETH_KEY) {
-                address = config.addresses.weth;
-            }
             if (!assetMetadata) {
                 return defaultIcon;
             }

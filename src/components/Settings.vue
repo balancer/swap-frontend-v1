@@ -38,24 +38,25 @@ export default defineComponent({
 
 <style scoped>
 .button {
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--text-control);
     background: var(--background-secondary);
-    border: 1px solid var(--outline);
-    border-radius: var(--border-radius);
+    border: 1px solid var(--border-input);
+    border-radius: 50%;
     cursor: pointer;
 }
 
 .button:hover {
-    background: var(--background-primary);
+    background: var(--background-hover);
 }
 
 .icon {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
 }
 </style>

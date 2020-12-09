@@ -19,7 +19,7 @@ interface Config {
     network: string;
     chainId: number;
     precision: number;
-    alchemyKey: string;
+    infuraKey: string;
     subgraphUrl: string;
     subgraphBackupUrl: string;
     addresses: {
