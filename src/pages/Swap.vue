@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <div class="page">
+        <WarningBeta />
         <div class="pair">
             <div class="header">
                 <div class="header-text">
@@ -73,6 +74,7 @@ import Routing from '@/components/swap/Routing.vue';
 import Settings from '@/components/Settings.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
+import WarningBeta from '@/components/WarningBeta.vue';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -90,6 +92,7 @@ export default defineComponent({
         Settings,
         SwapButton,
         SwapPair,
+        WarningBeta,
     },
     setup() {
         let sor: SOR | undefined = undefined;
@@ -513,6 +516,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.page {
+    flex-direction: column;
+}
 .pair {
     margin: 20px;
     padding: 60px 40px;
