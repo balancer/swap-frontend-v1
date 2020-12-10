@@ -10,6 +10,13 @@
             </div>
         </router-link>
         <div class="header-right">
+            <a
+                class="link"
+                href="https://pools.balancer.exchange"
+                target="_blank"
+            >
+                Add Liquidity
+            </a>
             <Account class="account" />
         </div>
     </div>
@@ -48,6 +55,11 @@ export default defineComponent({
 
 .header-right {
     display: flex;
+    align-items: center;
+}
+
+.link {
+    margin-right: 8px;
 }
 
 a {
@@ -82,6 +94,10 @@ a {
     }
 
     .title {
+        display: none;
+    }
+
+    .link {
         display: none;
     }
 }
