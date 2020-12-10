@@ -519,6 +519,7 @@ export default defineComponent({
 .page {
     flex-direction: column;
 }
+
 .pair {
     margin: 20px;
     padding: 60px 40px;
