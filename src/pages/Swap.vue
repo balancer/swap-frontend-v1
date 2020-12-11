@@ -519,7 +519,7 @@ export default defineComponent({
 
 .pair {
     margin: 20px;
-    padding: 60px 40px;
+    padding: 40px 40px;
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border-form);
