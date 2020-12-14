@@ -9,7 +9,13 @@
                     class="asset-icon"
                     :address="address"
                 />
-                <Tooltip>
+                <span
+                    v-if="symbol.length <= 10"
+                    class="asset-symbol"
+                >
+                    {{ symbol }}
+                </span>
+                <Tooltip v-else>
                     <template #trigger>
                         <span class="asset-symbol">{{ symbol }}</span>
                     </template>
