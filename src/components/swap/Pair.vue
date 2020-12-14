@@ -243,6 +243,7 @@ export default defineComponent({
 }
 
 .rate-label {
+    max-width: 320px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
