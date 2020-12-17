@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { getAddress } from '@ethersproject/address';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
+import assets from '@balancer-labs/assets/assets/index.json';
 
 import config from '@/config';
 import provider from '@/utils/provider';
@@ -82,7 +83,10 @@ export function getPoolLink(pool: string): string {
     return link;
 }
 
-export function getTrustwalletLink(address: string): string {
+export function getAssetLogo(address: string): string {
+    if (assets.includes(address.toLowerCase())) {
+        return `https://raw.githubusercontent.com/balancer-labs/assets/master/assets/${address.toLowerCase()}.png`;
+    }
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
 }
 

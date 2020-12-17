@@ -4,7 +4,7 @@ import dsProxyRegistryAbi from '../abi/DSProxyRegistry.json';
 import erc20Abi from '../abi/ERC20.json';
 
 import config, { AssetMetadata } from '@/config';
-import { ETH_KEY, getTrustwalletLink } from '@/utils/helpers';
+import { ETH_KEY, getAssetLogo } from '@/utils/helpers';
 import provider from '@/utils/provider';
 
 export type Allowances = Record<string, Record<string, string>>;
@@ -87,7 +87,7 @@ export default class Ethereum {
                 name,
                 symbol,
                 decimals,
-                logoURI: getTrustwalletLink(assetAddress),
+                logoURI: getAssetLogo(assetAddress),
             };
         }
         return metadata;

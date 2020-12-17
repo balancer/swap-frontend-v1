@@ -224,7 +224,9 @@ export default defineComponent({
                 const swapAmount = new BigNumber(rawHops[0].swapAmount || '0');
                 const share = swapAmount.div(totalSwapAmount).toNumber();
                 const hops = rawHops.map(rawHop => {
-                    const { tokenIn, tokenOut, swapAmount } = rawHop;
+                    const { swapAmount } = rawHop;
+                    const tokenIn = getAddress(rawHop.tokenIn);
+                    const tokenOut = getAddress(rawHop.tokenOut);
                     const rawPool = pools.find(pool => pool.id === rawHop.pool);
                     if (!rawPool) {
                         return {};
@@ -242,7 +244,15 @@ export default defineComponent({
                                     share,
                                 };
                             })
-                            .sort((a, b) => a.share - b.share)
+                            .sort((a, b) => {
+                                if (a.address === tokenIn || b.address === tokenOut) {
+                                    return -1;
+                                }
+                                if (a.address === tokenOut || b.address === tokenIn) {
+                                    return 1;
+                                }
+                                return a.share - b.share;
+                            })
                             .slice(0, 4),
                     };
                     return {

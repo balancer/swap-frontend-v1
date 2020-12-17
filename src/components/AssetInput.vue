@@ -9,7 +9,20 @@
                     class="asset-icon"
                     :address="address"
                 />
-                <span class="asset-symbol">{{ symbol }}</span>
+                <span
+                    v-if="symbol.length <= 10"
+                    class="asset-symbol"
+                >
+                    {{ symbol }}
+                </span>
+                <Tooltip v-else>
+                    <template #trigger>
+                        <span class="asset-symbol">{{ symbol }}</span>
+                    </template>
+                    <template #default>
+                        <div>{{ symbol }}</div>
+                    </template>
+                </Tooltip>
             </div>
             <Icon
                 class="chevron-icon"
@@ -63,6 +76,7 @@ import { ETH_KEY, scale } from '@/utils/helpers';
 import AssetIcon from '@/components/AssetIcon.vue';
 import ButtonText from '@/components/ButtonText.vue';
 import Icon from '@/components/Icon.vue';
+import Tooltip from '@/components/Tooltip.vue';
 
 export interface Label {
     text: string;
@@ -80,6 +94,7 @@ export default defineComponent({
         AssetIcon,
         ButtonText,
         Icon,
+        Tooltip,
     },
     props: {
         modalKey: {
@@ -209,6 +224,7 @@ export default defineComponent({
 }
 
 .asset-symbol {
+    display: block;
     max-width: 68px;
     margin-left: 8px;
     font-size: var(--font-size-large);
