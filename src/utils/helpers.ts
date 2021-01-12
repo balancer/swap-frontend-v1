@@ -87,6 +87,9 @@ export function getAssetLogo(address: string): string {
     if (assets.includes(address.toLowerCase())) {
         return `https://raw.githubusercontent.com/balancer-labs/assets/master/assets/${address.toLowerCase()}.png`;
     }
+    if (address.toLowerCase() === '0xffffffff2ba8f66d4e51811c5190992176930278') {
+        return 'https://raw.githubusercontent.com/balancer-labs/assets/master/assets/0xffffffff2ba8f66d4e51811c5190992176930278.png';
+    }
     return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
 }
 
