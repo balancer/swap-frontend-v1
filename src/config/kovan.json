@@ -4,7 +4,7 @@
     "precision": 6,
     "infuraKey": "237c3102f39b4940abbe12dc49165cd6",
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
-    "subgraphBackupUrl": "https://timur-team-bucket.storage.fleek.co/balancer-exchange-kovan/pools",
+    "subgraphBackupUrl": "https://balancer-bucket.storage.fleek.co/balancer-exchange-kovan/pools",
     "addresses": {
         "bFactory": "0x8f7F78080219d4066A8036ccD30D588B416a40DB",
         "bActions": "0x02EFDB542B9390ae7C1620B29674e02F9c0d86CC",
