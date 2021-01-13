@@ -278,12 +278,13 @@ export default defineComponent({
         }
 
         async function initSor(): Promise<void> {
+            const poolsUrl = `${config.subgraphBackupUrl}?timestamp=${Date.now()}`;
             sor = new SOR(
                 provider,
                 new BigNumber(GAS_PRICE),
                 MAX_POOLS,
                 config.chainId,
-                config.subgraphBackupUrl,
+                poolsUrl,
             );
 
             const assetInAddress = assetInAddressInput.value === ETH_KEY
