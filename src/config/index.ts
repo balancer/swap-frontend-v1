@@ -20,6 +20,7 @@ interface Config {
     chainId: number;
     precision: number;
     infuraKey: string;
+    alchemyKey: string;
     subgraphUrl: string;
     subgraphBackupUrl: string;
     addresses: {
