@@ -1,6 +1,6 @@
 <template>
     <div class="message">
-        Balancer is partially reimbursing gas costs for some trades 🎉
+        Balancer is partially reimbursing gas costs for some trades.
         <a
             href="https://medium.com/balancer-protocol/exchange-gas-reimbursements-8326db66cab2"
             target="_blank"
