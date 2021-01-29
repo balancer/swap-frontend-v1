@@ -1,12 +1,10 @@
 <template>
     <div class="message">
-        Balancer is partially reimbursing gas costs for some trades.
-        <a
-            href="https://medium.com/balancer-protocol/exchange-gas-reimbursements-8326db66cab2"
+        Earn BAL when swapping between WETH, WBTC, USDC, DAI, or BAL <a
+            href="https://forum.balancer.finance/t/proposal-balancer-exchange-gas-reimbursement/705"
             target="_blank"
         >
-            Learn more
-        </a>
+            (details)</a>.
     </div>
 </template>
 
