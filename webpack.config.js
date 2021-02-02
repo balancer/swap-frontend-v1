@@ -6,6 +6,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 const webpack = require('webpack');
 
 const isDev = process.argv.some(v => v.includes('webpack-dev-server'));
+const isPinata = process.argv.some(v => v.includes('pinata'));
 
 module.exports =
 {
@@ -14,7 +15,7 @@ module.exports =
     // Where should the compiled file go?
     output:
     {
-        publicPath: '/',
+        publicPath: isPinata ? './' : '/',
         filename: '[name].[hash].js',
     },
     mode: isDev ? 'development' : 'production',
