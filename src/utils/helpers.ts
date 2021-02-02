@@ -87,6 +87,9 @@ export function getAssetLogo(address: string): string {
     if (assets.includes(address.toLowerCase())) {
         return `https://raw.githubusercontent.com/balancer-labs/assets/master/assets/${address.toLowerCase()}.png`;
     }
+    if (address.toLowerCase() === '0x50de6856358cc35f3a9a57eaaa34bd4cb707d2cd') {
+        return 'https://raw.githubusercontent.com/balancer-labs/assets/master/assets/0x50de6856358cc35f3a9a57eaaa34bd4cb707d2cd.png';
+    }
     if (address.toLowerCase() === '0xffffffff2ba8f66d4e51811c5190992176930278') {
         return 'https://raw.githubusercontent.com/balancer-labs/assets/master/assets/0xffffffff2ba8f66d4e51811c5190992176930278.png';
     }
