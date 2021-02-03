@@ -3,16 +3,16 @@ name: Pinata Deploy
 on:
   push:
     branches:
-      - master
+      - main
       - develop
 
 jobs:
-  deploy-master:
-    name: Deploy-Master
+  deploy-main:
+    name: Deploy-Main
 
     runs-on: ubuntu-latest
 
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v1
@@ -31,13 +31,10 @@ jobs:
           APP_GAS_PRICE: 100000000000
 
       - name: Deploy Kovan
-        run: ipfs-deploy ./dist -p pinata -d cloudflare
+        run: ipfs-deploy ./dist -p pinata
         env:
           IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
           IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
-          IPFS_DEPLOY_CLOUDFLARE__API_TOKEN: ${{ secrets.IPFS_DEPLOY_CLOUDFLARE__API_TOKEN }}
-          IPFS_DEPLOY_CLOUDFLARE__ZONE: balancer.exchange
-          IPFS_DEPLOY_CLOUDFLARE__RECORD: _dnslink.kovan-test.balancer.exchange
 
       - name: Build Mainnet
         run: npm run build-pinata
@@ -46,13 +43,10 @@ jobs:
           APP_GAS_PRICE: 100000000000
 
       - name: Deploy Mainnet
-        run: ipfs-deploy ./dist -p pinata -d cloudflare
+        run: ipfs-deploy ./dist -p pinata
         env:
           IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
           IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
-          IPFS_DEPLOY_CLOUDFLARE__API_TOKEN: ${{ secrets.IPFS_DEPLOY_CLOUDFLARE__API_TOKEN }}
-          IPFS_DEPLOY_CLOUDFLARE__ZONE: balancer.exchange
-          IPFS_DEPLOY_CLOUDFLARE__RECORD: _dnslink.balancer.exchange-test.balancer.exchange
 
   deploy-develop:
     name: Deploy-Develop
@@ -78,10 +72,7 @@ jobs:
           APP_GAS_PRICE: 100000000000
 
       - name: Deploy Beta
-        run: ipfs-deploy ./dist -p pinata -d cloudflare
+        run: ipfs-deploy ./dist -p pinata
         env:
           IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
           IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
-          IPFS_DEPLOY_CLOUDFLARE__API_TOKEN: ${{ secrets.IPFS_DEPLOY_CLOUDFLARE__API_TOKEN }}
-          IPFS_DEPLOY_CLOUDFLARE__ZONE: balancer.exchange
-          IPFS_DEPLOY_CLOUDFLARE__RECORD: _dnslink.beta-test.balancer.exchange
