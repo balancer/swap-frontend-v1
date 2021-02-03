@@ -67,7 +67,7 @@
                     />
                     <Icon
                         :title="'triangle'"
-                        class="arrow-icon"
+                        class="arrow-icon reverted"
                     />
                 </div>
                 <div class="routes">
@@ -75,9 +75,9 @@
                         v-for="(route, index) in routes"
                         :key="index"
                         :style="{
-                            height: `${16 + 68 * index}px`,
-                            width: `calc(100% - ${4 * (routes.length - index - 1)}px - 2px`,
-                            margin: `0 ${2 * (routes.length - index - 1)}px`,
+                            height: `${18 + 72 * index}px`,
+                            width: `calc(100% - ${4 * (routes.length - index - 1)}px - 4px)`,
+                            margin: `0 ${2 * (routes.length - index - 1) + 1}px`,
                         }"
                         class="route-line"
                     />
@@ -99,12 +99,17 @@
                                     :key="hop.pool.address"
                                     class="hop"
                                 >
-                                    <AssetIcon
-                                        v-for="token in hop.pool.tokens"
-                                        :key="token.address"
-                                        :address="token.address"
-                                        class="asset-icon-small"
-                                    />
+                                    <a
+                                        :href="getPoolLink(hop.pool.address)"
+                                        target="_blank"
+                                    >
+                                        <AssetIcon
+                                            v-for="token in hop.pool.tokens"
+                                            :key="token.address"
+                                            :address="token.address"
+                                            class="asset-icon-small"
+                                        />
+                                    </a>
                                 </div>
                             </div>
                             <div class="share">
@@ -126,6 +131,7 @@ import { getAddress } from '@ethersproject/address';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 
 import { RootState } from '@/store';
+import { getPoolLink } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import Icon from '@/components/Icon.vue';
@@ -253,7 +259,10 @@ export default defineComponent({
                                 }
                                 return a.share - b.share;
                             })
-                            .slice(0, 4),
+                            .filter((token, index, tokens) => {
+                                // Show first 2 and last 2 tokens
+                                return index < 2 || index > tokens.length - 3;
+                            }),
                     };
                     return {
                         pool,
@@ -284,6 +293,7 @@ export default defineComponent({
             routes,
 
             formatShare,
+            getPoolLink,
         };
     },
 });
@@ -375,6 +385,10 @@ div {
     transform: rotate(180deg);
     display: flex;
     color: var(--line-color);
+}
+
+.arrow-icon.reverted {
+    transform: none;
 }
 
 .arrow-icon.horizontal {
