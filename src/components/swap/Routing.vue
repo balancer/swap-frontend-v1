@@ -67,7 +67,7 @@
                     />
                     <Icon
                         :title="'triangle'"
-                        class="arrow-icon"
+                        class="arrow-icon reverted"
                     />
                 </div>
                 <div class="routes">
@@ -375,6 +375,10 @@ div {
     transform: rotate(180deg);
     display: flex;
     color: var(--line-color);
+}
+
+.arrow-icon.reverted {
+    transform: none;
 }
 
 .arrow-icon.horizontal {
