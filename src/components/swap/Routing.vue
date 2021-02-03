@@ -75,9 +75,9 @@
                         v-for="(route, index) in routes"
                         :key="index"
                         :style="{
-                            height: `${16 + 68 * index}px`,
-                            width: `calc(100% - ${4 * (routes.length - index - 1)}px - 2px`,
-                            margin: `0 ${2 * (routes.length - index - 1)}px`,
+                            height: `${18 + 72 * index}px`,
+                            width: `calc(100% - ${4 * (routes.length - index - 1)}px - 4px)`,
+                            margin: `0 ${2 * (routes.length - index - 1) + 1}px`,
                         }"
                         class="route-line"
                     />
