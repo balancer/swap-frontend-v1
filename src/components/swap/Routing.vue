@@ -259,7 +259,10 @@ export default defineComponent({
                                 }
                                 return a.share - b.share;
                             })
-                            .slice(0, 4),
+                            .filter((token, index, tokens) => {
+                                // Show first 2 and last 2 tokens
+                                return index < 2 || index > tokens.length - 3;
+                            }),
                     };
                     return {
                         pool,
