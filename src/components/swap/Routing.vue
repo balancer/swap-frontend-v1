@@ -99,12 +99,17 @@
                                     :key="hop.pool.address"
                                     class="hop"
                                 >
-                                    <AssetIcon
-                                        v-for="token in hop.pool.tokens"
-                                        :key="token.address"
-                                        :address="token.address"
-                                        class="asset-icon-small"
-                                    />
+                                    <a
+                                        :href="getPoolLink(hop.pool.address)"
+                                        target="_blank"
+                                    >
+                                        <AssetIcon
+                                            v-for="token in hop.pool.tokens"
+                                            :key="token.address"
+                                            :address="token.address"
+                                            class="asset-icon-small"
+                                        />
+                                    </a>
                                 </div>
                             </div>
                             <div class="share">
@@ -126,6 +131,7 @@ import { getAddress } from '@ethersproject/address';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 
 import { RootState } from '@/store';
+import { getPoolLink } from '@/utils/helpers';
 
 import AssetIcon from '@/components/AssetIcon.vue';
 import Icon from '@/components/Icon.vue';
@@ -284,6 +290,7 @@ export default defineComponent({
             routes,
 
             formatShare,
+            getPoolLink,
         };
     },
 });
