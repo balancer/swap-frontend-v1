@@ -14,10 +14,6 @@
                 {{ formatAddress(address) }}
             </div>
         </div>
-        <Icon
-            class="chevron-icon"
-            :title="'chevron'"
-        />
     </div>
     <Button
         v-else
@@ -37,13 +33,11 @@ import { RootState } from '@/store';
 import { formatAddress } from '@/utils/helpers';
 
 import Button from '@/components/Button.vue';
-import Icon from '@/components/Icon.vue';
 import Jazzicon from '@/components/Jazzicon.vue';
 
 export default defineComponent({
     components: {
         Button,
-        Icon,
         Jazzicon,
     },
     setup() {
@@ -84,7 +78,7 @@ export default defineComponent({
 <style scoped>
 .account-wrapper {
     height: var(--block-height);
-    width: 186px;
+    width: 166px;
     padding: 8px;
     box-sizing: border-box;
     display: flex;
@@ -114,10 +108,5 @@ export default defineComponent({
 
 .account-address {
     margin-left: 8px;
-}
-
-.chevron-icon {
-    width: 12px;
-    height: 12px;
 }
 </style>
