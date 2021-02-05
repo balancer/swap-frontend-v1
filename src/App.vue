@@ -112,7 +112,7 @@ input:invalid {
 }
 
 .view {
-    min-height: calc(100vh - 96px);
+    min-height: calc(100vh - 80px);
     display: flex;
     align-items: center;
     justify-content: center;

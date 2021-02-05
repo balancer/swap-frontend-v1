@@ -1,22 +1,32 @@
 <template>
     <div class="header">
-        <router-link :to="'/'">
-            <div class="brand">
+        <div class="header-left">
+            <router-link
+                class="brand"
+                :to="'/'"
+            >
                 <img
                     class="logo"
                     :src="logo"
                 >
                 <span class="title">Balancer</span>
+            </router-link>
+            <div class="page-links">
+                <div
+                    class="link active"
+                >
+                    Trade
+                </div>
+                <a
+                    class="link"
+                    href="https://pools.balancer.exchange"
+                    target="_blank"
+                >
+                    Invest
+                </a>
             </div>
-        </router-link>
+        </div>
         <div class="header-right">
-            <a
-                class="link"
-                href="https://pools.balancer.exchange"
-                target="_blank"
-            >
-                Add Liquidity
-            </a>
             <Account class="account" />
         </div>
     </div>
@@ -53,13 +63,13 @@ export default defineComponent({
     box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
 }
 
+.header-left {
+    display: flex;
+}
+
 .header-right {
     display: flex;
     align-items: center;
-}
-
-.link {
-    margin-right: 8px;
 }
 
 a {
@@ -68,19 +78,34 @@ a {
 }
 
 .brand {
-    margin-left: 40px;
+    margin-left: 20px;
     display: flex;
     align-items: center;
 }
 
 .logo {
-    height: 40px;
-    width: 40px;
+    height: 27px;
 }
 
 .title {
-    margin-left: 16px;
-    font-size: 20px;
+    margin-left: 12px;
+    font-size: 22px;
+}
+
+.page-links {
+    display: flex;
+    align-items: end;
+    margin-left: 48px;
+}
+
+.link {
+    margin-right: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.link.active {
+    color: var(--text-primary);
 }
 
 .account {
