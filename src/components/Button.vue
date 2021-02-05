@@ -41,7 +41,7 @@ button {
     justify-content: center;
     font-size: var(--font-size-large);
     font-weight: bold;
-    color: var(--text-primary);
+    color: #fff;
     background: var(--background-secondary);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     border-radius: var(--border-radius-medium);
