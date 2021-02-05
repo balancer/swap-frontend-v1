@@ -53,14 +53,10 @@ export default defineComponent({
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--background-secondary);
-    border: 1px solid var(--border-input);
+    background: var(--background-control);
+    border: 1px solid var(--border);
     border-radius: 50%;
     cursor: pointer;
-}
-
-.icon-wrapper:hover {
-    background: var(--background-hover);
 }
 
 .icon {

@@ -60,20 +60,12 @@ export default defineComponent({
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap');
 
 :root {
-    --background-primary: #181818;
+    --background-primary: #1c1d26;
     --background-secondary: #21222c;
-    --background-header: #1a1a1a;
-    --background-form: #1f1f1f;
-    --background-control: #2c2d3a;
-    --background-hover: #1c1c24;
-    --border-form: #262626;
-    --border-input: #2a2a2a;
-    --accent: #4965ff;
-    --accent-dark: #3c56e3;
+    --background-control: #1f2029;
+    --border: #333;
     --text-primary: #fff;
-    --text-secondary: #acbbc3;
-    --text-control: #999;
-    --text-inverted: #000;
+    --text-secondary: #98aab4;
     --success: #21b66f;
     --info: #7685d5;
     --warning: #ffc780;

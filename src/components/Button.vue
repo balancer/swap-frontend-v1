@@ -56,17 +56,13 @@ button.primary {
     transition: background 0.25s ease-in;
 }
 
-button:hover {
-    background: var(--background-hover);
-}
-
 button.primary:hover {
     background: linear-gradient(185deg, #f0f -100%, #00f 100%) 70% / 200%;
 }
 
 button:disabled,
 button:disabled:hover {
-    background: var(--text-secondary);
+    opacity: 0.35;
     cursor: not-allowed;
 }
 </style>

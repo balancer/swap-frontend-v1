@@ -526,9 +526,9 @@ export default defineComponent({
     padding: 40px 40px;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-form);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-large);
-    background: var(--background-form);
+    background: var(--background-secondary);
 }
 
 .header {

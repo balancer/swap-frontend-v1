@@ -44,15 +44,11 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-control);
-    background: var(--background-secondary);
-    border: 1px solid var(--border-input);
+    color: var(--text-secondary);
+    background: var(--background-control);
+    border: 1px solid var(--border);
     border-radius: 50%;
     cursor: pointer;
-}
-
-.button:hover {
-    background: var(--background-hover);
 }
 
 .icon {

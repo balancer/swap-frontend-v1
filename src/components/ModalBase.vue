@@ -119,7 +119,7 @@ export default defineComponent({
     align-items: flex-end;
     font-size: 22px;
     font-weight: bold;
-    background: var(--border-input);
+    background: var(--border);
 }
 
 .close-icon {

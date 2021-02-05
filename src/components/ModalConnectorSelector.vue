@@ -85,12 +85,12 @@ export default defineComponent({
 .connector {
     display: flex;
     padding: 16px;
-    border-bottom: 1px solid var(--border-input);
+    border-bottom: 1px solid var(--border);
     cursor: pointer;
 }
 
 .connector:hover {
-    background: var(--border-input);
+    background: var(--border);
 }
 
 .connector-icon {

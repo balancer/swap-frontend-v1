@@ -190,9 +190,9 @@ export default defineComponent({
 .asset-input {
     display: flex;
     height: 58px;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-medium);
-    background: var(--background-secondary);
+    background: var(--background-control);
 }
 
 .asset-wrapper {
@@ -205,7 +205,6 @@ export default defineComponent({
 }
 
 .asset-wrapper:hover {
-    background: var(--background-hover);
     border-radius: var(--border-radius-medium);
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
@@ -240,7 +239,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-left: 1px solid var(--border-input);
+    border-left: 1px solid var(--border);
 }
 
 .amount {

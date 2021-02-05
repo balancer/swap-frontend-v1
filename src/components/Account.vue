@@ -84,14 +84,10 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-small);
     background: var(--background-secondary);
     cursor: pointer;
-}
-
-.account-wrapper:hover {
-    background: var(--background-hover);
 }
 
 .account-meta {

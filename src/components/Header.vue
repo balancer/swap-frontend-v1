@@ -59,8 +59,9 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--background-header);
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
+    background: var(--background-primary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border);
 }
 
 .header-left {
