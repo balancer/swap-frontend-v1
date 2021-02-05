@@ -313,12 +313,15 @@ div {
 }
 
 .toggle-icon {
-    margin-left: 14px;
+    margin-left: 12px;
+    margin-bottom: 12px;
     width: 12px;
     height: 12px;
 }
 
 .toggle-icon.flipped {
+    margin-bottom: 0;
+    margin-top: 12px;
     transform: rotate(180deg);
 }
 
