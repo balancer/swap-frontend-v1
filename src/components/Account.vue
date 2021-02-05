@@ -22,6 +22,7 @@
         :loading="loading"
         :disabled="loading"
         @click="openConnectorModal"
+        class="connect-button"
     />
 </template>
 
@@ -104,5 +105,9 @@ export default defineComponent({
 
 .account-address {
     margin-left: 8px;
+}
+
+.connect-button {
+    width: 166px;
 }
 </style>
