@@ -573,6 +573,7 @@ export default defineComponent({
         padding: 16px 8px;
         border: none;
         background: transparent;
+        box-shadow: none;
     }
 
     .routing {
