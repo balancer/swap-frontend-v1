@@ -36,7 +36,6 @@ export default defineComponent({
 <style scoped>
 button {
     height: var(--block-height);
-    width: 170px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -44,20 +43,20 @@ button {
     font-weight: bold;
     color: var(--text-primary);
     background: var(--background-secondary);
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     border-radius: var(--border-radius-medium);
     border: none;
     cursor: pointer;
-    transition: background 0.25s ease-in;
+    transition: box-shadow 0.25s, transform 0.25s;
 }
 
 button.primary {
-    background: linear-gradient(185deg, #f0f -100%, #00f 100%) 40% / 200%;
-    transition: background 0.25s ease-in;
+    background: linear-gradient(185deg, #f0f 0%, #00f 100%);
 }
 
 button.primary:hover {
-    background: linear-gradient(185deg, #f0f -100%, #00f 100%) 70% / 200%;
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 button:disabled,
