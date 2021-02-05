@@ -442,7 +442,7 @@ div {
 .hop {
     padding: 6px;
     display: flex;
-    background: #292a33;
+    background: var(--background-primary);
     border-radius: var(--border-radius-small);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
