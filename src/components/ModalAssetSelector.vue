@@ -196,7 +196,7 @@ export default defineComponent({
 }
 
 .asset:hover {
-    background: var(--border);
+    background: var(--background-secondary);
 }
 
 .asset.incompatible:hover {

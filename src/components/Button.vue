@@ -42,12 +42,16 @@ button {
     font-size: var(--font-size-large);
     font-weight: bold;
     color: var(--text-primary);
-    background: var(--background-secondary);
+    background: var(--background-control);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-medium);
-    border: none;
     cursor: pointer;
     transition: box-shadow 0.25s, transform 0.25s;
+}
+
+button:hover {
+    background: var(--background-primary);
 }
 
 button.primary {

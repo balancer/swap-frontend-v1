@@ -90,7 +90,7 @@ export default defineComponent({
 }
 
 .connector:hover {
-    background: var(--border);
+    background: var(--background-secondary);
 }
 
 .connector-icon {

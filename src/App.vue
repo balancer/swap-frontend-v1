@@ -63,6 +63,7 @@ export default defineComponent({
     --background-primary: #1c1d26;
     --background-secondary: #21222c;
     --background-control: #1f2029;
+    --background-hover: #20222c;
     --border: #333;
     --text-primary: #fff;
     --text-secondary: #98aab4;

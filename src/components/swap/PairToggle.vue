@@ -59,6 +59,10 @@ export default defineComponent({
     cursor: pointer;
 }
 
+.icon-wrapper:hover {
+    background: var(--background-primary);
+}
+
 .icon {
     width: 20px;
     height: 16px;

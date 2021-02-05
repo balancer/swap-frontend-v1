@@ -51,6 +51,10 @@ export default defineComponent({
     cursor: pointer;
 }
 
+.button:hover {
+    background: var(--background-primary);
+}
+
 .icon {
     width: 18px;
     height: 18px;

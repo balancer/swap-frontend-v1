@@ -28,4 +28,8 @@ export default defineComponent({
     background: var(--background-control);
     cursor: pointer;
 }
+
+.button:hover {
+    background: var(--background-primary);
+}
 </style>
