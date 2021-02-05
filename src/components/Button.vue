@@ -41,7 +41,7 @@ button {
     justify-content: center;
     font-size: var(--font-size-large);
     font-weight: bold;
-    color: #fff;
+    color: var(--text-primary);
     background: var(--background-secondary);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     border-radius: var(--border-radius-medium);
@@ -52,6 +52,7 @@ button {
 
 button.primary {
     background: linear-gradient(185deg, #f0f 0%, #00f 100%);
+    color: #fff;
 }
 
 button.primary:hover {
