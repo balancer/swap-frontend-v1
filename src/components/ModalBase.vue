@@ -94,7 +94,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: linear-gradient(221.96deg, #1f1f1f -3.26%, #181818 100.91%);
+    background: var(--background-primary);
     border-radius: var(--border-radius-large);
 }
 
@@ -119,7 +119,7 @@ export default defineComponent({
     align-items: flex-end;
     font-size: 22px;
     font-weight: bold;
-    background: var(--border);
+    background: var(--background-secondary);
 }
 
 .close-icon {
