@@ -5,10 +5,10 @@
                 class="brand"
                 :to="'/'"
             >
-                <img
+                <Icon
                     class="logo"
-                    :src="logo"
-                >
+                    :title="'brand'"
+                />
                 <span class="title">Balancer</span>
             </router-link>
             <div class="page-links">
@@ -35,27 +35,21 @@
 <script>
 import { defineComponent } from 'vue';
 
-import logo from '@/assets/logo.svg';
-import title from '@/assets/title.svg';
-
 import Account from '@/components/Account.vue';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
     components: {
         Account,
-    },
-    setup() {
-        return {
-            logo,
-            title,
-        };
+        Icon,
     },
 });
 </script>
 
 <style scoped>
 .header {
-    height: 96px;
+    height: 80px;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -64,13 +58,10 @@ export default defineComponent({
     border-bottom: 1px solid var(--border);
 }
 
-.header-left {
-    display: flex;
-}
-
+.header-left,
 .header-right {
     display: flex;
-    align-items: center;
+    align-items: end;
 }
 
 a {
@@ -81,16 +72,17 @@ a {
 .brand {
     margin-left: 20px;
     display: flex;
-    align-items: center;
+    align-items: end;
 }
 
 .logo {
-    height: 27px;
+    height: 22px;
+    width: 27px;
 }
 
 .title {
     margin-left: 12px;
-    font-size: 22px;
+    font-size: var(--font-size-large);
 }
 
 .page-links {
