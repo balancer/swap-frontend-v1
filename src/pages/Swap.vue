@@ -529,6 +529,7 @@ export default defineComponent({
     border: 1px solid var(--border);
     border-radius: var(--border-radius-large);
     background: var(--background-secondary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header {
