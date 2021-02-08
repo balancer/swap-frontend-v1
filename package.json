@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "webpack",
+    "build-pinata": "webpack --env=pinata",
     "serve": "webpack-dev-server",
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint \"src/**/*.{js,ts,vue}\"",

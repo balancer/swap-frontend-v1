@@ -1,0 +1,78 @@
+name: Pinata Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy-main:
+    name: Deploy-Main
+
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+
+      - name: Install ipfs-deploy
+        run: npm install -g ipfs-deploy
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Kovan
+        run: npm run build-pinata
+        env:
+          APP_CHAIN_ID: 42
+          APP_GAS_PRICE: 100000000000
+
+      - name: Deploy Kovan
+        run: ipfs-deploy ./dist -p pinata
+        env:
+          IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
+          IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
+
+      - name: Build Mainnet
+        run: npm run build-pinata
+        env:
+          APP_CHAIN_ID: 1
+          APP_GAS_PRICE: 100000000000
+
+      - name: Deploy Mainnet
+        run: ipfs-deploy ./dist -p pinata
+        env:
+          IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
+          IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
+
+  deploy-develop:
+    name: Deploy-Develop
+
+    runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+
+      - name: Install ipfs-deploy
+        run: npm install -g ipfs-deploy
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Beta
+        run: npm run build-pinata
+        env:
+          APP_CHAIN_ID: 1
+          APP_GAS_PRICE: 100000000000
+
+      - name: Deploy Beta
+        run: ipfs-deploy ./dist -p pinata
+        env:
+          IPFS_DEPLOY_PINATA__API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__API_KEY }}
+          IPFS_DEPLOY_PINATA__SECRET_API_KEY: ${{ secrets.IPFS_DEPLOY_PINATA__SECRET_API_KEY }}
