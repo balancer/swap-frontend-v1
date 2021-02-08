@@ -1,10 +1,10 @@
 <template>
     <div class="message">
-        Earn BAL when swapping between WETH, WBTC, USDC, DAI, or BAL <a
-            href="https://forum.balancer.finance/t/proposal-balancer-exchange-gas-reimbursement/705"
+        Earn BAL when swapping between <a
+            href="https://forum.balancer.finance/t/proposal-balancer-exchange-gas-reimbursement/799"
             target="_blank"
         >
-            (details)</a>.
+            eligible tokens</a>.
     </div>
 </template>
 
