@@ -27,13 +27,20 @@
             </div>
         </div>
         <div class="header-right">
+            <Icon
+                class="mode-icon"
+                :title="modeLogo"
+                @click="toggleMode"
+            />
             <Account class="account" />
         </div>
     </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script lang="ts">
+import { defineComponent, ref, computed } from 'vue';
+
+import Storage from '@/utils/storage';
 
 import Account from '@/components/Account.vue';
 import Icon from '@/components/Icon.vue';
@@ -42,6 +49,29 @@ export default defineComponent({
     components: {
         Account,
         Icon,
+    },
+    setup() {
+        const mode = ref(Storage.isDarkmode());
+
+        const modeLogo = computed(() => getLogo(mode.value));
+
+        function toggleMode(): void {
+            mode.value = Storage.toggleMode();
+            if (mode.value) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+
+        function getLogo(isDarkmode: boolean): string {
+            return isDarkmode ? 'moon' : 'sun';
+        }
+
+        return {
+            modeLogo,
+            toggleMode,
+        };
     },
 });
 </script>
@@ -58,10 +88,14 @@ export default defineComponent({
     border-bottom: 1px solid var(--border);
 }
 
-.header-left,
-.header-right {
+.header-left {
     display: flex;
     align-items: end;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
 }
 
 a {
@@ -101,9 +135,14 @@ a {
     color: var(--text-primary);
 }
 
+.mode-icon {
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+}
+
 .account {
-    margin-left: 8px;
-    margin-right: 16px;
+    margin: 0 16px;
 }
 
 @media only screen and (max-width: 768px) {

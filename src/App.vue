@@ -17,6 +17,7 @@ import { defineComponent, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
+import Storage from '@/utils/storage';
 
 import Header from '@/components/Header.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
@@ -40,6 +41,13 @@ export default defineComponent({
         const isConnectorModalOpen = computed(() => store.state.ui.modal.connector.isOpen);
 
         const notifications = computed(() => store.state.ui.notifications);
+
+        const mode = Storage.isDarkmode();
+        if (mode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
 
         onMounted(() => {
             store.dispatch('assets/init');
@@ -80,6 +88,16 @@ export default defineComponent({
     --border-radius-medium: 10px;
     --border-radius-small: 5px;
     --block-height: 50px;
+}
+
+[data-theme="dark"] {
+    --background-primary: #1c1d26;
+    --background-secondary: #21222c;
+    --background-control: #1f2029;
+    --background-hover: #20222c;
+    --border: #333;
+    --text-primary: #fff;
+    --text-secondary: #98aab4;
 }
 
 body {
