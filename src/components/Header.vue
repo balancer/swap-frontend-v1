@@ -11,6 +11,15 @@
                 />
                 <span class="title">Balancer</span>
             </router-link>
+            <a
+                v-if="isBeta"
+                :href="commitLink"
+                target="_blank"
+            >
+                <div class="beta-label">
+                    #{{ commit }}
+                </div>
+            </a>
             <div class="page-links">
                 <div
                     class="link active"
@@ -51,8 +60,14 @@ export default defineComponent({
         Icon,
     },
     setup() {
-        const mode = ref(Storage.isDarkmode());
+        // eslint-disable-next-line no-undef
+        const commit = ref(process.env.APP_COMMIT);
+        const isBeta = computed(() => !!commit.value);
+        const commitLink = computed(() => 
+            `https://github.com/balancer-labs/balancer-frontend/commit/${commit.value}`,
+        );
 
+        const mode = ref(Storage.isDarkmode());
         const modeLogo = computed(() => getLogo(mode.value));
 
         function toggleMode(): void {
@@ -69,6 +84,10 @@ export default defineComponent({
         }
 
         return {
+            isBeta,
+            commit,
+            commitLink,
+
             modeLogo,
             toggleMode,
         };
@@ -117,6 +136,11 @@ a {
 .title {
     margin-left: 12px;
     font-size: var(--font-size-large);
+}
+
+.beta-label {
+    margin-left: 8px;
+    color: var(--text-secondary);
 }
 
 .page-links {
