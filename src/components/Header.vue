@@ -15,8 +15,9 @@
                 v-if="isDev"
                 :href="commitLink"
                 target="_blank"
+                class="commit-label"
             >
-                <div class="beta-label">
+                <div>
                     #{{ commitLabel }}
                 </div>
             </a>
@@ -139,7 +140,7 @@ a {
     font-size: var(--font-size-large);
 }
 
-.beta-label {
+.commit-label {
     margin-left: 8px;
     font-size: var(--font-size-small);
     color: var(--text-secondary);
@@ -176,10 +177,8 @@ a {
         margin-left: 16px;
     }
 
-    .title {
-        display: none;
-    }
-
+    .title,
+    .commit-label,
     .link {
         display: none;
     }
