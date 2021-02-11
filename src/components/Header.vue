@@ -141,6 +141,7 @@ a {
 
 .beta-label {
     margin-left: 8px;
+    font-size: var(--font-size-small);
     color: var(--text-secondary);
 }
 
