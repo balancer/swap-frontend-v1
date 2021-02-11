@@ -12,12 +12,12 @@
                 <span class="title">Balancer</span>
             </router-link>
             <a
-                v-if="isBeta"
+                v-if="isDev"
                 :href="commitLink"
                 target="_blank"
             >
                 <div class="beta-label">
-                    #{{ commit }}
+                    #{{ commitLabel }}
                 </div>
             </a>
             <div class="page-links">
@@ -61,8 +61,9 @@ export default defineComponent({
     },
     setup() {
         // eslint-disable-next-line no-undef
-        const commit = ref(process.env.APP_COMMIT);
-        const isBeta = computed(() => !!commit.value);
+        const isDev = ref(process.env.APP_ENV === 'dev');
+        const commit = ref(APP_COMMIT || '');
+        const commitLabel = computed(() => commit.value.substr(0, 6));
         const commitLink = computed(() => 
             `https://github.com/balancer-labs/balancer-frontend/commit/${commit.value}`,
         );
@@ -84,8 +85,8 @@ export default defineComponent({
         }
 
         return {
-            isBeta,
-            commit,
+            isDev,
+            commitLabel,
             commitLink,
 
             modeLogo,
