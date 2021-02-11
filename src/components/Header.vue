@@ -1,43 +1,76 @@
 <template>
     <div class="header">
-        <router-link :to="'/'">
-            <div class="brand">
-                <img
-                    class="logo"
-                    :src="logo"
-                >
-                <span class="title">Balancer</span>
-            </div>
-        </router-link>
-        <div class="header-right">
-            <a
-                class="link"
-                href="https://pools.balancer.exchange"
-                target="_blank"
+        <div class="header-left">
+            <router-link
+                class="brand"
+                :to="'/'"
             >
-                Add Liquidity
-            </a>
+                <Icon
+                    class="logo"
+                    :title="'brand'"
+                />
+                <span class="title">Balancer</span>
+            </router-link>
+            <div class="page-links">
+                <div
+                    class="link active"
+                >
+                    Trade
+                </div>
+                <a
+                    class="link"
+                    href="https://pools.balancer.exchange"
+                    target="_blank"
+                >
+                    Invest
+                </a>
+            </div>
+        </div>
+        <div class="header-right">
+            <Icon
+                class="mode-icon"
+                :title="modeLogo"
+                @click="toggleMode"
+            />
             <Account class="account" />
         </div>
     </div>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script lang="ts">
+import { defineComponent, ref, computed } from 'vue';
 
-import logo from '@/assets/logo.svg';
-import title from '@/assets/title.svg';
+import Storage from '@/utils/storage';
 
 import Account from '@/components/Account.vue';
+import Icon from '@/components/Icon.vue';
 
 export default defineComponent({
     components: {
         Account,
+        Icon,
     },
     setup() {
+        const mode = ref(Storage.isDarkmode());
+
+        const modeLogo = computed(() => getLogo(mode.value));
+
+        function toggleMode(): void {
+            mode.value = Storage.toggleMode();
+            if (mode.value) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+
+        function getLogo(isDarkmode: boolean): string {
+            return isDarkmode ? 'moon' : 'sun';
+        }
+
         return {
-            logo,
-            title,
+            modeLogo,
+            toggleMode,
         };
     },
 });
@@ -45,21 +78,24 @@ export default defineComponent({
 
 <style scoped>
 .header {
-    height: 96px;
+    height: 80px;
+    box-sizing: border-box;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--background-header);
-    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.15);
+    background: var(--background-primary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid var(--border);
+}
+
+.header-left {
+    display: flex;
+    align-items: end;
 }
 
 .header-right {
     display: flex;
     align-items: center;
-}
-
-.link {
-    margin-right: 8px;
 }
 
 a {
@@ -68,24 +104,45 @@ a {
 }
 
 .brand {
-    margin-left: 40px;
+    margin-left: 20px;
     display: flex;
-    align-items: center;
+    align-items: end;
 }
 
 .logo {
-    height: 40px;
-    width: 40px;
+    height: 22px;
+    width: 27px;
 }
 
 .title {
-    margin-left: 16px;
-    font-size: 20px;
+    margin-left: 12px;
+    font-size: var(--font-size-large);
+}
+
+.page-links {
+    display: flex;
+    align-items: end;
+    margin-left: 48px;
+}
+
+.link {
+    margin-right: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.link.active {
+    color: var(--text-primary);
+}
+
+.mode-icon {
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
 }
 
 .account {
-    margin-left: 8px;
-    margin-right: 16px;
+    margin: 0 16px;
 }
 
 @media only screen and (max-width: 768px) {

@@ -313,12 +313,15 @@ div {
 }
 
 .toggle-icon {
-    margin-left: 14px;
+    margin-left: 12px;
+    margin-bottom: 12px;
     width: 12px;
     height: 12px;
 }
 
 .toggle-icon.flipped {
+    margin-bottom: 0;
+    margin-top: 12px;
     transform: rotate(180deg);
 }
 
@@ -439,7 +442,7 @@ div {
 .hop {
     padding: 6px;
     display: flex;
-    background: #292a33;
+    background: var(--background-primary);
     border-radius: var(--border-radius-small);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

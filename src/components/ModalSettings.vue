@@ -173,9 +173,9 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-small);
-    background: var(--background-secondary);
+    background: var(--background-control);
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
@@ -192,9 +192,5 @@ input.slippage-option {
 
 .slippage-option.selected {
     border-color: var(--text-primary);
-}
-
-.slippage-option:hover {
-    background: var(--background-hover);
 }
 </style>

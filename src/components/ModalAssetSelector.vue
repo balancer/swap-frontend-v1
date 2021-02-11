@@ -187,7 +187,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    border-bottom: 1px solid var(--border-input);
+    border-bottom: 1px solid var(--border);
     cursor: pointer;
 }
 
@@ -196,7 +196,7 @@ export default defineComponent({
 }
 
 .asset:hover {
-    background: var(--border-input);
+    background: var(--background-secondary);
 }
 
 .asset.incompatible:hover {

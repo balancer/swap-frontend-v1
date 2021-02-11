@@ -17,6 +17,7 @@ import { defineComponent, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import { RootState } from '@/store';
+import Storage from '@/utils/storage';
 
 import Header from '@/components/Header.vue';
 import ModalAccount from '@/components/ModalAccount.vue';
@@ -41,6 +42,13 @@ export default defineComponent({
 
         const notifications = computed(() => store.state.ui.notifications);
 
+        const mode = Storage.isDarkmode();
+        if (mode) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+
         onMounted(() => {
             store.dispatch('assets/init');
             store.dispatch('account/init');
@@ -57,27 +65,20 @@ export default defineComponent({
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap');
 
 :root {
-    --background-primary: #181818;
-    --background-secondary: #21222c;
-    --background-header: #1a1a1a;
-    --background-form: #1f1f1f;
-    --background-control: #2c2d3a;
-    --background-hover: #1c1c24;
-    --border-form: #262626;
-    --border-input: #2a2a2a;
-    --accent: #4965ff;
-    --accent-dark: #3c56e3;
-    --text-primary: #fff;
-    --text-secondary: #acbbc3;
-    --text-control: #999;
-    --text-inverted: #000;
+    --background-primary: #fafafa;
+    --background-secondary: #fff;
+    --background-control: #fff;
+    --background-hover: #f5f5f5;
+    --border: #e5e5e5;
+    --text-primary: #21222c;
+    --text-secondary: #718b98;
     --success: #21b66f;
     --info: #7685d5;
-    --warning: #ffc780;
-    --error: #ff8a80;
+    --warning: #ff9a1a;
+    --error: #ff5b4c;
     --font-size-tiny: 11px;
     --font-size-small: 14px;
     --font-size-medium: 16px;
@@ -89,8 +90,18 @@ export default defineComponent({
     --block-height: 50px;
 }
 
+[data-theme="dark"] {
+    --background-primary: #1c1d26;
+    --background-secondary: #21222c;
+    --background-control: #1f2029;
+    --background-hover: #20222c;
+    --border: #333;
+    --text-primary: #fff;
+    --text-secondary: #98aab4;
+}
+
 body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     font-size: var(--font-size-medium);
     margin: 0;
     background: var(--background-primary);
@@ -112,7 +123,7 @@ input:invalid {
 }
 
 .view {
-    min-height: calc(100vh - 96px);
+    min-height: calc(100vh - 80px);
     display: flex;
     align-items: center;
     justify-content: center;
