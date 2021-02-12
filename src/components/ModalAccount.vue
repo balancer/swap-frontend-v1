@@ -244,7 +244,7 @@ export default defineComponent({
 
 .wallet {
     margin: 16px;
-    border: 1px solid var(--border-form);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-medium);
 }
 

@@ -190,9 +190,9 @@ export default defineComponent({
 .asset-input {
     display: flex;
     height: 58px;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-medium);
-    background: var(--background-secondary);
+    background: var(--background-control);
 }
 
 .asset-wrapper {
@@ -200,12 +200,12 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 5px 0 5px rgba(0, 0, 0, 0.05);
     cursor: pointer;
 }
 
 .asset-wrapper:hover {
-    background: var(--background-hover);
+    background: var(--background-primary);
     border-radius: var(--border-radius-medium);
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
@@ -240,7 +240,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-left: 1px solid var(--border-input);
+    border-left: 1px solid var(--border);
 }
 
 .amount {
@@ -283,6 +283,8 @@ export default defineComponent({
 
 .input {
     min-width: 120px;
+    margin: 0;
+    padding: 0;
     font-size: var(--font-size-large);
     font-weight: bold;
     color: var(--text-primary);
@@ -319,7 +321,8 @@ export default defineComponent({
 .chevron-icon {
     width: 12px;
     height: 12px;
-    margin-right: 10px;
+    margin-right: 12px;
+    margin-bottom: 12px;
 }
 
 @media only screen and (max-width: 768px) {

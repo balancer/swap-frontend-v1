@@ -21,6 +21,7 @@
         :primary="false"
         :loading="loading"
         :disabled="loading"
+        class="connect-button"
         @click="openConnectorModal"
     />
 </template>
@@ -84,14 +85,14 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-small);
-    background: var(--background-secondary);
+    background: var(--background-control);
     cursor: pointer;
 }
 
 .account-wrapper:hover {
-    background: var(--background-hover);
+    background: var(--background-primary);
 }
 
 .account-meta {
@@ -108,5 +109,9 @@ export default defineComponent({
 
 .account-address {
     margin-left: 8px;
+}
+
+.connect-button {
+    width: 166px;
 }
 </style>

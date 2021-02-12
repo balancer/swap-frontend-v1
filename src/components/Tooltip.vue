@@ -30,7 +30,7 @@
     opacity: 0;
     font-size: var(--font-size-small);
     color: var(--text-primary);
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border);
     background-color: var(--background-secondary);
     border-radius: var(--border-radius-small);
     transition: opacity 0.125s ease-in, visibility 0.125s ease-in;
@@ -48,7 +48,7 @@
     margin-left: -8px;
     content: "";
     border-style: solid;
-    border-color: var(--border-input) transparent transparent transparent;
+    border-color: var(--border) transparent transparent transparent;
     border-width: 8px;
 }
 

@@ -10,6 +10,7 @@ interface Preferences {
     slippage: number;
     pairs: Record<number, Pair>;
     list: string;
+    darkmode: boolean;
 }
 
 interface Pair {
@@ -64,6 +65,11 @@ export default class Storage {
             return {};
         }
         return assets[chainId];
+    }
+
+    static isDarkmode(): boolean {
+        const preferences = getPreferences();
+        return preferences.darkmode;
     }
 
     static saveConnector(connector: string): void {
@@ -125,6 +131,13 @@ export default class Storage {
         localStorage.setItem(ASSETS, JSON.stringify(assetList));
     }
 
+    static toggleMode(): boolean {
+        const preferences = getPreferences();
+        preferences.darkmode = !preferences.darkmode;
+        localStorage.setItem(PREFERENCES, JSON.stringify(preferences));
+        return preferences.darkmode;
+    }
+
     static clearConnector(): void {
         const preferences = getPreferences();
         preferences.connector = null;
@@ -155,6 +168,7 @@ function getPreferences(): Preferences {
             },
         },
         list: 'balancer',
+        darkmode: true,
     };
     const preferenceString = localStorage.getItem(PREFERENCES);
     const preferences = JSON.parse(preferenceString || '{}');

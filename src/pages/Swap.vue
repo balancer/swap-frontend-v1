@@ -526,9 +526,10 @@ export default defineComponent({
     padding: 40px 40px;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--border-form);
+    border: 1px solid var(--border);
     border-radius: var(--border-radius-large);
-    background: var(--background-form);
+    background: var(--background-secondary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header {
@@ -572,6 +573,7 @@ export default defineComponent({
         padding: 16px 8px;
         border: none;
         background: transparent;
+        box-shadow: none;
     }
 
     .routing {
