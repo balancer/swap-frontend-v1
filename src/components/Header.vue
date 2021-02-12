@@ -112,7 +112,7 @@ export default defineComponent({
 
 .header-left {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .header-right {
@@ -128,7 +128,7 @@ a {
 .brand {
     margin-left: 20px;
     display: flex;
-    align-items: end;
+    align-items: flex-end;
 }
 
 .logo {
@@ -149,7 +149,7 @@ a {
 
 .page-links {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     margin-left: 48px;
 }
 

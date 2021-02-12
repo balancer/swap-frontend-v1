@@ -283,6 +283,8 @@ export default defineComponent({
 
 .input {
     min-width: 120px;
+    margin: 0;
+    padding: 0;
     font-size: var(--font-size-large);
     font-weight: bold;
     color: var(--text-primary);
