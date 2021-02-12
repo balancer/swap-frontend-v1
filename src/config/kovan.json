@@ -2,7 +2,7 @@
     "network": "kovan",
     "chainId": 42,
     "precision": 6,
-    "infuraKey": "237c3102f39b4940abbe12dc49165cd6",
+    "infuraKey": "93e3393c76ed4e1f940d0266e2fdbda2",
     "alchemyKey": "cQGZUiTLRCFsQS7kbRxPJK4eH4fTTu88",
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
     "subgraphBackupUrl": "https://ipfs.fleek.co/ipns/balancer-bucket.storage.fleek.co/balancer-exchange-kovan/pools",
@@ -18,7 +18,7 @@
         "injected": {},
         "walletconnect": {
             "rpc": {
-                "42": "https://kovan.infura.io/v3/237c3102f39b4940abbe12dc49165cd6"
+                "42": "https://kovan.infura.io/v3/93e3393c76ed4e1f940d0266e2fdbda2"
             }
         },
         "portis": {
@@ -29,7 +29,7 @@
             "appName": "Balancer Exchange",
             "darkMode": true,
             "chainId": 42,
-            "ethJsonrpcUrl": "https://kovan.infura.io/v3/237c3102f39b4940abbe12dc49165cd6"
+            "ethJsonrpcUrl": "https://kovan.infura.io/v3/93e3393c76ed4e1f940d0266e2fdbda2"
         },
         "fortmatic": {
             "apiKey": "pk_live_9CE8FD92E54684ED"
