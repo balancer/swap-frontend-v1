@@ -75,6 +75,7 @@ import Routing from '@/components/swap/Routing.vue';
 import Settings from '@/components/Settings.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
+import { setGoal } from '@/utils/fathom';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -112,7 +113,7 @@ export default defineComponent({
         const pools = ref<Pool[]>([]);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
-        
+
         const account = computed(() => {
             const { connector, address } = store.state.account;
             if (!connector || !connector.id || !address) {
@@ -228,6 +229,7 @@ export default defineComponent({
             const assetInAddress = assetInAddressInput.value;
             const spender = config.addresses.exchangeProxy;
             const tx = await Helper.unlock(provider, assetInAddress, spender);
+            setGoal('approve');
             const metadata = store.getters['assets/metadata'];
             const assetSymbol = metadata[assetInAddress].symbol;
             const text = `Unlock ${assetSymbol}`;
@@ -268,10 +270,12 @@ export default defineComponent({
                 const minAmount = assetOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapIn(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmount, minAmount);
                 await handleTransaction(tx, text);
+                setGoal('swapIn');
             } else {
                 const assetInAmountMax = assetInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
                 const tx = await Swapper.swapOut(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmountMax);
                 await handleTransaction(tx, text);
+                setGoal('swapOut');
             }
             store.dispatch('account/fetchAssets', [ assetInAddress, assetOutAddress ]);
             if (sor) {
@@ -462,10 +466,10 @@ export default defineComponent({
 
         function getInitialPair(): Pair {
             const pair = Storage.getPair(config.chainId);
-            let assetIn = 
+            let assetIn =
                 router.currentRoute.value.params.assetIn as string ||
                 pair.inputAsset;
-            let assetOut = 
+            let assetOut =
                 router.currentRoute.value.params.assetOut as string ||
                 pair.outputAsset;
             if (isAddress(assetIn)) {

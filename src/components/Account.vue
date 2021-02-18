@@ -79,7 +79,7 @@ export default defineComponent({
 <style scoped>
 .account-wrapper {
     height: var(--block-height);
-    width: 166px;
+    width: 170px;
     padding: 8px;
     box-sizing: border-box;
     display: flex;
@@ -112,6 +112,6 @@ export default defineComponent({
 }
 
 .connect-button {
-    width: 166px;
+    width: 170px;
 }
 </style>
