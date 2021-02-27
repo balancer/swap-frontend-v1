@@ -288,6 +288,7 @@ export default defineComponent({
     width: 32px;
     height: 32px;
     border-radius: 50%;
+    background-color: white;
 }
 
 .asset-meta {

@@ -369,6 +369,7 @@ div {
     width: 36px;
     height: 36px;
     border-radius: 50%;
+    background-color: white;
 }
 
 .output-asset {
@@ -455,6 +456,7 @@ div {
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    background-color: white;
 }
 
 .asset-icon-small:not(:first-child) {
