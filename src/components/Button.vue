@@ -1,7 +1,5 @@
 <template>
-    <button
-        :class="{ primary }"
-    >
+    <button :class="{ primary }">
         <LoadingIndicator v-if="loading" />
         {{ text }}
     </button>

@@ -1,6 +1,5 @@
 <template>
     <div class="page">
-        <MessageReimbursement />
         <div class="pair">
             <div class="header">
                 <div class="header-text">
@@ -17,10 +16,14 @@
                 :slippage="slippage"
                 :swaps-loading="swapsLoading"
                 :validation="validation"
-                @change="value => {
-                    handleAmountChange(value);
-                }"
+                @change="
+                    value => {
+                        handleAmountChange(value);
+                    }
+                "
             />
+
+            <MessageReimbursement />
             <SwapButton
                 class="swap-button"
                 :address-in="assetInAddressInput"
@@ -63,7 +66,11 @@ import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import config from '@/config';
 import provider from '@/utils/provider';
 import { ETH_KEY, scale, isAddress, getEtherscanLink } from '@/utils/helpers';
-import { ValidationError, SwapValidation, validateNumberInput } from '@/utils/validation';
+import {
+    ValidationError,
+    SwapValidation,
+    validateNumberInput,
+} from '@/utils/validation';
 import Storage from '@/utils/storage';
 import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
@@ -132,8 +139,12 @@ export default defineComponent({
                 return SwapValidation.INVALID_INPUT;
             }
             // No swaps
-            if ((swapsLoading.value || swaps.value.length === 0) &&
-                !isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)
+            if (
+                (swapsLoading.value || swaps.value.length === 0) &&
+                !isWrapPair(
+                    assetInAddressInput.value,
+                    assetOutAddressInput.value,
+                )
             ) {
                 return SwapValidation.NO_SWAPS;
             }
@@ -201,9 +212,10 @@ export default defineComponent({
         watch(assetOutAddressInput, async () => {
             Storage.saveOutputAsset(config.chainId, assetOutAddressInput.value);
             if (sor) {
-                const assetOutAddress = assetOutAddressInput.value === ETH_KEY
-                    ? config.addresses.weth
-                    : assetOutAddressInput.value;
+                const assetOutAddress =
+                    assetOutAddressInput.value === ETH_KEY
+                        ? config.addresses.weth
+                        : assetOutAddressInput.value;
                 await sor.setCostOutputToken(assetOutAddress);
             }
             onAmountChange(activeInput.value);
@@ -234,7 +246,7 @@ export default defineComponent({
             const assetSymbol = metadata[assetInAddress].symbol;
             const text = `Unlock ${assetSymbol}`;
             await handleTransaction(tx, text);
-            store.dispatch('account/fetchAssets', [ assetInAddress ]);
+            store.dispatch('account/fetchAssets', [assetInAddress]);
         }
 
         async function swap(): Promise<void> {
@@ -258,26 +270,51 @@ export default defineComponent({
                     const text = 'Unwrap ether';
                     await handleTransaction(tx, text);
                 }
-                store.dispatch('account/fetchAssets', [ config.addresses.weth ]);
+                store.dispatch('account/fetchAssets', [config.addresses.weth]);
                 return;
             }
             const assetInSymbol = metadata[assetInAddress].symbol;
             const assetOutSymbol = metadata[assetOutAddress].symbol;
             const text = `Swap ${assetInSymbol} for ${assetOutSymbol}`;
             if (isExactIn.value) {
-                const assetOutAmountNumber = new BigNumber(assetOutAmountInput.value);
-                const assetOutAmount = scale(assetOutAmountNumber, assetOutDecimals);
-                const minAmount = assetOutAmount.div(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapIn(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmount, minAmount);
+                const assetOutAmountNumber = new BigNumber(
+                    assetOutAmountInput.value,
+                );
+                const assetOutAmount = scale(
+                    assetOutAmountNumber,
+                    assetOutDecimals,
+                );
+                const minAmount = assetOutAmount
+                    .div(1 + slippageBufferRate)
+                    .integerValue(BigNumber.ROUND_DOWN);
+                const tx = await Swapper.swapIn(
+                    provider,
+                    swaps.value,
+                    assetInAddress,
+                    assetOutAddress,
+                    assetInAmount,
+                    minAmount,
+                );
                 await handleTransaction(tx, text);
                 setGoal('swapIn');
             } else {
-                const assetInAmountMax = assetInAmount.times(1 + slippageBufferRate).integerValue(BigNumber.ROUND_DOWN);
-                const tx = await Swapper.swapOut(provider, swaps.value, assetInAddress, assetOutAddress, assetInAmountMax);
+                const assetInAmountMax = assetInAmount
+                    .times(1 + slippageBufferRate)
+                    .integerValue(BigNumber.ROUND_DOWN);
+                const tx = await Swapper.swapOut(
+                    provider,
+                    swaps.value,
+                    assetInAddress,
+                    assetOutAddress,
+                    assetInAmountMax,
+                );
                 await handleTransaction(tx, text);
                 setGoal('swapOut');
             }
-            store.dispatch('account/fetchAssets', [ assetInAddress, assetOutAddress ]);
+            store.dispatch('account/fetchAssets', [
+                assetInAddress,
+                assetOutAddress,
+            ]);
             if (sor) {
                 sor.fetchPools();
                 onAmountChange(activeInput.value);
@@ -285,7 +322,9 @@ export default defineComponent({
         }
 
         async function initSor(): Promise<void> {
-            const poolsUrl = `${config.subgraphBackupUrl}?timestamp=${Date.now()}`;
+            const poolsUrl = `${
+                config.subgraphBackupUrl
+            }?timestamp=${Date.now()}`;
             sor = new SOR(
                 provider,
                 new BigNumber(GAS_PRICE),
@@ -294,18 +333,24 @@ export default defineComponent({
                 poolsUrl,
             );
 
-            const assetInAddress = assetInAddressInput.value === ETH_KEY
-                ? config.addresses.weth
-                : assetInAddressInput.value;
-            const assetOutAddress = assetOutAddressInput.value === ETH_KEY
-                ? config.addresses.weth
-                : assetOutAddressInput.value;
+            const assetInAddress =
+                assetInAddressInput.value === ETH_KEY
+                    ? config.addresses.weth
+                    : assetInAddressInput.value;
+            const assetOutAddress =
+                assetOutAddressInput.value === ETH_KEY
+                    ? config.addresses.weth
+                    : assetOutAddressInput.value;
             console.time(`[SOR] setCostOutputToken: ${assetOutAddress}`);
             await sor.setCostOutputToken(assetOutAddress);
             console.timeEnd(`[SOR] setCostOutputToken: ${assetOutAddress}`);
-            console.time(`[SOR] fetchFilteredPairPools: ${assetInAddress}, ${assetOutAddress}`);
+            console.time(
+                `[SOR] fetchFilteredPairPools: ${assetInAddress}, ${assetOutAddress}`,
+            );
             await sor.fetchFilteredPairPools(assetInAddress, assetOutAddress);
-            console.timeEnd(`[SOR] fetchFilteredPairPools: ${assetInAddress}, ${assetOutAddress}`);
+            console.timeEnd(
+                `[SOR] fetchFilteredPairPools: ${assetInAddress}, ${assetOutAddress}`,
+            );
             await onAmountChange(activeInput.value);
             console.time('[SOR] fetchPools');
             await sor.fetchPools();
@@ -327,7 +372,12 @@ export default defineComponent({
                 return;
             }
 
-            if (isWrapPair(assetInAddressInput.value, assetOutAddressInput.value)) {
+            if (
+                isWrapPair(
+                    assetInAddressInput.value,
+                    assetOutAddressInput.value,
+                )
+            ) {
                 if (isExactIn.value) {
                     assetOutAmountInput.value = amount;
                 } else {
@@ -337,12 +387,14 @@ export default defineComponent({
                 return;
             }
 
-            const assetInAddress = assetInAddressInput.value === ETH_KEY
-                ? config.addresses.weth
-                : assetInAddressInput.value;
-            const assetOutAddress = assetOutAddressInput.value === ETH_KEY
-                ? config.addresses.weth
-                : assetOutAddressInput.value;
+            const assetInAddress =
+                assetInAddressInput.value === ETH_KEY
+                    ? config.addresses.weth
+                    : assetInAddressInput.value;
+            const assetOutAddress =
+                assetOutAddressInput.value === ETH_KEY
+                    ? config.addresses.weth
+                    : assetOutAddressInput.value;
 
             if (assetInAddress === assetOutAddress) {
                 return;
@@ -361,18 +413,25 @@ export default defineComponent({
                 const assetInAmountRaw = new BigNumber(amount);
                 const assetInAmount = scale(assetInAmountRaw, assetInDecimals);
 
-                console.time(`[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactIn`);
+                console.time(
+                    `[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactIn`,
+                );
                 const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
                     assetInAddress,
                     assetOutAddress,
                     'swapExactIn',
                     assetInAmount,
                 );
-                console.timeEnd(`[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactIn`);
+                console.timeEnd(
+                    `[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactIn`,
+                );
                 swaps.value = tradeSwaps;
                 const assetOutAmountRaw = scale(tradeAmount, -assetOutDecimals);
                 const assetOutPrecision = config.precision;
-                assetOutAmountInput.value = assetOutAmountRaw.toFixed(assetOutPrecision, BigNumber.ROUND_DOWN);
+                assetOutAmountInput.value = assetOutAmountRaw.toFixed(
+                    assetOutPrecision,
+                    BigNumber.ROUND_DOWN,
+                );
                 if (tradeSwaps.length === 0) {
                     slippage.value = 0;
                 } else {
@@ -384,20 +443,30 @@ export default defineComponent({
                 }
             } else {
                 const assetOutAmountRaw = new BigNumber(amount);
-                const assetOutAmount = scale(assetOutAmountRaw, assetOutDecimals);
+                const assetOutAmount = scale(
+                    assetOutAmountRaw,
+                    assetOutDecimals,
+                );
 
-                console.time(`[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactOut`);
+                console.time(
+                    `[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactOut`,
+                );
                 const [tradeSwaps, tradeAmount, spotPrice] = await sor.getSwaps(
                     assetInAddress,
                     assetOutAddress,
                     'swapExactOut',
                     assetOutAmount,
                 );
-                console.timeEnd(`[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactOut`);
+                console.timeEnd(
+                    `[SOR] getSwaps ${assetInAddress} ${assetOutAddress} exactOut`,
+                );
                 swaps.value = tradeSwaps;
                 const assetInAmountRaw = scale(tradeAmount, -assetInDecimals);
                 const assetInPrecision = config.precision;
-                assetInAmountInput.value = assetInAmountRaw.toFixed(assetInPrecision, BigNumber.ROUND_UP);
+                assetInAmountInput.value = assetInAmountRaw.toFixed(
+                    assetInPrecision,
+                    BigNumber.ROUND_UP,
+                );
 
                 if (tradeSwaps.length === 0) {
                     slippage.value = 0;
@@ -412,7 +481,10 @@ export default defineComponent({
             swapsLoading.value = false;
         }
 
-        async function handleTransaction(transaction: any, text: string): Promise<void> {
+        async function handleTransaction(
+            transaction: any,
+            text: string,
+        ): Promise<void> {
             if (transaction.code) {
                 transactionPending.value = false;
                 if (transaction.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
@@ -430,16 +502,17 @@ export default defineComponent({
                 text,
             });
 
-            const transactionReceipt = await provider.waitForTransaction(transaction.hash, 1);
+            const transactionReceipt = await provider.waitForTransaction(
+                transaction.hash,
+                1,
+            );
             transactionPending.value = false;
             store.dispatch('account/saveMinedTransaction', {
                 receipt: transactionReceipt,
                 timestamp: Date.now(),
             });
 
-            const type = transactionReceipt.status === 1
-                ? 'success'
-                : 'error';
+            const type = transactionReceipt.status === 1 ? 'success' : 'error';
             const link = getEtherscanLink(transactionReceipt.transactionHash);
             store.dispatch('ui/notify', {
                 text,
@@ -448,7 +521,10 @@ export default defineComponent({
             });
         }
 
-        async function fetchAssetMetadata(assetIn: string, assetOut: string): Promise<void> {
+        async function fetchAssetMetadata(
+            assetIn: string,
+            assetOut: string,
+        ): Promise<void> {
             const metadata = store.getters['assets/metadata'];
             const unknownAssets = [];
             if (!metadata[assetIn]) {
@@ -467,10 +543,10 @@ export default defineComponent({
         function getInitialPair(): Pair {
             const pair = Storage.getPair(config.chainId);
             let assetIn =
-                router.currentRoute.value.params.assetIn as string ||
+                (router.currentRoute.value.params.assetIn as string) ||
                 pair.inputAsset;
             let assetOut =
-                router.currentRoute.value.params.assetOut as string ||
+                (router.currentRoute.value.params.assetOut as string) ||
                 pair.outputAsset;
             if (isAddress(assetIn)) {
                 assetIn = getAddress(assetIn);
