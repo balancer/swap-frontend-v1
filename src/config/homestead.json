@@ -5,7 +5,7 @@
     "infuraKey": "237c3102f39b4940abbe12dc49165cd6",
     "alchemyKey": "cQGZUiTLRCFsQS7kbRxPJK4eH4fTTu88",
     "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
-    "subgraphBackupUrl": "https://ipfs.fleek.co/ipns/balancer-bucket.storage.fleek.co/balancer-exchange/pools",
+    "subgraphBackupUrl": "https://storageapi.fleek.co/balancer-bucket/balancer-exchange/pools",
     "addresses": {
         "bFactory": "0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd",
         "bActions": "0xde4A25A0b9589689945d842c5ba0CF4f0D4eB3ac",
