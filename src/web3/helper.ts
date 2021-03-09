@@ -66,7 +66,7 @@ export default class Helper {
 
     static async getGasPrice(
         provider: Web3Provider,
-        fallback = 20,
+        fallback = 200,
     ): Promise<any> {
         try {
             // TODO: units, return, gas price, optional total fee cost calculation:  price + gas used estimate:
