@@ -4,6 +4,9 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import assets from '@balancer-labs/assets/assets/index.json';
 
+import { Pool } from '@balancer-labs/sor/dist/types';
+import { calcSpotPrice } from '@/utils/math';
+
 import config from '@/config';
 import { debugProvider } from '@/utils/provider';
 
@@ -111,4 +114,48 @@ export function logRevertedTx(
     const dummyWallet = new Wallet(dummyPrivateKey).connect(debugProvider);
     const loggingContract = contract.connect(dummyWallet);
     loggingContract[action](...params, overrides);
+}
+
+const ENDPOINT_PRICE_USD = 'https://api.coingecko.com/api/v3';
+
+export async function getTokenPriceUSD(
+    token: string,
+): Promise<any> {
+    let data;
+    try {
+        const url = `${ENDPOINT_PRICE_USD}/simple/price?ids=${token}&vs_currencies=usd`;
+        const response = await fetch(url);
+        data = await response.json();
+        return data['weth'].usd;
+    } catch (e) {
+        console.error('error: getPriceUSD: ', e);
+        return;
+    }
+}
+
+// TODO: convert for any pool, with/w/o fees
+export function getBALETHSpotPrice(rawPool: Pool): any {
+    try {
+        const balWethPool = {
+            tokens: rawPool.tokens
+                .map(token => {
+                    return {
+                        balance: new BigNumber(token.balance),
+                        weight: new BigNumber(token.denormWeight),
+                    };
+                }),
+        };
+
+        const spotPrice = calcSpotPrice(
+            balWethPool.tokens[1].balance,
+            balWethPool.tokens[1].weight,
+            balWethPool.tokens[0].balance,
+            balWethPool.tokens[0].weight,
+        ).div(1e18);
+
+        return spotPrice;
+    }
+    catch (e) {
+        console.error('error: getting bal spot price: ', e);
+    }
 }

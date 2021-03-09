@@ -2,6 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { ErrorCode } from '@ethersproject/logger';
 import { Web3Provider } from '@ethersproject/providers';
+import { formatUnits } from '@ethersproject/units';
 import BigNumber from 'bignumber.js';
 
 import { logRevertedTx } from '@/utils/helpers';
@@ -60,6 +61,21 @@ export default class Helper {
                 logRevertedTx(sender, wethContract, 'withdraw', [amount.toString()], {});
             }
             return e;
+        }
+    }
+
+    static async getGasPrice(
+        provider: Web3Provider,
+        fallback = 20,
+    ): Promise<any> {
+        try {
+            // TODO: units, return, gas price, optional total fee cost calculation:  price + gas used estimate:
+            const gasPrice = await provider.getGasPrice();
+            const gasPriceInGwei = formatUnits(gasPrice, 'gwei');
+            return gasPriceInGwei;
+        } catch(e) {
+            console.error(e);
+            return fallback;
         }
     }
 }

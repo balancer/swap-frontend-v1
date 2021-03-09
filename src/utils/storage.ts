@@ -4,6 +4,7 @@ import { Transaction } from '@/store/modules/account';
 const PREFERENCES = 'preferences';
 const TRANSACTIONS = 'transactions';
 const ASSETS = 'assets';
+const DATA = 'data';
 
 interface Preferences {
     connector: string | null;
@@ -20,6 +21,7 @@ interface Pair {
 
 type Transactions = Record<string, Record<number, Record<string, Transaction>>>;
 type Assets = Record<number, Record<string, AssetMetadata>>;
+type Data = Record<number, Record<string, any>>;
 
 export default class Storage {
     static getConnector(): string | null {
@@ -65,6 +67,17 @@ export default class Storage {
             return {};
         }
         return assets[chainId];
+    }
+
+    static getData(chainId: number): Record<string, any> {
+        const dataString = localStorage.getItem(DATA);
+        const data: Data = dataString
+            ? JSON.parse(dataString)
+            : {};
+        if (!data[chainId]) {
+            return {};
+        }
+        return data[chainId];
     }
 
     static isDarkmode(): boolean {
@@ -131,6 +144,20 @@ export default class Storage {
         localStorage.setItem(ASSETS, JSON.stringify(assetList));
     }
 
+    static saveData(chainId: number, data: Record<string, any>): void {
+        const dataString = localStorage.getItem(DATA);
+        const dataList: Data = dataString
+            ? JSON.parse(dataString)
+            : {};
+        if (!dataList[chainId]) {
+            dataList[chainId] = {};
+        }
+        for (const item in data) {
+            dataList[chainId][item] = data[item];
+        }
+        localStorage.setItem(DATA, JSON.stringify(dataList));
+    }
+
     static toggleMode(): boolean {
         const preferences = getPreferences();
         preferences.darkmode = !preferences.darkmode;
@@ -150,6 +177,10 @@ export default class Storage {
 
     static clearAssets(): void {
         localStorage.removeItem(ASSETS);
+    }
+
+    static clearData(): void {
+        localStorage.removeItem(DATA);
     }
 }
 

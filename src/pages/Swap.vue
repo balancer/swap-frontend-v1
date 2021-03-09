@@ -21,6 +21,13 @@
                     handleAmountChange(value);
                 }"
             />
+            <div v-if="isCampaignActive">
+                <SwapGasReimbursement
+                    :pools="pools"
+                    :swaps="swaps"
+                    :reward-modifier="rewardModifier"
+                />
+            </div>
             <SwapButton
                 class="swap-button"
                 :address-in="assetInAddressInput"
@@ -75,6 +82,7 @@ import Routing from '@/components/swap/Routing.vue';
 import Settings from '@/components/Settings.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
+import SwapGasReimbursement from '@/components/swap/GasReimbursement.vue';
 import { setGoal } from '@/utils/fathom';
 
 // eslint-disable-next-line no-undef
@@ -94,6 +102,7 @@ export default defineComponent({
         Settings,
         SwapButton,
         SwapPair,
+        SwapGasReimbursement,
     },
     setup() {
         let sor: SOR | undefined = undefined;
@@ -111,6 +120,9 @@ export default defineComponent({
         const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
         const pools = ref<Pool[]>([]);
+
+        const isCampaignActive = ref(true);
+        const rewardModifier = ref(0);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
 
@@ -515,6 +527,9 @@ export default defineComponent({
             handleAssetSelect,
             unlock,
             swap,
+
+            isCampaignActive,
+            rewardModifier,
         };
     },
 });
