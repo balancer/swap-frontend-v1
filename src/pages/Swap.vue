@@ -1,6 +1,5 @@
 <template>
     <div class="page">
-        <MessageReimbursement />
         <div class="pair">
             <div class="header">
                 <div class="header-text">
@@ -20,6 +19,10 @@
                 @change="value => {
                     handleAmountChange(value);
                 }"
+            />
+            <GasReimbursement
+                :pools="pools"
+                :swaps="swaps"
             />
             <SwapButton
                 class="swap-button"
@@ -69,12 +72,12 @@ import Swapper from '@/web3/swapper';
 import Helper from '@/web3/helper';
 import { RootState } from '@/store';
 
-import MessageReimbursement from '@/components/MessageReimbursement.vue';
 import ModalAssetSelector from '@/components/ModalAssetSelector.vue';
 import Routing from '@/components/swap/Routing.vue';
 import Settings from '@/components/Settings.vue';
 import SwapButton from '@/components/swap/Button.vue';
 import SwapPair from '@/components/swap/Pair.vue';
+import GasReimbursement from '@/components/swap/GasReimbursement.vue';
 import { setGoal } from '@/utils/fathom';
 
 // eslint-disable-next-line no-undef
@@ -88,12 +91,12 @@ interface Pair {
 
 export default defineComponent({
     components: {
-        MessageReimbursement,
         ModalAssetSelector,
         Routing,
         Settings,
         SwapButton,
         SwapPair,
+        GasReimbursement,
     },
     setup() {
         let sor: SOR | undefined = undefined;
