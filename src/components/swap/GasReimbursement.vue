@@ -1,14 +1,20 @@
 <template>
-    <div class="message">
-        <div>
-            <span class="header">
-                High gas fees? We'll refund you!<br>
-            </span>
-            <span class="body">
-                {{ text }}
-            </span>
+    <a
+        href="https://forum.balancer.finance/t/proposal-bal-for-gas/1437"
+        target="_blank"
+        class="message-link"
+    >
+        <div class="message">    
+            <div>
+                <span class="header">
+                    High gas fees? Here's a helping hand<br>
+                </span>
+                <span class="body">
+                    {{ text }}
+                </span>
+            </div>
         </div>
-    </div>
+    </a>
 </template>
 
 <script lang="ts">
@@ -53,6 +59,7 @@ export default defineComponent({
 
         const reimburseAmount = computed(() => {
             const ethPrice = store.state.price.prices['ethereum'];
+            const balPrice = store.state.price.prices['balancer'];
             
             const totalSwaps = props.swaps.flat().filter(hop => {
                 return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
@@ -65,14 +72,16 @@ export default defineComponent({
                         numSwaps >= 4 ? 400000 : 0));
             const gasPriceWei = gasLimit.times(GAS_PRICE);
             const gasPrice = gasPriceWei.div(1e18);
-            const gasPriceUSD = gasPrice.times(ethPrice);
-            return gasPriceUSD;
+            return {
+                bal: gasPrice.times(ethPrice).div(balPrice),
+                usd: gasPrice.times(ethPrice),
+            };
         });
 
         const text = computed(() => {
-            const isEligible = reimburseAmount.value && reimburseAmount.value.gt(0);
+            const isEligible = reimburseAmount.value && reimburseAmount.value.usd.gt(0);
             return isEligible
-                ? `Trade will earn you up ~${formatUSD(reimburseAmount.value)} of BAL`
+                ? `This trade will earn you ${reimburseAmount.value.bal.toFixed(2)}BAL (${formatUSD(reimburseAmount.value.usd)})*`
                 : 'Earn BAL when swapping eligible tokens';
         });
 
@@ -88,17 +97,21 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.message-link {
+    text-decoration: none;
+}
+
 .message {
     position: relative;
     margin: 40px 0 0;
-    padding: 20px 40px;
+    padding: 20px 30px;
     border-radius: var(--border-radius-medium);
     color: var(--text-primary);
     background: linear-gradient(185deg, #f0f 0%, #00f 100%);
 }
 
 .message::before {
-    content: '👏';
+    content: '🤝';
     position: absolute;
     top: 2px;
     left: 2px;
@@ -111,6 +124,12 @@ export default defineComponent({
     background: var(--background-control);
 }
 
+.header {
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
 .body {
     color: var(--text-secondary);
     font-size: var(--font-size-small);
@@ -118,7 +137,7 @@ export default defineComponent({
 
 .header,
 .body {
-    margin-left: 32px;
+    margin-left: 36px;
     position: relative;
 }
 
