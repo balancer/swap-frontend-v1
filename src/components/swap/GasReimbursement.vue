@@ -135,7 +135,6 @@ export default defineComponent({
         linear-gradient(185deg, #f0f 0%, #00f 100%) border-box;
     border-radius: var(--border-radius-medium);
     margin-top: 40px;
-    width: 385px;
     padding: 10px;
     border: 3px solid transparent;
     font-size: var(--font-size-small);
@@ -163,7 +162,6 @@ export default defineComponent({
     display: flex;
     align-items: center;
     margin-top: 40px;
-    width: 385px;
     padding: 10px;
     border: 3px solid transparent;
     font-size: var(--font-size-small);
