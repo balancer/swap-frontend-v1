@@ -24,7 +24,6 @@ import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
 import BigNumber from 'bignumber.js';
-import { getPrices } from '@/utils/price';
 import handsClapIcon from '@/assets/handsClapIcon.png';
 
 // eslint-disable-next-line no-undef
@@ -56,9 +55,8 @@ export default defineComponent({
         watch(() => props, async (props) => {
             loading.value = true;
 
-            const prices = await getPrices(['ethereum', 'balancer']);
-            const ethPrice = prices['ethereum'];
-            const balPrice = prices['balancer'];
+            const ethPrice = store.state.price.prices['ethereum'];
+            const balPrice = store.state.price.prices['balancer'];
 
             const eligibleTokensList = store.getters['assets/eligibleTokensList'];
             const totalSwaps = props.swaps.flat().filter(hop => {
