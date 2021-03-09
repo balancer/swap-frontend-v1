@@ -1,17 +1,11 @@
 <template>
-    <div class="container">
+    <div class="message">
         <div>
-            <img
-                class="message-icon"
-                :src="handsClapIcon"
-            >
-        </div>
-        <div>
-            <span class="message-title">
+            <span class="header">
                 High gas fees? We'll refund you!<br>
             </span>
-            <span class="message-body">
-                {{ messageGasReimbursed }}
+            <span class="body">
+                {{ text }}
             </span>
         </div>
     </div>
@@ -24,7 +18,6 @@ import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
 import BigNumber from 'bignumber.js';
-import handsClapIcon from '@/assets/handsClapIcon.png';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -67,10 +60,10 @@ export default defineComponent({
             return gasPriceUSD;
         });
 
-        const messageGasReimbursed = computed(() => {
+        const text = computed(() => {
             const isEligible = reimburseAmount.value && reimburseAmount.value.gt(0);
             return isEligible
-                ? `This trade will earn you up ~${formatUSD(reimburseAmount.value)} of BAL`
+                ? `Trade will earn you up ~${formatUSD(reimburseAmount.value)} of BAL`
                 : 'Earn BAL when swapping eligible tokens';
         });
 
@@ -79,43 +72,50 @@ export default defineComponent({
         }
 
         return {
-            messageGasReimbursed,
-            handsClapIcon,
+            text,
         };
     },
 });
 </script>
 
 <style scoped>
-
-.container {
-    display: flex;
-    align-items: center;
-    background:
-        linear-gradient(var(--background-secondary), var(--background-secondary)) padding-box,
-        linear-gradient(185deg, #f0f 0%, #00f 100%) border-box;
+.message {
+    position: relative;
+    margin: 40px 0 0;
+    padding: 20px 40px;
     border-radius: var(--border-radius-medium);
-    margin-top: 40px;
-    padding: 10px;
-    border: 3px solid transparent;
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-}
-
-.message-title {
-    font-weight: bold;
     color: var(--text-primary);
+    background: linear-gradient(185deg, #f0f 0%, #00f 100%);
 }
 
-.message-body {
-    font-size: var(--font-size-small);
+.message::before {
+    content: '👏';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    bottom: 2px;
+    right: 2px;
+    padding: 20px;
+    border-radius: var(--border-radius-medium);
+    text-align: left;
+    font-size: 32px;
+    background: var(--background-control);
+}
+
+.body {
     color: var(--text-secondary);
-    cursor: pointer;
+    font-size: var(--font-size-small);
 }
 
-.message-icon {
-    width: 32px;
-    height: 32px;
-    margin: 10px 10px;
+.header,
+.body {
+    margin-left: 32px;
+    position: relative;
+}
+
+@media only screen and (max-width: 768px) {
+    .message {
+        width: initial;
+    }
 }
 </style>
