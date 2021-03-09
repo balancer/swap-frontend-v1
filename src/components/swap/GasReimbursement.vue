@@ -1,5 +1,8 @@
 <template>
-    <div class="container">
+    <div
+        v-if="!isZero"
+        class="container"
+    >
         <div>
             <img
                 class="message-icon"
@@ -50,6 +53,13 @@ export default defineComponent({
         const balReimburseAmount = ref('');
         const balReimburseAmountUSD = ref('');
         const loading = ref(true);
+
+        const isZero = computed(() => {
+            return !balReimburseAmount.value || !balReimburseAmountUSD.value ||
+                balReimburseAmount.value === '' || balReimburseAmountUSD.value === '' ||
+                parseFloat(balReimburseAmount.value) === 0 ||
+                parseFloat(balReimburseAmountUSD.value) === 0;
+        });
 
         watch(() => props, async (props) => {
             loading.value = true;
@@ -120,6 +130,7 @@ export default defineComponent({
 
         return {
             loading,
+            isZero,
             messageGasReimbursed,
             handsIcon,
         };
