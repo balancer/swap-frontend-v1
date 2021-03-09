@@ -3,7 +3,7 @@
         <div>
             <img
                 class="message-icon"
-                :src="handsIcon"
+                :src="handsClapIcon"
             >
         </div>
         <div>
@@ -19,7 +19,7 @@
 
 <script lang="ts">
 
-import { ref, PropType, defineComponent, watch, computed } from 'vue';
+import { PropType, defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
@@ -48,16 +48,9 @@ export default defineComponent({
 
     setup(props) {
         const store = useStore<RootState>();
-        const balReimburseAmount = ref('');
-        const balReimburseAmountUSD = ref('');
-        const loading = ref(true);
 
-        watch(() => props, async (props) => {
-            loading.value = true;
-
+        const reimburseAmount = computed(() => {
             const ethPrice = store.state.price.prices['ethereum'];
-            const balPrice = store.state.price.prices['balancer'];
-
             const eligibleTokensList = store.getters['assets/eligibleTokensList'];
             const totalSwaps = props.swaps.flat().filter(hop => {
                 return hop.tokenIn in eligibleTokensList && hop.tokenOut in eligibleTokensList;
@@ -70,40 +63,24 @@ export default defineComponent({
                         numSwaps >= 4 ? 400000 : 0));
             const gasPriceWei = gasLimit.times(GAS_PRICE);
             const gasPrice = gasPriceWei.div(1e18);
-
-            const balAmount = gasPrice.div(balPrice);
-            balReimburseAmount.value = balAmount.toFixed(2);
-            const gasPriceUSD = new BigNumber(ethPrice).times(gasPrice.toString());
-            balReimburseAmountUSD.value = gasPriceUSD.toFixed(2);
-
-            loading.value = false;
-        },
-        {
-            deep: true,
-            immediate: true,
-        },
-        );
-
-        const messageGasReimbursed = computed(() => {
-            const isEligible = loading.value ||
-                !balReimburseAmountUSD.value ||
-                balReimburseAmountUSD.value === '' ||
-                parseFloat(balReimburseAmountUSD.value) === 0;
-            return isEligible
-                ? 'Earn BAL when swapping eligible tokens!'
-                : `This trade will earn you up ~${formatUSD(balReimburseAmountUSD.value)} of BAL`;
+            const gasPriceUSD = gasPrice.times(ethPrice);
+            return gasPriceUSD;
         });
 
-        function formatUSD(amount: any): string {
-            return `$${new BigNumber(amount).toFixed(2)}`; // TODO: check NaN
+        const messageGasReimbursed = computed(() => {
+            const isEligible = reimburseAmount.value && reimburseAmount.value.gt(0);
+            return isEligible
+                ? `This trade will earn you up ~${formatUSD(reimburseAmount.value)} of BAL`
+                : 'Earn BAL when swapping eligible tokens';
+        });
+
+        function formatUSD(amount: BigNumber): string {
+            return `$${new BigNumber(amount).toFixed(2)}`;
         }
 
-        const handsIcon = ref(handsClapIcon);
-
         return {
-            loading,
             messageGasReimbursed,
-            handsIcon,
+            handsClapIcon,
         };
     },
 });
@@ -140,16 +117,5 @@ export default defineComponent({
     width: 32px;
     height: 32px;
     margin: 10px 10px;
-}
-
-.container-loading {
-    display: flex;
-    align-items: center;
-    margin-top: 40px;
-    padding: 10px;
-    border: 3px solid transparent;
-    font-size: var(--font-size-small);
-    color: var(--text-secondary);
-    justify-content: center;
 }
 </style>
