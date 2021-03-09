@@ -20,13 +20,10 @@
                     handleAmountChange(value);
                 }"
             />
-            <div v-if="isCampaignActive">
-                <GasReimbursement
-                    :pools="pools"
-                    :swaps="swaps"
-                    :reward-modifier="rewardModifier"
-                />
-            </div>
+            <GasReimbursement
+                :pools="pools"
+                :swaps="swaps"
+            />
             <SwapButton
                 class="swap-button"
                 :address-in="assetInAddressInput"
@@ -117,9 +114,6 @@ export default defineComponent({
         const swapsLoading = ref(false);
         const swaps = ref<Swap[][]>([]);
         const pools = ref<Pool[]>([]);
-
-        const isCampaignActive = ref(true);
-        const rewardModifier = ref(0);
 
         const isModalOpen = computed(() => store.state.ui.modal.asset.isOpen);
 
@@ -524,9 +518,6 @@ export default defineComponent({
             handleAssetSelect,
             unlock,
             swap,
-
-            isCampaignActive,
-            rewardModifier,
         };
     },
 });

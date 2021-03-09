@@ -43,11 +43,6 @@ export default defineComponent({
             required: false,
             default: true,
         },
-        rewardModifier: {
-            type: Number,
-            required: false,
-            default: 100,
-        },
     },
 
     setup(props) {
