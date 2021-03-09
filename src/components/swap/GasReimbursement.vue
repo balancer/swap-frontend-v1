@@ -53,6 +53,7 @@ export default defineComponent({
 
         const reimburseAmount = computed(() => {
             const ethPrice = store.state.price.prices['ethereum'];
+            const balPrice = store.state.price.prices['balancer'];
             
             const totalSwaps = props.swaps.flat().filter(hop => {
                 return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
@@ -65,14 +66,16 @@ export default defineComponent({
                         numSwaps >= 4 ? 400000 : 0));
             const gasPriceWei = gasLimit.times(GAS_PRICE);
             const gasPrice = gasPriceWei.div(1e18);
-            const gasPriceUSD = gasPrice.times(ethPrice);
-            return gasPriceUSD;
+            return {
+                bal: gasPrice.times(ethPrice).div(balPrice),
+                usd: gasPrice.times(ethPrice),
+            };
         });
 
         const text = computed(() => {
-            const isEligible = reimburseAmount.value && reimburseAmount.value.gt(0);
+            const isEligible = reimburseAmount.value && reimburseAmount.value.usd.gt(0);
             return isEligible
-                ? `Trade will earn you up ~${formatUSD(reimburseAmount.value)} of BAL`
+                ? `Trade will earn you ${reimburseAmount.value.bal.toFixed(2)}BAL (${formatUSD(reimburseAmount.value.usd)})`
                 : 'Earn BAL when swapping eligible tokens';
         });
 
