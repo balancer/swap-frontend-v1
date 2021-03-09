@@ -28,7 +28,7 @@ import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
 import BigNumber from 'bignumber.js';
 import Helper from '@/web3/helper';
-import { getTokenPriceUSD, getBALETHSpotPrice } from '@/utils/helpers';
+import { getPrices } from '@/utils/price';
 import handsClapIcon from '@/assets/handsClapIcon.png';
 
 export default defineComponent({
@@ -55,51 +55,38 @@ export default defineComponent({
         const loading = ref(true);
 
         const isZero = computed(() => {
-            return !balReimburseAmount.value || !balReimburseAmountUSD.value ||
-                balReimburseAmount.value === '' || balReimburseAmountUSD.value === '' ||
-                parseFloat(balReimburseAmount.value) === 0 ||
+            return !balReimburseAmountUSD.value ||
+                balReimburseAmountUSD.value === '' ||
                 parseFloat(balReimburseAmountUSD.value) === 0;
         });
 
         watch(() => props, async (props) => {
             loading.value = true;
 
-            try {
-                const poolAddress = '0x59a19d8c652fa0284f44113d0ff9aba70bd46fb4'; // TODO: extract for dynamic appt
-                const eligibleTokensList = store.getters['assets/eligibleTokensList'];
-                const totalSwaps = props.swaps.flat().filter(item => {
-                    return item.tokenIn in eligibleTokensList && item.tokenOut in eligibleTokensList;
-                });
+            const prices = await getPrices(['ethereum', 'balancer']);
+            const ethPrice = prices['ethereum'];
+            const balPrice = prices['balancer'];
 
-                const balWethPool = props.pools.find(pool => pool.id === poolAddress);
+            const eligibleTokensList = store.getters['assets/eligibleTokensList'];
+            const totalSwaps = props.swaps.flat().filter(hop => {
+                return hop.tokenIn in eligibleTokensList && hop.tokenOut in eligibleTokensList;
+            });
 
-                if (balWethPool) {
-                    // get gas limit based on swaps
-                    const numSwaps = totalSwaps.length;
-                    const gasLimitGwei =    new BigNumber((numSwaps === 1 ? 130000 :
-                        numSwaps === 2 ? 220000 :
-                            numSwaps === 3 ? 300000 :
-                                numSwaps >= 4 ? 400000 : 0));
-                    // get gas price, total
-                    const provider = await store.getters['account/provider'];
-                    const gasPriceGwei = new BigNumber(await Helper.getGasPrice(provider));
-                    const gasPriceETH = new BigNumber(gasLimitGwei).times(gasPriceGwei).div(1e9);
+            const numSwaps = totalSwaps.length;
+            const gasLimitGwei =    new BigNumber((numSwaps === 1 ? 130000 :
+                numSwaps === 2 ? 220000 :
+                    numSwaps === 3 ? 300000 :
+                        numSwaps >= 4 ? 400000 : 0));
 
-                    // calc BAL reimbursement amt
-                    const balEthSpotPrice = getBALETHSpotPrice(balWethPool);
-                    const balAmount = gasPriceETH.div(balEthSpotPrice);
-                    balReimburseAmount.value = balAmount.toFixed(2);
+            const provider = await store.getters['account/provider'];
+            const gasPriceGwei = new BigNumber(await Helper.getGasPrice(provider));
+            const gasPriceETH = new BigNumber(gasLimitGwei).times(gasPriceGwei).div(1e9);
 
-                    // get $gas $bal
-                    const wethPriceUSD = await getTokenPriceUSD('weth');
-                    const gasPriceUSD = new BigNumber(wethPriceUSD).times(gasPriceETH);
-                    balReimburseAmountUSD.value = gasPriceUSD.toFixed(2);
-                }
-            } catch(e) {
-                console.error('error calculating estimate: ', e);
-                balReimburseAmount.value = '';
-                balReimburseAmountUSD.value = '';
-            }
+            const balAmount = gasPriceETH.div(balPrice);
+            balReimburseAmount.value = balAmount.toFixed(2);
+            const gasPriceUSD = new BigNumber(ethPrice).times(gasPriceETH);
+            balReimburseAmountUSD.value = gasPriceUSD.toFixed(2);
+
             loading.value = false;
         },
         {
