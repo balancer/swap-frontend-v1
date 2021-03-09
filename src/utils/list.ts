@@ -1,5 +1,4 @@
 import tokenlist from '@balancer-labs/assets/generated/listed.tokenlist.json';
-import eligibletokenlist from '@balancer-labs/assets/lists/eligible.json';
 
 import config, { AssetMetadata } from '@/config';
 
@@ -21,7 +20,6 @@ interface Token {
 }
 
 export const DEFAULT_LIST = 'balancer';
-export const ELIGIBILE_TOKEN_LIST = 'eligibleTokenList';
 
 export const listMetadata: Record<string, string> = {
     [DEFAULT_LIST]: '',
@@ -30,11 +28,6 @@ export const listMetadata: Record<string, string> = {
     'compound': 'https://raw.githubusercontent.com/compound-finance/token-list/master/compound.tokenlist.json',
     'zapper': 'https://zapper.fi/api/token-list',
     'zerion': 'http://tokenlist.zerion.eth.link',
-};
-
-// for lists of any type, not oriented toward token list only
-export const anyListMetadata: Record<string, string> = {
-    [ELIGIBILE_TOKEN_LIST]: '',
 };
 
 export async function getTokenlist(id: string): Promise<TokenList> {
@@ -72,28 +65,3 @@ export function getAssetsFromTokenlist(chainId: number, list: TokenList): Record
     }
     return assets;
 }
-
-export async function getAnyListData(id: string): Promise<any> {
-    if (id === ELIGIBILE_TOKEN_LIST) {
-        return Object.keys(eligibleTokensList).reduce((c, k) => 
-            (c[k.toLowerCase()] = eligibleTokensList[k], c), {},
-        );
-    }
-
-    const dataUrl = anyListMetadata[id];
-    const response = await fetch(dataUrl);
-    const json = await response.json();
-    return json;
-}
-
-const eligibleTokensLists = {
-    1: {
-        ...eligibletokenlist.homestead,
-    },
-    42:{
-        ...eligibletokenlist.kovan,
-    },
-};
-
-export const eligibleTokensList = eligibleTokensLists[config.chainId];
-

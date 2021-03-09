@@ -17,7 +17,10 @@ import { PropType, defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
+import config from '@/config';
 import BigNumber from 'bignumber.js';
+
+import eligibleAssetList from '@balancer-labs/assets/lists/eligible.json';
 
 // eslint-disable-next-line no-undef
 const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
@@ -42,11 +45,17 @@ export default defineComponent({
     setup(props) {
         const store = useStore<RootState>();
 
+        const eligibleAssetMeta = eligibleAssetList[config.network];
+        const eligibleAssets = Object.fromEntries(Object.entries(eligibleAssetMeta).map(assetEntry => {
+            const [address] = assetEntry;
+            return [address.toLowerCase(), ''];
+        }));
+
         const reimburseAmount = computed(() => {
             const ethPrice = store.state.price.prices['ethereum'];
-            const eligibleTokensList = store.getters['assets/eligibleTokensList'];
+            
             const totalSwaps = props.swaps.flat().filter(hop => {
-                return hop.tokenIn in eligibleTokensList && hop.tokenOut in eligibleTokensList;
+                return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
             });
 
             const numSwaps = totalSwaps.length;

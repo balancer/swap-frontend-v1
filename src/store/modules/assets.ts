@@ -3,13 +3,7 @@ import { ActionContext } from 'vuex';
 import Ethereum from '@/api/ethereum';
 import { RootState } from '@/store';
 import config, { AssetMetadata } from '@/config';
-import { TokenList,
-    DEFAULT_LIST,
-    listMetadata,
-    getTokenlist,
-    getAssetsFromTokenlist,
-    ELIGIBILE_TOKEN_LIST,
-    getAnyListData } from '@/utils/list';
+import { TokenList, DEFAULT_LIST, listMetadata, getTokenlist, getAssetsFromTokenlist } from '@/utils/list';
 import Storage from '@/utils/storage';
 
 type Metadata = Record<string, AssetMetadata>;
@@ -18,17 +12,11 @@ export interface AssetState {
     listId: string;
     lists: Record<string, TokenList>;
     custom: Metadata;
-    data: any;
 }
 
 interface AddListPayload {
     listId: string;
     list: TokenList;
-}
-
-interface AddDataPayload {
-    id: string;
-    data: any;
 }
 
 const mutations = {
@@ -37,9 +25,6 @@ const mutations = {
     },
     addList: (_state: AssetState, payload: AddListPayload): void => {
         _state.lists[payload.listId] = payload.list;
-    },
-    addData: (_state: AssetState, payload: AddDataPayload): void => {
-        _state.data[payload.id] = payload.data;
     },
     addCustomMetadata: (_state: AssetState, custom: Record<string, AssetMetadata>): void => {
         for (const address in custom) {
@@ -53,8 +38,6 @@ const actions = {
         const listId = Storage.getList();
         const list = await getTokenlist(listId);
         commit('addList', { listId, list });
-        const eligibleTokensList = await getAnyListData(ELIGIBILE_TOKEN_LIST);
-        commit('addData', { id: ELIGIBILE_TOKEN_LIST, data: eligibleTokensList });
     },
     fetchLists: async({ commit }: ActionContext<AssetState, RootState>): Promise<void> => {
         const listIds = Object.keys(listMetadata);
@@ -85,9 +68,6 @@ const getters = {
         };
         return metadata;
     },
-    eligibleTokensList: (state: AssetState): any => {
-        return state.data[ELIGIBILE_TOKEN_LIST];
-    },
 };
 
 function state(): AssetState {
@@ -95,7 +75,6 @@ function state(): AssetState {
         listId: DEFAULT_LIST,
         lists: {},
         custom: {},
-        data: {},
     };
 }
 
