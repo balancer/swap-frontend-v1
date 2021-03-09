@@ -1,14 +1,20 @@
 <template>
-    <div class="message">
-        <div>
-            <span class="header">
-                High gas fees? Here's a helping hand<br>
-            </span>
-            <span class="body">
-                {{ text }}
-            </span>
+    <a
+        href="https://forum.balancer.finance/t/proposal-bal-for-gas/1437"
+        target="_blank"
+        class="message-link"
+    >
+        <div class="message">    
+            <div>
+                <span class="header">
+                    High gas fees? Here's a helping hand<br>
+                </span>
+                <span class="body">
+                    {{ text }}
+                </span>
+            </div>
         </div>
-    </div>
+    </a>
 </template>
 
 <script lang="ts">
@@ -75,7 +81,7 @@ export default defineComponent({
         const text = computed(() => {
             const isEligible = reimburseAmount.value && reimburseAmount.value.usd.gt(0);
             return isEligible
-                ? `This trade will earn you ${reimburseAmount.value.bal.toFixed(2)}BAL (${formatUSD(reimburseAmount.value.usd)})`
+                ? `This trade will earn you ${reimburseAmount.value.bal.toFixed(2)}BAL (${formatUSD(reimburseAmount.value.usd)})*`
                 : 'Earn BAL when swapping eligible tokens';
         });
 
@@ -91,6 +97,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.message-link {
+    text-decoration: none;
+}
+
 .message {
     position: relative;
     margin: 40px 0 0;
@@ -117,6 +127,7 @@ export default defineComponent({
 .header {
     font-size: var(--font-size-medium);
     font-weight: bold;
+    color: var(--text-primary);
 }
 
 .body {
