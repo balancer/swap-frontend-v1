@@ -27,9 +27,11 @@ import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
 import BigNumber from 'bignumber.js';
-import Helper from '@/web3/helper';
 import { getPrices } from '@/utils/price';
 import handsClapIcon from '@/assets/handsClapIcon.png';
+
+// eslint-disable-next-line no-undef
+const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
 
 export default defineComponent({
     props: {
@@ -73,18 +75,16 @@ export default defineComponent({
             });
 
             const numSwaps = totalSwaps.length;
-            const gasLimitGwei =    new BigNumber((numSwaps === 1 ? 130000 :
+            const gasLimit = new BigNumber((numSwaps === 1 ? 130000 :
                 numSwaps === 2 ? 220000 :
                     numSwaps === 3 ? 300000 :
                         numSwaps >= 4 ? 400000 : 0));
+            const gasPriceWei = gasLimit.times(GAS_PRICE);
+            const gasPrice = gasPriceWei.div(1e18);
 
-            const provider = await store.getters['account/provider'];
-            const gasPriceGwei = new BigNumber(await Helper.getGasPrice(provider));
-            const gasPriceETH = new BigNumber(gasLimitGwei).times(gasPriceGwei).div(1e9);
-
-            const balAmount = gasPriceETH.div(balPrice);
+            const balAmount = gasPrice.div(balPrice);
             balReimburseAmount.value = balAmount.toFixed(2);
-            const gasPriceUSD = new BigNumber(ethPrice).times(gasPriceETH);
+            const gasPriceUSD = new BigNumber(ethPrice).times(gasPrice.toString());
             balReimburseAmountUSD.value = gasPriceUSD.toFixed(2);
 
             loading.value = false;
@@ -102,7 +102,7 @@ export default defineComponent({
                        (!balReimburseAmount.value || balReimburseAmount.value) === '0' ||
                        (!balReimburseAmountUSD.value || balReimburseAmountUSD.value === '0') ?
                     defaultMessage :
-                    `This trade will earn you up to  ${balReimburseAmount.value}BAL (${formatUSD(balReimburseAmountUSD.value)})`;
+                    `This trade will earn you up ~${formatUSD(balReimburseAmountUSD.value)} of BAL`;
             } catch (e) {
                 console.error('error calculating estimate: ', e);
                 return defaultMessage;
