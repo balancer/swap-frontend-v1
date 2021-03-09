@@ -1,8 +1,5 @@
 <template>
-    <div
-        v-if="!isZero"
-        class="container"
-    >
+    <div class="container">
         <div>
             <img
                 class="message-icon"
@@ -56,12 +53,6 @@ export default defineComponent({
         const balReimburseAmountUSD = ref('');
         const loading = ref(true);
 
-        const isZero = computed(() => {
-            return !balReimburseAmountUSD.value ||
-                balReimburseAmountUSD.value === '' ||
-                parseFloat(balReimburseAmountUSD.value) === 0;
-        });
-
         watch(() => props, async (props) => {
             loading.value = true;
 
@@ -96,17 +87,13 @@ export default defineComponent({
         );
 
         const messageGasReimbursed = computed(() => {
-            const defaultMessage = 'Earn BAL when swapping eligible tokens!';
-            try {
-                return loading.value ||
-                       (!balReimburseAmount.value || balReimburseAmount.value) === '0' ||
-                       (!balReimburseAmountUSD.value || balReimburseAmountUSD.value === '0') ?
-                    defaultMessage :
-                    `This trade will earn you up ~${formatUSD(balReimburseAmountUSD.value)} of BAL`;
-            } catch (e) {
-                console.error('error calculating estimate: ', e);
-                return defaultMessage;
-            }
+            const isEligible = loading.value ||
+                !balReimburseAmountUSD.value ||
+                balReimburseAmountUSD.value === '' ||
+                parseFloat(balReimburseAmountUSD.value) === 0;
+            return isEligible
+                ? 'Earn BAL when swapping eligible tokens!'
+                : `This trade will earn you up ~${formatUSD(balReimburseAmountUSD.value)} of BAL`;
         });
 
         function formatUSD(amount: any): string {
@@ -117,7 +104,6 @@ export default defineComponent({
 
         return {
             loading,
-            isZero,
             messageGasReimbursed,
             handsIcon,
         };
