@@ -103,7 +103,6 @@ export default defineComponent({
 
 .message {
     position: relative;
-    margin: 40px 0 0;
     padding: 20px 30px;
     border-radius: var(--border-radius-medium);
     color: var(--text-primary);

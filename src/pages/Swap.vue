@@ -21,6 +21,7 @@
                 }"
             />
             <GasReimbursement
+                class="reimbursement-message"
                 :pools="pools"
                 :swaps="swaps"
             />
@@ -562,6 +563,10 @@ export default defineComponent({
 .status-label {
     margin-top: 32px;
     font-size: 14px;
+}
+
+.reimbursement-message {
+    margin-top: 40px;
 }
 
 .swap-button {
