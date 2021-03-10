@@ -1,6 +1,6 @@
 <template>
     <a
-        href="https://forum.balancer.finance/t/proposal-bal-for-gas/1437"
+        href="https://docs.balancer.finance/core-concepts/bal-balancer-governance-token/bal-for-gas"
         target="_blank"
         class="message-link"
     >
