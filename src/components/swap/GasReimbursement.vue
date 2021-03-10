@@ -28,9 +28,6 @@ import BigNumber from 'bignumber.js';
 
 import eligibleAssetList from '@balancer-labs/assets/lists/eligible.json';
 
-// eslint-disable-next-line no-undef
-const GAS_PRICE = process.env.APP_GAS_PRICE || '100000000000';
-
 export default defineComponent({
     props: {
         swaps: {
@@ -60,21 +57,23 @@ export default defineComponent({
         const reimburseAmount = computed(() => {
             const ethPrice = store.state.price.prices['ethereum'];
             const balPrice = store.state.price.prices['balancer'];
-            
+            const gasPrice = store.state.gas.price;
+
             const totalSwaps = props.swaps.flat().filter(hop => {
                 return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
             });
 
             const numSwaps = totalSwaps.length;
-            const gasLimit = new BigNumber((numSwaps === 1 ? 130000 :
+            const gasLimit = numSwaps === 1 ? 130000 :
                 numSwaps === 2 ? 220000 :
                     numSwaps === 3 ? 300000 :
-                        numSwaps >= 4 ? 400000 : 0));
-            const gasPriceWei = gasLimit.times(GAS_PRICE);
-            const gasPrice = gasPriceWei.div(1e18);
+                        numSwaps >= 4 ? 400000 : 0;
+            const gasLimitNumber = new BigNumber(gasLimit);
+            const gasCostWei = gasLimitNumber.times(gasPrice);
+            const gasCost = gasCostWei.div(1e18);
             return {
-                bal: gasPrice.times(ethPrice).div(balPrice),
-                usd: gasPrice.times(ethPrice),
+                bal: gasCost.times(ethPrice).div(balPrice),
+                usd: gasCost.times(ethPrice),
             };
         });
 
