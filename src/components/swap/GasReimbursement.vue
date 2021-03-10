@@ -72,9 +72,9 @@ export default defineComponent({
                 return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
             });
             
-            const addressInIsEligible = (props.addressIn === ETH_KEY || props.addressIn.toLowerCase() in eligibleAssets)
-            const addressOutIsEligible = (props.addressOut === ETH_KEY || props.addressOut.toLowerCase() in eligibleAssets)
-            const reimburseAllSwaps = addressInIsEligible && addressOutIsEligible
+            const addressInIsEligible = (props.addressIn === ETH_KEY || props.addressIn.toLowerCase() in eligibleAssets);
+            const addressOutIsEligible = (props.addressOut === ETH_KEY || props.addressOut.toLowerCase() in eligibleAssets);
+            const reimburseAllSwaps = addressInIsEligible && addressOutIsEligible;
             const numSwaps = reimburseAllSwaps ? props.swaps.flat().length : eligibleSwaps.length;
             const gasLimit = numSwaps === 1 ? 130000 :
                 numSwaps === 2 ? 220000 :
