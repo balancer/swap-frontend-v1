@@ -28,7 +28,6 @@ import config from '@/config';
 import BigNumber from 'bignumber.js';
 
 import eligibleAssetList from '@balancer-labs/assets/lists/eligible.json';
-import gas from '@/store/modules/gas';
 
 export default defineComponent({
     props: {
