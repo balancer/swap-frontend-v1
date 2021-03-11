@@ -23,6 +23,7 @@ import { PropType, defineComponent, computed } from 'vue';
 import { useStore } from 'vuex';
 import { Swap, Pool } from '@balancer-labs/sor/dist/types';
 import { RootState } from '@/store';
+import { ETH_KEY } from '@/utils/helpers';
 import config from '@/config';
 import BigNumber from 'bignumber.js';
 
@@ -30,6 +31,14 @@ import eligibleAssetList from '@balancer-labs/assets/lists/eligible.json';
 
 export default defineComponent({
     props: {
+        addressIn: {
+            type: String,
+            required: true,
+        },
+        addressOut: {
+            type: String,
+            required: true,
+        },
         swaps: {
             type: Array as PropType<Swap[][]>,
             required: true,
@@ -59,11 +68,14 @@ export default defineComponent({
             const balPrice = store.state.price.prices['balancer'];
             const gasPrice = store.state.gas.price;
 
-            const totalSwaps = props.swaps.flat().filter(hop => {
+            const eligibleSwaps = props.swaps.flat().filter(hop => {
                 return hop.tokenIn in eligibleAssets && hop.tokenOut in eligibleAssets;
             });
-
-            const numSwaps = totalSwaps.length;
+            
+            const addressInIsEligible = (props.addressIn === ETH_KEY || props.addressIn.toLowerCase() in eligibleAssets);
+            const addressOutIsEligible = (props.addressOut === ETH_KEY || props.addressOut.toLowerCase() in eligibleAssets);
+            const reimburseAllSwaps = addressInIsEligible && addressOutIsEligible;
+            const numSwaps = reimburseAllSwaps ? props.swaps.flat().length : eligibleSwaps.length;
             const gasLimit = numSwaps === 1 ? 130000 :
                 numSwaps === 2 ? 220000 :
                     numSwaps === 3 ? 300000 :
@@ -80,7 +92,7 @@ export default defineComponent({
         const text = computed(() => {
             const isEligible = reimburseAmount.value && reimburseAmount.value.usd.gt(0);
             return isEligible
-                ? `This trade will earn you ${reimburseAmount.value.bal.toFixed(2)}BAL (${formatUSD(reimburseAmount.value.usd)})*`
+                ? `This trade will earn you +${reimburseAmount.value.bal.toFixed(1, BigNumber.ROUND_DOWN)} BAL (${formatUSD(reimburseAmount.value.usd)})*`
                 : 'Earn BAL when swapping eligible tokens';
         });
 

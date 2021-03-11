@@ -22,6 +22,8 @@
             />
             <GasReimbursement
                 class="reimbursement-message"
+                :address-in="assetInAddressInput"
+                :address-out="assetOutAddressInput"
                 :pools="pools"
                 :swaps="swaps"
             />
