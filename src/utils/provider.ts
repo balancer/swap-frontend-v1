@@ -1,8 +1,8 @@
-import { AlchemyProvider, InfuraProvider } from '@ethersproject/providers';
+import { AlchemyProvider } from '@ethersproject/providers';
 
 import config from '@/config';
 
-const provider = new InfuraProvider(config.network, config.infuraKey);
+const provider = new AlchemyProvider(config.network, config.alchemyKey);
 
 export default provider;
 
