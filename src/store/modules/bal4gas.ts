@@ -9,7 +9,7 @@ export interface Bal4GasState {
 
 const mutations = {
     setBal4Gas: (_state: Bal4GasState, bal4gas: number): void => {
-        _state.bal4gas = bal4gas
+        _state.bal4gas = bal4gas;
     },
 };
 
@@ -18,7 +18,7 @@ const actions = {
         dispatch('fetchBal4Gas');
     },
     fetchBal4Gas: async({ commit }: ActionContext<Bal4GasState, RootState>): Promise<void> => {
-        const budgetLeft = await isBudgetLeft()
+        const budgetLeft = await isBudgetLeft();
         const bal4gas = budgetLeft ? 1 : 0;
         commit('setBal4Gas', bal4gas);
     },

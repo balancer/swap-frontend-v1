@@ -23,7 +23,7 @@ const store = createStore({
         gas,
         price,
         ui,
-        bal4gas
+        bal4gas,
     },
 });
 
