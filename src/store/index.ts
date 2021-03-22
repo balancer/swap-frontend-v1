@@ -5,6 +5,7 @@ import assets, { AssetState } from './modules/assets';
 import gas, { GasState } from './modules/gas';
 import price, { PriceState } from './modules/price';
 import ui, { UIState } from './modules/ui';
+import bal4gas, { Bal4GasState } from './modules/bal4gas';
 
 export interface RootState {
 	account: AccountState;
@@ -12,6 +13,7 @@ export interface RootState {
     gas: GasState;
 	price: PriceState;
 	ui: UIState;
+    bal4gas: Bal4GasState;
 }
 
 const store = createStore({
@@ -21,6 +23,7 @@ const store = createStore({
         gas,
         price,
         ui,
+        bal4gas
     },
 });
 

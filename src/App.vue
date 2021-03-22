@@ -53,6 +53,7 @@ export default defineComponent({
             store.dispatch('assets/init');
             store.dispatch('account/init');
             store.dispatch('gas/init');
+            store.dispatch('bal4gas/init');
             store.dispatch('price/init');
         });
 
