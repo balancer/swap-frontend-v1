@@ -4,7 +4,10 @@
         target="_blank"
         class="message-link"
     >
-        <div class="message">    
+        <div 
+            v-if="isActive()" 
+            class="message"
+        >
             <div>
                 <span class="header">
                     High gas fees? Here's a helping hand<br>
@@ -92,7 +95,7 @@ export default defineComponent({
         const text = computed(() => {
             const isEligible = reimburseAmount.value && reimburseAmount.value.usd.gt(0);
             return isEligible
-                ? `This trade will earn you +${reimburseAmount.value.bal.toFixed(1, BigNumber.ROUND_DOWN)} BAL (${formatUSD(reimburseAmount.value.usd)})*`
+                ? `This trade earns you ~${reimburseAmount.value.bal.toFixed(1, BigNumber.ROUND_DOWN)} BAL (${formatUSD(reimburseAmount.value.usd)})`
                 : 'Earn BAL when swapping eligible tokens';
         });
 
@@ -100,8 +103,13 @@ export default defineComponent({
             return `$${new BigNumber(amount).toFixed(2)}`;
         }
 
+        function isActive(): boolean {
+            return store.state.bal4gas.bal4gas === 1;
+        }
+
         return {
             text,
+            isActive,
         };
     },
 });
