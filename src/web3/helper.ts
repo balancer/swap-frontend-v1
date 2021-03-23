@@ -2,7 +2,6 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { ErrorCode } from '@ethersproject/logger';
 import { Web3Provider } from '@ethersproject/providers';
-import { formatUnits } from '@ethersproject/units';
 import BigNumber from 'bignumber.js';
 
 import { logRevertedTx } from '@/utils/helpers';
