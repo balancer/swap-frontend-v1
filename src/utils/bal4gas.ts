@@ -1,4 +1,4 @@
-const ENDPOINT_BUDGET_SPENT = 'http://api.balancer.finance/liquidity-mining/v1/gas/';
+const ENDPOINT_BUDGET_SPENT = 'https://api.balancer.finance/liquidity-mining/v1/gas/';
 const BUDGET = 30000;
 
 export async function isBudgetLeft(): Promise<boolean> {
