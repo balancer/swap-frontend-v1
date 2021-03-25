@@ -24,7 +24,7 @@
                             v-model="slippageInput"
                             class="slippage-option"
                             :class="{ selected: isCustomSlippage }"
-                            placeholder="2.0"
+                            placeholder="10.0"
                             type="number"
                         >
                     </div>
@@ -67,7 +67,7 @@ import Storage from '@/utils/storage';
 import ButtonText from '@/components/ButtonText.vue';
 import ModalBase from '@/components/ModalBase.vue';
 
-const slippageOptions = [0.001, 0.002, 0.005, 0.01];
+const slippageOptions = [0.005, 0.01, 0.02, 0.05];
 
 export default defineComponent({
     components: {
@@ -103,7 +103,7 @@ export default defineComponent({
                 return;
             }
             const slippageNumber = parseFloat(slippageInput.value) / 100;
-            if (slippageNumber >= 0.1) {
+            if (slippageNumber >= 0.3) {
                 return;
             }
             setSlippage(slippageNumber);
