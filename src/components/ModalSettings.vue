@@ -24,7 +24,7 @@
                             v-model="slippageInput"
                             class="slippage-option"
                             :class="{ selected: isCustomSlippage }"
-                            placeholder="2.0"
+                            placeholder="10.0"
                             type="number"
                         >
                     </div>
