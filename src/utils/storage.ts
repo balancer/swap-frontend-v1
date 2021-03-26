@@ -156,7 +156,7 @@ export default class Storage {
 function getPreferences(): Preferences {
     const defaultPreferences: Preferences = {
         connector: null,
-        slippage: 0.005,
+        slippage: 0.01,
         pairs: {
             1: {
                 inputAsset: '0x6B175474E89094C44Da98b954EedeAC495271d0F',

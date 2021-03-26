@@ -104,7 +104,7 @@ export default defineComponent({
         }
 
         function isActive(): boolean {
-            return store.state.bal4gas.bal4gas === 1;
+            return config.chainId === 1 && store.state.bal4gas.bal4gas === 1;
         }
 
         return {
