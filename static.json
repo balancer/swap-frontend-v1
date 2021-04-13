@@ -1,0 +1,22 @@
+{
+    "root": "build/",
+    "https_only": false,
+    "routes": {
+      "/static/*": "/static/",
+      "/**": "index.html"
+    },
+    "proxies": {
+      "/api/": {
+        "origin": "${API_URL}"
+      }
+    },
+    "headers": {
+      "/**": {
+        "Cache-Control": "no-store, no-cache"
+      },
+      "/static/**": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    }
+  }
+  
