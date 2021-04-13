@@ -13,6 +13,7 @@
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint \"src/**/*.{js,ts,vue}\"",
     "stylelint": "stylelint \"src/**/*.vue\"",
+    "start": "node server.js",
     "postinstall": "npm install express"
   },
   "dependencies": {
