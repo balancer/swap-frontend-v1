@@ -12,7 +12,8 @@
     "serve": "webpack-dev-server",
     "lint": "npm run eslint && npm run stylelint",
     "eslint": "eslint \"src/**/*.{js,ts,vue}\"",
-    "stylelint": "stylelint \"src/**/*.vue\""
+    "stylelint": "stylelint \"src/**/*.vue\"",
+    "postinstall": "npm install express"
   },
   "dependencies": {
     "@balancer-labs/assets": "github:balancer-labs/assets#master",
