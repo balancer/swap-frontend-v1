@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "Balancer Protocol Frontend",
   "license": "GPL-3.0-only",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/balancer-labs/balancer-frontend.git"
-  },
   "engines": {
     "node": "14.x"
   },
