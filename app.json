@@ -3,18 +3,6 @@
     "scripts": {
     },
     "env": {
-      "NODE_ENV": {
-        "required": true
-      },
-      "API_URL": {
-        "required": true
-      },
-      "REACT_APP_API_URL": {
-        "required": true
-      },
-      "NPM_CONFIG_PRODUCTION": {
-        "required": true
-      }
     },
     "formation": {
       "web": {
