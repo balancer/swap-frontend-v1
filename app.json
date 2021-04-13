@@ -1,0 +1,35 @@
+{
+    "name": "tokenswap",
+    "scripts": {
+    },
+    "env": {
+      "NODE_ENV": {
+        "required": true
+      },
+      "API_URL": {
+        "required": true
+      },
+      "REACT_APP_API_URL": {
+        "required": true
+      },
+      "NPM_CONFIG_PRODUCTION": {
+        "required": true
+      }
+    },
+    "formation": {
+      "web": {
+        "quantity": 1
+      }
+    },
+    "addons": [
+    ],
+    "buildpacks": [
+      {
+        "url": "heroku/nodejs"
+      },
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-static"
+      }
+    ]
+  }
+  
