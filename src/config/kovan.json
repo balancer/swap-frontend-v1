@@ -4,7 +4,7 @@
     "precision": 6,
     "infuraKey": "8dd19a9306014b30bb8e994bbf21211c",
     "alchemyKey": "cQGZUiTLRCFsQS7kbRxPJK4eH4fTTu88",
-    "subgraphUrl": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-kovan",
+    "subgraphUrl": "https://api.thegraph.com/subgraphs/name/cron-md/multitoken",
     "subgraphBackupUrl": "https://ipfs.fleek.co/ipns/balancer-bucket.storage.fleek.co/balancer-exchange-kovan/pools",
     "addresses": {
         "bFactory": "0x0728eA2885818759c4adD023C4B234D3e3fDf209",
