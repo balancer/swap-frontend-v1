@@ -18,7 +18,6 @@
                 class="commit-label"
             >
                 <div>
-                    #{{ commitLabel }}
                 </div>
             </a>
             <div class="page-links">
@@ -64,10 +63,10 @@ export default defineComponent({
         // eslint-disable-next-line no-undef
         const isDev = ref(process.env.APP_ENV === 'dev');
         // eslint-disable-next-line no-undef
-        const commit = ref(APP_COMMIT || '');
-        const commitLabel = computed(() => commit.value.substr(0, 6));
+        const commit = ''; // ref(APP_COMMIT || '');
+        const commitLabel = computed(() => '');
         const commitLink = computed(() => 
-            `https://github.com/balancer-labs/balancer-frontend/commit/${commit.value}`,
+            '',
         );
 
         const mode = ref(Storage.isDarkmode());
