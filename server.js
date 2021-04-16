@@ -1,6 +1,7 @@
 var path = require('path');
 var express = require('express');
-const https = require('https')
+const https = require('https');
+const { readSync } = require('fs');
 
 var app = express();
 
@@ -44,6 +45,9 @@ app.get('/pools', (req, res) => {
     
       tres.on('data', d => {
         res.write(d)
+      })
+      tres.on('end', () => {
+          res.end()
       })
     })
     
