@@ -42,12 +42,16 @@ app.get('/pools', (req, res) => {
     
     const treq = https.request(options, tres => {
       console.log(`statusCode: ${res.statusCode}`)
+
+      const chunks = [];
     
       tres.on('data', d => {
-        res.write(d)
+        chunks.push(Buffer.from(d))
+        // res.write(d)
       })
       tres.on('end', () => {
-          res.end()
+          let data = JSON.parse(Buffer.concat(chunks).toString('utf8'))
+          res.end(JSON.stringify(data['data']))
       })
     })
     
