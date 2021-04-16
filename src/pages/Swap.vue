@@ -292,7 +292,7 @@ export default defineComponent({
 
         async function initSor(): Promise<void> {
             // const poolsUrl = `${config.subgraphBackupUrl}?timestamp=${Date.now()}`;
-            const poolsUrl = 'https://multitoken-balancer-swap-prod.herokuapp.com/pools-data.json';
+            const poolsUrl = '/pools';
             sor = new SOR(
                 provider,
                 new BigNumber(GAS_PRICE),
