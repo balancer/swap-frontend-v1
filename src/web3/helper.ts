@@ -1,10 +1,8 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
-import { ErrorCode } from '@ethersproject/logger';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 
-import { logRevertedTx } from '@/utils/helpers';
 import config from '@/config';
 
 import ERC20Abi from '../abi/ERC20.json';
@@ -20,10 +18,6 @@ export default class Helper {
         try {
             return await assetContract.approve(spender, MaxUint256);
         } catch(e) {
-            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                const sender = await provider.getSigner().getAddress();
-                logRevertedTx(sender, assetContract, 'approve', [spender, MaxUint256], {});
-            }
             return e;
         }
     }
@@ -39,10 +33,6 @@ export default class Helper {
         try {
             return await wethContract.deposit(overrides);
         } catch(e) {
-            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                const sender = await provider.getSigner().getAddress();
-                logRevertedTx(sender, wethContract, 'deposit', [], overrides);
-            }
             return e;
         }
     }
@@ -55,10 +45,6 @@ export default class Helper {
         try {
             return await wethContract.withdraw(amount.toString(), {});
         } catch(e) {
-            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                const sender = await provider.getSigner().getAddress();
-                logRevertedTx(sender, wethContract, 'withdraw', [amount.toString()], {});
-            }
             return e;
         }
     }
