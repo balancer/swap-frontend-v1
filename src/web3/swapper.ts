@@ -1,13 +1,12 @@
 import BigNumber from 'bignumber.js';
 import { Contract } from '@ethersproject/contracts';
-import { ErrorCode } from '@ethersproject/logger';
 import { Web3Provider } from '@ethersproject/providers';
 import { Swap } from '@balancer-labs/sor/dist/types';
 
 import ExchangeProxyABI from '../abi/ExchangeProxy.json';
 
 import config from '@/config';
-import { ETH_KEY, logRevertedTx } from '@/utils/helpers';
+import { ETH_KEY } from '@/utils/helpers';
 
 const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 const exchangeProxyAddress = config.addresses.exchangeProxy;
@@ -40,22 +39,6 @@ export default class Swapper {
                 overrides,
             );
         } catch(e) {
-            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                const sender = await provider.getSigner().getAddress();
-                logRevertedTx(
-                    sender,
-                    exchangeProxyContract,
-                    'multihopBatchSwapExactIn',
-                    [
-                        swaps,
-                        assetInAddress,
-                        assetOutAddress,
-                        assetInAmount.toString(),
-                        assetOutAmountMin.toString(),
-                    ],
-                    overrides,
-                );
-            }
             return e;
         }
     }
@@ -85,21 +68,6 @@ export default class Swapper {
                 overrides,
             );
         } catch(e) {
-            if (e.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
-                const sender = await provider.getSigner().getAddress();
-                logRevertedTx(
-                    sender,
-                    exchangeProxyContract,
-                    'multihopBatchSwapExactOut',
-                    [
-                        swaps,
-                        assetInAddress,
-                        assetOutAddress,
-                        assetInAmountMax.toString(),
-                    ],
-                    overrides,
-                );
-            }
             return e;
         }
     }
